@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+unstaged_files=$(git ls-files --others --modified --cached --exclude-standard)
+
+# Loop through each file
+for file in $unstaged_files; do
+    # Check if the file contains the substring "correct": true
+    if grep -q '"correct": true' "$file"; then
+        # Add the file to staging
+        git add "$file"
+        echo "Added $file to staging."
+    fi
+done
+
+# Notify if no files were added
+if [ -z "$unstaged_files" ]; then
+    echo "No unstaged files found."
+fi
