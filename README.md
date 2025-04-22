@@ -5,7 +5,7 @@
 This repository contains the code and the data for the paper "Why Do Multi-Agent Systems Fail?" https://arxiv.org/pdf/2503.13657
 
 
-In this paper, we present the first comprehensive study of MAS challenges.
+In this paper, we present the first comprehensive study of MAS challenges: MAST (Multi-Agent Systems Failure Taxonomy).
 
 ![A Taxonomy of MAS Failure Modes](assets/taxonomy_v11_cropped-1.png)
 ![Study Workflow](assets/arxiv_figure_v2_cropped-1.png)
