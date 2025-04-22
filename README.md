@@ -2,7 +2,7 @@
 
 This repository contains the code and the data for the paper "Why Do Multi-Agent Systems Fail?" https://arxiv.org/pdf/2503.13657
 
-![MAST Logo](assets/mast_logo_with_writing.png)
+![MAST Logo](assets/mas22.png)
 
 In this paper, we present the first comprehensive study of MAS challenges.
 
