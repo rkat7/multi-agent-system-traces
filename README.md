@@ -4,7 +4,7 @@
 
 Our blogpost: https://sites.google.com/berkeley.edu/mast/
 
-This repository contains the code and the data for the paper "Why Do Multi-Agent Systems Fail?" https://arxiv.org/pdf/2503.13657
+This repository contains the code and the data for the paper "Why Do Multi-Agent Systems Fail?" [https://arxiv.org/pdf/2503.13657](https://arxiv.org/pdf/2503.13657v2)
 
 
 In this paper, we present the first comprehensive study of MAS challenges: MAST (Multi-Agent Systems Failure Taxonomy).
