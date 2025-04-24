@@ -2,7 +2,7 @@
   <img src="assets/mas22.jpg" alt="MAST Logo" width="300"/>
 </p>
 
-Checkout our blogpost! https://sites.google.com/berkeley.edu/mast/
+Our blogpost: https://sites.google.com/berkeley.edu/mast/
 
 This repository contains the code and the data for the paper "Why Do Multi-Agent Systems Fail?" https://arxiv.org/pdf/2503.13657
 
