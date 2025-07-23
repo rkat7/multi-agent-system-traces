@@ -1,5 +1,6 @@
 For the full MAD (Multi-Agent systems failure Dataset) that is produced by using the MAST, please visit [https://huggingface.co/datasets/mcemri/MAD](https://huggingface.co/datasets/mcemri/MAD)
-Our you can use it by following the steps below:
+
+Or you can use it by following the steps below:
 
 For LLM-as-a-Judge annotated traces:
 ```
