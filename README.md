@@ -18,6 +18,7 @@ For LLM-as-a-Judge annotated traces:
 ```
 from huggingface_hub import hf_hub_download
 import pandas as pd
+import json
 
 REPO_ID = "mcemri/MAD"
 FILENAME = "MAD_full_dataset.json"
