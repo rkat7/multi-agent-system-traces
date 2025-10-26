@@ -1,3 +1,5 @@
+NOTE: Full credits to the Authors from the original repo: https://github.com/multi-agent-systems-failure-taxonomy/MAST.git
+
 <p align="center">
   <img src="assets/mas22.jpg" alt="MAST Logo" width="300"/>
 </p>
