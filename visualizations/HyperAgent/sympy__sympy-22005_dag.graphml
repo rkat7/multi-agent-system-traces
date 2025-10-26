@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <key id="d8" for="edge" attr.name="edge_type" attr.type="string" />
+  <key id="d7" for="node" attr.name="context" attr.type="string" />
+  <key id="d6" for="node" attr.name="index" attr.type="long" />
+  <key id="d5" for="node" attr.name="content" attr.type="string" />
+  <key id="d4" for="node" attr.name="type" attr.type="string" />
+  <key id="d3" for="node" attr.name="id" attr.type="string" />
+  <key id="d2" for="node" attr.name="label" attr.type="string" />
+  <key id="d1" for="graph" attr.name="problem_statement" attr.type="string" />
+  <key id="d0" for="graph" attr.name="instance_id" attr.type="string" />
+  <graph edgedefault="directed">
+    <node id="node_0">
+      <data key="d2">Init</data>
+      <data key="d3">node_0</data>
+      <data key="d4">initialization</data>
+      <data key="d5">HyperAgent_sympy__sympy-22005 - INFO - Initialized HyperAgent instance sympy__sympy-22005</data>
+      <data key="d6">0</data>
+      <data key="d7" />
+    </node>
+    <node id="node_1">
+      <data key="d2">Init</data>
+      <data key="d3">node_1</data>
+      <data key="d4">initialization</data>
+      <data key="d5">HyperAgent_sympy__sympy-22005 - INFO - Initialized HyperAgent instance sympy__sympy-22005</data>
+      <data key="d6">1</data>
+      <data key="d7" />
+    </node>
+    <node id="node_2">
+      <data key="d2">Init</data>
+      <data key="d3">node_2</data>
+      <data key="d4">initialization</data>
+      <data key="d5">HyperAgent_sympy__sympy-22005 - INFO - Initialized HyperAgent instance sympy__sympy-22005</data>
+      <data key="d6">2</data>
+      <data key="d7" />
+    </node>
+    <edge source="node_0" target="node_1">
+      <data key="d8">sequential</data>
+    </edge>
+    <edge source="node_1" target="node_2">
+      <data key="d8">sequential</data>
+    </edge>
+    <data key="d0">sympy__sympy-22005</data>
+    <data key="d1">["detection of infinite solution request", "```python\r", "&gt;&gt;&gt; solve_poly_system((x - 1,), x, y)\r", "Traceback (most recent call last):\r", "...\r", "NotImplementedError:\r", "only zero-dimensional systems supported (finite number of solutions)\r", "&gt;&gt;&gt; solve_poly_system((y - 1,), x, y)  &lt;--- this is not handled correctly\r", "[(1,)]\r", "```\r", "```diff\r", "diff --git a/sympy/solvers/polysys.py b/sympy/solvers/polysys.py\r", "index b9809fd4e9..674322d4eb 100644\r", "--- a/sympy/solvers/polysys.py\r", "+++ b/sympy/solvers/polysys.py\r", "@@ -240,7 +240,7 @@ def _solve_reduced_system(system, gens, entry=False):\r", " \r", "         univariate = list(filter(_is_univariate, basis))\r", " \r", "-        if len(univariate) == 1:\r", "+        if len(univariate) == 1 and len(gens) == 1:\r", "             f = univariate.pop()\r", "         else:\r", "             raise NotImplementedError(filldedent('''\r", "diff --git a/sympy/solvers/tests/test_polysys.py b/sympy/solvers/tests/test_polysys.py\r", "index 58419f8762..9e674a6fe6 100644\r", "--- a/sympy/solvers/tests/test_polysys.py\r", "+++ b/sympy/solvers/tests/test_polysys.py\r", "@@ -48,6 +48,10 @@ def test_solve_poly_system():\r", "     raises(NotImplementedError, lambda: solve_poly_system(\r", "         [z, -2*x*y**2 + x + y**2*z, y**2*(-z - 4) + 2]))\r", "     raises(PolynomialError, lambda: solve_poly_system([1/x], x))\r", "+    raises(NotImplementedError, lambda: solve_poly_system(\r", "+        Poly(x - 1, x, y), (x, y)))\r", "+    raises(NotImplementedError, lambda: solve_poly_system(\r", "+        Poly(y - 1, x, y), (x, y)))\r", " \r", " \r", " def test_solve_biquadratic():\r", "```", ""]</data>
+  </graph>
+</graphml>

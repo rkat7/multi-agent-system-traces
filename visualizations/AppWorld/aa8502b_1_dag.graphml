@@ -1,0 +1,855 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <key id="d13" for="edge" attr.name="edge_type" attr.type="string" />
+  <key id="d12" for="node" attr.name="api" attr.type="string" />
+  <key id="d11" for="node" attr.name="to_agent" attr.type="string" />
+  <key id="d10" for="node" attr.name="from_agent" attr.type="string" />
+  <key id="d9" for="node" attr.name="context" attr.type="string" />
+  <key id="d8" for="node" attr.name="line_number" attr.type="long" />
+  <key id="d7" for="node" attr.name="content" attr.type="string" />
+  <key id="d6" for="node" attr.name="agent" attr.type="string" />
+  <key id="d5" for="node" attr.name="type" attr.type="string" />
+  <key id="d4" for="node" attr.name="id" attr.type="string" />
+  <key id="d3" for="node" attr.name="label" attr.type="string" />
+  <key id="d2" for="graph" attr.name="task_description" attr.type="string" />
+  <key id="d1" for="graph" attr.name="task_number" attr.type="string" />
+  <key id="d0" for="graph" attr.name="task_id" attr.type="string" />
+  <graph edgedefault="directed">
+    <node id="node_0">
+      <data key="d3">Supervisor Response</data>
+      <data key="d4">node_0</data>
+      <data key="d5">agent_response</data>
+      <data key="d6">Supervisor</data>
+      <data key="d7">Response from Supervisor Agent
+    # To solve this task, I need to follow these steps:
+    # 1. Retrieve the list of songs that Troy has liked on Spotify.
+    # 2. Extract the artists from these liked songs.
+    # 3. Follow each of these artists on Spotify.
+    # 
+    # Let's start by sending a message to the Spotify agent to get the list of liked songs.
+    
+    send_message(app_name='spotify', message='Get my liked songs')
+    
+    
+    </data>
+      <data key="d8">4</data>
+      <data key="d9" />
+    </node>
+    <node id="node_1">
+      <data key="d3">Code Exec</data>
+      <data key="d4">node_1</data>
+      <data key="d5">code_execution</data>
+      <data key="d7">Code Execution Output
+
+    # CallExtension
+    reply = self.send_message(app_name='spotify', message='Get my liked songs')
+    
+    
+    
+    </data>
+      <data key="d8">16</data>
+      <data key="d9">Supervisor</data>
+    </node>
+    <node id="node_2">
+      <data key="d3">Enter Spotify</data>
+      <data key="d4">node_2</data>
+      <data key="d5">agent_entry</data>
+      <data key="d6">Spotify</data>
+      <data key="d7">Entering Spotify Agent message loop</data>
+      <data key="d8">24</data>
+    </node>
+    <node id="node_3">
+      <data key="d3">→ Spotify</data>
+      <data key="d4">node_3</data>
+      <data key="d5">agent_message</data>
+      <data key="d6">Spotify</data>
+      <data key="d7">Message to Spotify Agent
+        Get my liked songs
+        
+        
+        </data>
+      <data key="d8">25</data>
+      <data key="d9">Spotify</data>
+    </node>
+    <node id="node_4">
+      <data key="d3">Spotify Response</data>
+      <data key="d4">node_4</data>
+      <data key="d5">agent_response</data>
+      <data key="d6">Spotify</data>
+      <data key="d7">Response from Spotify Agent
+        # To get your liked songs, I need to use the `show_liked_songs` API from the Spotify app. First, I'll check the API documentation to understand its usage.
+        print(apis.api_docs.show_api_doc(app_name='spotify', api_name='show_liked_songs'))
+        
+        
+        </data>
+      <data key="d8">30</data>
+      <data key="d9">Spotify</data>
+    </node>
+    <node id="node_5">
+      <data key="d3">→ Spotify</data>
+      <data key="d4">node_5</data>
+      <data key="d5">agent_message</data>
+      <data key="d6">Spotify</data>
+      <data key="d7">Message to Spotify Agent
+        {
+         "app_name": "spotify",
+         "api_name": "show_liked_songs",
+         "path": "/liked_songs",
+         "method": "GET",
+         "description": "Get a list of songs you have liked.",
+         "parameters": [
+          {
+           "name": "access_token",
+           "type": "string",
+           "required": true,
+           "description": "Access token obtained from spotify app login.",
+           "default": null,
+           "constraints": []
+          },
+          {
+           "name": "page_index",
+           "type": "integer",
+           "required": false,
+           "description": "The index of the page to return.",
+           "default": 0,
+           "constraints": [
+            "value &gt;= 0.0"
+           ]
+          },
+          {
+           "name": "page_limit",
+           "type": "integer",
+           "required": false,
+           "description": "The maximum number of results to return per page.",
+           "default": 5,
+           "constraints": [
+            "value &gt;= 1.0, &lt;= 20.0"
+           ]
+          },
+          {
+           "name": "sort_by",
+           "type": "string",
+           "required": false,
+           "description": "The attribute to sort the liked songs by prefixed with +/- to reflect ascending/descending. Valid attributes: liked_at, play_count and title.",
+           "default": "-liked_at",
+           "constraints": []
+          }
+         ],
+         "response_schemas": {
+          "success": [
+           {
+            "song_id": 1,
+            "title": "string",
+            "album_id": 1,
+            "album_title": "string",
+            "duration": 1,
+            "artists": [
+             {
+              "id": 1,
+              "name": "string"
+             }
+            ],
+            "liked_at": "2019-01-01T00:00:00"
+           }
+          ],
+          "failure": {
+           "message": "string"
+          }
+         }
+        }
+        
+        
+        
+        </data>
+      <data key="d8">36</data>
+      <data key="d9">Spotify</data>
+    </node>
+    <node id="node_6">
+      <data key="d3">Spotify Response</data>
+      <data key="d4">node_6</data>
+      <data key="d5">agent_response</data>
+      <data key="d6">Spotify</data>
+      <data key="d7">Response from Spotify Agent
+        # To get the liked songs, I need an access token. I'll ask you to provide the access token for the Spotify app.
+        reply("Please provide the access token for the Spotify app to retrieve your liked songs.")
+        
+        
+        </data>
+      <data key="d8">107</data>
+      <data key="d9">Spotify</data>
+    </node>
+    <node id="node_7">
+      <data key="d3">Spotify → Supervisor</data>
+      <data key="d4">node_7</data>
+      <data key="d5">agent_reply</data>
+      <data key="d10">Spotify</data>
+      <data key="d11">Supervisor</data>
+      <data key="d7">Reply from Spotify Agent to Supervisor
+        Please provide the access token for the Spotify app to retrieve your liked songs.
+        
+        
+        </data>
+      <data key="d8">113</data>
+      <data key="d9">Spotify</data>
+    </node>
+    <node id="node_8">
+      <data key="d3">Exit Spotify</data>
+      <data key="d4">node_8</data>
+      <data key="d5">agent_exit</data>
+      <data key="d6">Spotify</data>
+      <data key="d7">Exiting Spotify Agent message loop</data>
+      <data key="d8">118</data>
+    </node>
+    <node id="node_9">
+      <data key="d3">API: send_message</data>
+      <data key="d4">node_9</data>
+      <data key="d5">api_response</data>
+      <data key="d12">send_message</data>
+      <data key="d7">Response from send_message API
+    Please provide the access token for the Spotify app to retrieve your liked songs.
+    
+    
+</data>
+      <data key="d8">119</data>
+    </node>
+    <node id="node_10">
+      <data key="d3">→ Supervisor</data>
+      <data key="d4">node_10</data>
+      <data key="d5">agent_message</data>
+      <data key="d6">Supervisor</data>
+      <data key="d7">Message to Supervisor Agent
+    Please provide the access token for the Spotify app to retrieve your liked songs.
+    
+    
+    </data>
+      <data key="d8">124</data>
+      <data key="d9" />
+    </node>
+    <node id="node_11">
+      <data key="d3">Supervisor Response</data>
+      <data key="d4">node_11</data>
+      <data key="d5">agent_response</data>
+      <data key="d6">Supervisor</data>
+      <data key="d7">Response from Supervisor Agent
+    # I need to get the access token for the Spotify app from the supervisor app. Let's retrieve the account credentials for Spotify.
+    print(apis.supervisor.show_account_passwords())
+    
+    
+    </data>
+      <data key="d8">129</data>
+      <data key="d9" />
+    </node>
+    <node id="node_12">
+      <data key="d3">Code Exec</data>
+      <data key="d4">node_12</data>
+      <data key="d5">code_execution</data>
+      <data key="d7">Code Execution Output
+
+    [
+     {
+      "account_name": "amazon",
+      "password": "Dd^+uzP"
+     },
+     {
+      "account_name": "file_system",
+      "password": "QF^61f3"
+     },
+     {
+      "account_name": "gmail",
+      "password": "*WytI+J"
+     },
+     {
+      "account_name": "phone",
+      "password": "u&amp;Xg}+5"
+     },
+     {
+      "account_name": "simple_note",
+      "password": "jXbJu50"
+     },
+     {
+      "account_name": "splitwise",
+      "password": "mi)AdQ3"
+     },
+     {
+      "account_name": "spotify",
+      "password": "Q3c_DvY"
+     },
+     {
+      "account_name": "todoist",
+      "password": "=Z$WBI0"
+     },
+     {
+      "account_name": "venmo",
+      "password": "z*@]t]Q"
+     }
+    ]
+    
+    
+    
+    
+</data>
+      <data key="d8">135</data>
+      <data key="d9">Supervisor</data>
+    </node>
+    <node id="node_13">
+      <data key="d3">→ Supervisor</data>
+      <data key="d4">node_13</data>
+      <data key="d5">agent_message</data>
+      <data key="d6">Supervisor</data>
+      <data key="d7">Message to Supervisor Agent
+    [
+     {
+      "account_name": "amazon",
+      "password": "Dd^+uzP"
+     },
+     {
+      "account_name": "file_system",
+      "password": "QF^61f3"
+     },
+     {
+      "account_name": "gmail",
+      "password": "*WytI+J"
+     },
+     {
+      "account_name": "phone",
+      "password": "u&amp;Xg}+5"
+     },
+     {
+      "account_name": "simple_note",
+      "password": "jXbJu50"
+     },
+     {
+      "account_name": "splitwise",
+      "password": "mi)AdQ3"
+     },
+     {
+      "account_name": "spotify",
+      "password": "Q3c_DvY"
+     },
+     {
+      "account_name": "todoist",
+      "password": "=Z$WBI0"
+     },
+     {
+      "account_name": "venmo",
+      "password": "z*@]t]Q"
+     }
+    ]
+    
+    
+    
+    </data>
+      <data key="d8">180</data>
+      <data key="d9" />
+    </node>
+    <node id="node_14">
+      <data key="d3">Supervisor Response</data>
+      <data key="d4">node_14</data>
+      <data key="d5">agent_response</data>
+      <data key="d6">Supervisor</data>
+      <data key="d7">Response from Supervisor Agent
+    # It seems I retrieved the passwords instead of the access tokens. I need to find the correct API to get the access token for Spotify. Let's check the available APIs in the supervisor app again.
+    print(apis.api_docs.show_api_descriptions(app_name='supervisor'))
+    
+    
+    </data>
+      <data key="d8">223</data>
+      <data key="d9" />
+    </node>
+    <node id="node_15">
+      <data key="d3">Code Exec</data>
+      <data key="d4">node_15</data>
+      <data key="d5">code_execution</data>
+      <data key="d7">Code Execution Output
+
+    [
+     {
+      "name": "show_active_task",
+      "description": "Show the currently active task assigned to you by the supervisor."
+     },
+     {
+      "name": "complete_task",
+      "description": "Mark the currently active task as complete with the given answer."
+     },
+     {
+      "name": "show_profile",
+      "description": "Show your supervisor's profile information."
+     },
+     {
+      "name": "show_addresses",
+      "description": "Show your supervisor's addresses."
+     },
+     {
+      "name": "show_payment_cards",
+      "description": "Show your supervisor's payment_cards."
+     },
+     {
+      "name": "show_account_passwords",
+      "description": "Show your supervisor's app account passwords."
+     }
+    ]
+    
+    
+    
+    
+</data>
+      <data key="d8">229</data>
+      <data key="d9">Supervisor</data>
+    </node>
+    <node id="node_16">
+      <data key="d3">→ Supervisor</data>
+      <data key="d4">node_16</data>
+      <data key="d5">agent_message</data>
+      <data key="d6">Supervisor</data>
+      <data key="d7">Message to Supervisor Agent
+    [
+     {
+      "name": "show_active_task",
+      "description": "Show the currently active task assigned to you by the supervisor."
+     },
+     {
+      "name": "complete_task",
+      "description": "Mark the currently active task as complete with the given answer."
+     },
+     {
+      "name": "show_profile",
+      "description": "Show your supervisor's profile information."
+     },
+     {
+      "name": "show_addresses",
+      "description": "Show your supervisor's addresses."
+     },
+     {
+      "name": "show_payment_cards",
+      "description": "Show your supervisor's payment_cards."
+     },
+     {
+      "name": "show_account_passwords",
+      "description": "Show your supervisor's app account passwords."
+     }
+    ]
+    
+    
+    
+    </data>
+      <data key="d8">262</data>
+      <data key="d9" />
+    </node>
+    <node id="node_17">
+      <data key="d3">Supervisor Response</data>
+      <data key="d4">node_17</data>
+      <data key="d5">agent_response</data>
+      <data key="d6">Supervisor</data>
+      <data key="d7">Response from Supervisor Agent
+    # It seems there is no direct API to get the access token for Spotify. I will need to use the password to authenticate with the Spotify agent. Let's try sending the password along with the request to get the liked songs.
+    
+    send_message(app_name='spotify', message='Get my liked songs', access_token='Q3c_DvY')
+    
+    
+    </data>
+      <data key="d8">293</data>
+      <data key="d9" />
+    </node>
+    <node id="node_18">
+      <data key="d3">Code Exec</data>
+      <data key="d4">node_18</data>
+      <data key="d5">code_execution</data>
+      <data key="d7">Code Execution Output
+
+    Execution failed. Traceback:
+      File "&lt;python-input&gt;", line 3, in &lt;module&gt;
+        send_message(app_name='spotify', message='Get my liked songs', access_token='Q3c_DvY')
+    TypeError: send_message() got an unexpected keyword argument 'access_token'
+    
+    
+    
+</data>
+      <data key="d8">300</data>
+      <data key="d9">Supervisor</data>
+    </node>
+    <node id="node_19">
+      <data key="d3">→ Supervisor</data>
+      <data key="d4">node_19</data>
+      <data key="d5">agent_message</data>
+      <data key="d6">Supervisor</data>
+      <data key="d7">Message to Supervisor Agent
+    Execution failed. Traceback:
+      File "&lt;python-input&gt;", line 3, in &lt;module&gt;
+        send_message(app_name='spotify', message='Get my liked songs', access_token='Q3c_DvY')
+    TypeError: send_message() got an unexpected keyword argument 'access_token'
+    
+    
+    </data>
+      <data key="d8">310</data>
+      <data key="d9" />
+    </node>
+    <node id="node_20">
+      <data key="d3">Supervisor Response</data>
+      <data key="d4">node_20</data>
+      <data key="d5">agent_response</data>
+      <data key="d6">Supervisor</data>
+      <data key="d7">Response from Supervisor Agent
+    # It seems I made a mistake by trying to pass the access token as a keyword argument. I should include it in the message itself. Let's try sending the message again with the access token included in the message.
+    
+    send_message(app_name='spotify', message='Get my liked songs with access token Q3c_DvY')
+    
+    
+    </data>
+      <data key="d8">318</data>
+      <data key="d9" />
+    </node>
+    <node id="node_21">
+      <data key="d3">Code Exec</data>
+      <data key="d4">node_21</data>
+      <data key="d5">code_execution</data>
+      <data key="d7">Code Execution Output
+
+    # CallExtension
+    reply = self.send_message(app_name='spotify', message='Get my liked songs with access token Q3c_DvY')
+    
+    
+    
+    </data>
+      <data key="d8">325</data>
+      <data key="d9">Supervisor</data>
+    </node>
+    <node id="node_22">
+      <data key="d3">Enter Spotify</data>
+      <data key="d4">node_22</data>
+      <data key="d5">agent_entry</data>
+      <data key="d6">Spotify</data>
+      <data key="d7">Entering Spotify Agent message loop</data>
+      <data key="d8">333</data>
+    </node>
+    <node id="node_23">
+      <data key="d3">→ Spotify</data>
+      <data key="d4">node_23</data>
+      <data key="d5">agent_message</data>
+      <data key="d6">Spotify</data>
+      <data key="d7">Message to Spotify Agent
+        Get my liked songs with access token Q3c_DvY
+        
+        
+        </data>
+      <data key="d8">334</data>
+      <data key="d9">Spotify</data>
+    </node>
+    <node id="node_24">
+      <data key="d3">Spotify Response</data>
+      <data key="d4">node_24</data>
+      <data key="d5">agent_response</data>
+      <data key="d6">Spotify</data>
+      <data key="d7">Response from Spotify Agent
+        # Now that I have the access token, I can use it to get your liked songs. I'll start by fetching the first page of liked songs.
+        liked_songs_response = apis.spotify.show_liked_songs(access_token="Q3c_DvY", page_index=0, page_limit=5)
+        liked_songs_response
+        
+        
+        </data>
+      <data key="d8">339</data>
+      <data key="d9">Spotify</data>
+    </node>
+    <node id="node_25">
+      <data key="d3">→ Spotify</data>
+      <data key="d4">node_25</data>
+      <data key="d5">agent_message</data>
+      <data key="d6">Spotify</data>
+      <data key="d7">Message to Spotify Agent
+        Execution failed. Traceback:
+          File "&lt;python-input&gt;", line 2, in &lt;module&gt;
+            liked_songs_response = apis.spotify.show_liked_songs(access_token="Q3c_DvY", page_index=0, page_limit=5)
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        Exception: Response status code is 401:
+        {"message":"You are either not authorized to access this spotify API endpoint or your access token is missing, invalid or expired."}
+        
+        
+        </data>
+      <data key="d8">346</data>
+      <data key="d9">Spotify</data>
+    </node>
+    <node id="node_26">
+      <data key="d3">Spotify Response</data>
+      <data key="d4">node_26</data>
+      <data key="d5">agent_response</data>
+      <data key="d6">Spotify</data>
+      <data key="d7">Response from Spotify Agent
+        # It seems like the access token provided is either invalid or expired. I'll need a valid access token to proceed. Please provide a new access token for the Spotify app.
+        reply("The access token provided is invalid or expired. Please provide a valid access token for the Spotify app.")
+        
+        
+        </data>
+      <data key="d8">356</data>
+      <data key="d9">Spotify</data>
+    </node>
+    <node id="node_27">
+      <data key="d3">Spotify → Supervisor</data>
+      <data key="d4">node_27</data>
+      <data key="d5">agent_reply</data>
+      <data key="d10">Spotify</data>
+      <data key="d11">Supervisor</data>
+      <data key="d7">Reply from Spotify Agent to Supervisor
+        The access token provided is invalid or expired. Please provide a valid access token for the Spotify app.
+        
+        
+        </data>
+      <data key="d8">362</data>
+      <data key="d9">Spotify</data>
+    </node>
+    <node id="node_28">
+      <data key="d3">Exit Spotify</data>
+      <data key="d4">node_28</data>
+      <data key="d5">agent_exit</data>
+      <data key="d6">Spotify</data>
+      <data key="d7">Exiting Spotify Agent message loop</data>
+      <data key="d8">367</data>
+    </node>
+    <node id="node_29">
+      <data key="d3">API: send_message</data>
+      <data key="d4">node_29</data>
+      <data key="d5">api_response</data>
+      <data key="d12">send_message</data>
+      <data key="d7">Response from send_message API
+    The access token provided is invalid or expired. Please provide a valid access token for the Spotify app.
+    
+    
+</data>
+      <data key="d8">368</data>
+    </node>
+    <node id="node_30">
+      <data key="d3">→ Supervisor</data>
+      <data key="d4">node_30</data>
+      <data key="d5">agent_message</data>
+      <data key="d6">Supervisor</data>
+      <data key="d7">Message to Supervisor Agent
+    The access token provided is invalid or expired. Please provide a valid access token for the Spotify app.
+    
+    
+    </data>
+      <data key="d8">373</data>
+      <data key="d9" />
+    </node>
+    <node id="node_31">
+      <data key="d3">Supervisor Response</data>
+      <data key="d4">node_31</data>
+      <data key="d5">agent_response</data>
+      <data key="d6">Supervisor</data>
+      <data key="d7">Response from Supervisor Agent
+    # It seems the password is not the access token. I need to find another way to get the access token. Let's check the supervisor's profile information to see if it contains any relevant details.
+    
+    print(apis.supervisor.show_profile())
+    
+    
+    </data>
+      <data key="d8">378</data>
+      <data key="d9" />
+    </node>
+    <node id="node_32">
+      <data key="d3">Code Exec</data>
+      <data key="d4">node_32</data>
+      <data key="d5">code_execution</data>
+      <data key="d7">Code Execution Output
+
+    {
+     "first_name": "Troy",
+     "last_name": "Solomon",
+     "email": "tr_solo@gmail.com",
+     "phone_number": "7273731063",
+     "birthday": "1990-02-02",
+     "sex": "male"
+    }
+    
+    
+    
+    
+</data>
+      <data key="d8">385</data>
+      <data key="d9">Supervisor</data>
+    </node>
+    <node id="node_33">
+      <data key="d3">→ Supervisor</data>
+      <data key="d4">node_33</data>
+      <data key="d5">agent_message</data>
+      <data key="d6">Supervisor</data>
+      <data key="d7">Message to Supervisor Agent
+    {
+     "first_name": "Troy",
+     "last_name": "Solomon",
+     "email": "tr_solo@gmail.com",
+     "phone_number": "7273731063",
+     "birthday": "1990-02-02",
+     "sex": "male"
+    }
+    
+    
+    
+    </data>
+      <data key="d8">400</data>
+      <data key="d9" />
+    </node>
+    <node id="node_34">
+      <data key="d3">Supervisor Response</data>
+      <data key="d4">node_34</data>
+      <data key="d5">agent_response</data>
+      <data key="d6">Supervisor</data>
+      <data key="d7">Response from Supervisor Agent
+    # The profile information does not contain the access token. Since I cannot find the access token in the available APIs, I will need to mark this task as failed because I cannot proceed without it.
+    apis.supervisor.complete_task(status="fail")
+    
+    
+    </data>
+      <data key="d8">413</data>
+      <data key="d9" />
+    </node>
+    <node id="node_35">
+      <data key="d3">Code Exec</data>
+      <data key="d4">node_35</data>
+      <data key="d5">code_execution</data>
+      <data key="d7">Code Execution Output
+
+    Code executed successfully.
+    
+    
+    
+
+
+Evaluation
+{
+    "success": false,
+    "difficulty": 2,
+    "num_tests": 4,
+    "passes": [
+        {
+            "requirement": "assert answers match.",
+            "label": "no_op_fail"
+        },
+        {
+            "requirement": "obtain added, removed spotify.UserArtistFollowing records using models.changed_records, then,\nif public_data.action is \"Follow\", assert 0 have been removed,\nif public_data.action is \"Unfollow\", assert 0 have been added.",
+            "label": "no_op_pass"
+        }
+    ],
+    "failures": [
+        {
+            "requirement": "assert model changes match spotify.UserArtistFollowing.",
+            "trace": "```python\nwith test(\n    \"\"\"\n    assert model changes match spotify.UserArtistFollowing.\n    \"\"\"\n):\n    test.case(models.changed_model_names(), \"==\", {\"spotify.UserArtistFollowing\"})\n```\n----------\nAssertionError:  set() == {'spotify.UserArtistFollowing'}\n\nIn right but not left:\n['spotify.UserArtistFollowing']",
+            "label": "no_op_fail"
+        },
+        {
+            "requirement": "if public_data.action is \"Follow\",\nassert IDs of added artist followings match private_data.to_be_acted_upon_artist_ids (ignore_order),\nif public_data.action is \"Unfollow\",\nassert IDs of removed artist followings match private_data.to_be_acted_upon_artist_ids (ignore_order).",
+            "trace": "```python\nwith test(\n    \"\"\"\n    if public_data.action is \"Follow\",\n    assert IDs of added artist followings match private_data.to_be_acted_upon_artist_ids (ignore_order),\n    if public_data.action is \"Unfollow\",\n    assert IDs of removed artist followings match private_data.to_be_acted_upon_artist_ids (ignore_order).\n    \"\"\"\n):\n```\n----------\nAssertionError:  [] == [1, 2, 4, 5, 6, 7, 9, 11, 12, 13, 14, 15, 16]\n\nIn right but not left:\n[1, 2, 4, 5, 6, 7, 9, 11, 12, 13, 14, 15, 16]",
+            "label": "no_op_fail"
+        }
+    ]
+}</data>
+      <data key="d8">419</data>
+      <data key="d9">Supervisor</data>
+    </node>
+    <edge source="node_0" target="node_1">
+      <data key="d13">sequential</data>
+    </edge>
+    <edge source="node_1" target="node_2">
+      <data key="d13">execution_result</data>
+    </edge>
+    <edge source="node_2" target="node_3">
+      <data key="d13">context_entry</data>
+    </edge>
+    <edge source="node_3" target="node_4">
+      <data key="d13">request_response</data>
+    </edge>
+    <edge source="node_4" target="node_5">
+      <data key="d13">sequential</data>
+    </edge>
+    <edge source="node_5" target="node_6">
+      <data key="d13">request_response</data>
+    </edge>
+    <edge source="node_6" target="node_7">
+      <data key="d13">sequential</data>
+    </edge>
+    <edge source="node_7" target="node_8">
+      <data key="d13">sequential</data>
+    </edge>
+    <edge source="node_8" target="node_9">
+      <data key="d13">context_exit</data>
+    </edge>
+    <edge source="node_9" target="node_10">
+      <data key="d13">sequential</data>
+    </edge>
+    <edge source="node_10" target="node_11">
+      <data key="d13">request_response</data>
+    </edge>
+    <edge source="node_11" target="node_12">
+      <data key="d13">sequential</data>
+    </edge>
+    <edge source="node_12" target="node_13">
+      <data key="d13">execution_result</data>
+    </edge>
+    <edge source="node_13" target="node_14">
+      <data key="d13">request_response</data>
+    </edge>
+    <edge source="node_14" target="node_15">
+      <data key="d13">sequential</data>
+    </edge>
+    <edge source="node_15" target="node_16">
+      <data key="d13">execution_result</data>
+    </edge>
+    <edge source="node_16" target="node_17">
+      <data key="d13">request_response</data>
+    </edge>
+    <edge source="node_17" target="node_18">
+      <data key="d13">sequential</data>
+    </edge>
+    <edge source="node_18" target="node_19">
+      <data key="d13">execution_result</data>
+    </edge>
+    <edge source="node_19" target="node_20">
+      <data key="d13">request_response</data>
+    </edge>
+    <edge source="node_20" target="node_21">
+      <data key="d13">sequential</data>
+    </edge>
+    <edge source="node_21" target="node_22">
+      <data key="d13">execution_result</data>
+    </edge>
+    <edge source="node_22" target="node_23">
+      <data key="d13">context_entry</data>
+    </edge>
+    <edge source="node_23" target="node_24">
+      <data key="d13">request_response</data>
+    </edge>
+    <edge source="node_24" target="node_25">
+      <data key="d13">sequential</data>
+    </edge>
+    <edge source="node_25" target="node_26">
+      <data key="d13">request_response</data>
+    </edge>
+    <edge source="node_26" target="node_27">
+      <data key="d13">sequential</data>
+    </edge>
+    <edge source="node_27" target="node_28">
+      <data key="d13">sequential</data>
+    </edge>
+    <edge source="node_28" target="node_29">
+      <data key="d13">context_exit</data>
+    </edge>
+    <edge source="node_29" target="node_30">
+      <data key="d13">sequential</data>
+    </edge>
+    <edge source="node_30" target="node_31">
+      <data key="d13">request_response</data>
+    </edge>
+    <edge source="node_31" target="node_32">
+      <data key="d13">sequential</data>
+    </edge>
+    <edge source="node_32" target="node_33">
+      <data key="d13">execution_result</data>
+    </edge>
+    <edge source="node_33" target="node_34">
+      <data key="d13">request_response</data>
+    </edge>
+    <edge source="node_34" target="node_35">
+      <data key="d13">sequential</data>
+    </edge>
+    <data key="d0">aa8502b_1</data>
+    <data key="d1">14/16</data>
+    <data key="d2">Follow all the artists who have sung at least one song I have liked on Spotify.</data>
+  </graph>
+</graphml>
