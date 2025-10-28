@@ -1,0 +1,92 @@
+# vLLM Configuration for AppWorld Workflow Scheduling
+# Based on the Medium article architecture
+
+defaults:
+  backend: docker
+  port: 8000
+  image: "vllm/vllm-openai:latest"
+
+profiles:
+  # Development profile - for testing on single GPU
+  dev_profile:
+    model_id: "meta-llama/Llama-3.1-8B-Instruct"
+    backend: docker
+    port: 8000
+    engine:
+      # Context window
+      max_model_len: 8192
+      # GPU configuration
+      tensor_parallel_size: 1
+      gpu_memory_utilization: 0.90
+      # Batching for agent workloads
+      max_num_seqs: 64
+      max_num_batched_tokens: 4096
+      # Performance
+      dtype: auto
+      enable_chunked_prefill: true
+      # Tool calling support
+      enable_auto_tool_choice: true
+      tool_call_parser: "llama3_json"
+
+  # Production profile - optimized for throughput
+  prod_profile:
+    model_id: "meta-llama/Llama-3.1-8B-Instruct"
+    backend: docker
+    port: 8000
+    engine:
+      # Larger context for complex workflows
+      max_model_len: 16384
+      # GPU configuration
+      tensor_parallel_size: 1
+      gpu_memory_utilization: 0.92
+      # Higher batching for throughput
+      max_num_seqs: 128
+      max_num_batched_tokens: 8192
+      # Performance optimizations
+      dtype: auto
+      enable_chunked_prefill: true
+      # Tool calling
+      enable_auto_tool_choice: true
+      tool_call_parser: "llama3_json"
+
+  # Low latency profile - for interactive agent responses
+  low_latency_profile:
+    model_id: "meta-llama/Llama-3.1-8B-Instruct"
+    backend: docker
+    port: 8000
+    engine:
+      # Smaller context
+      max_model_len: 4096
+      # GPU configuration
+      tensor_parallel_size: 1
+      gpu_memory_utilization: 0.85
+      # Lower batching for latency
+      max_num_seqs: 32
+      max_num_batched_tokens: 2048
+      # Performance
+      dtype: auto
+      enable_chunked_prefill: true
+      # Tool calling
+      enable_auto_tool_choice: true
+      tool_call_parser: "llama3_json"
+
+  # Multi-GPU profile
+  multi_gpu_profile:
+    model_id: "meta-llama/Llama-3.1-70B-Instruct"
+    backend: docker
+    port: 8000
+    engine:
+      # Large context for complex workflows
+      max_model_len: 16384
+      # Multi-GPU sharding
+      tensor_parallel_size: 4
+      gpu_memory_utilization: 0.90
+      # High throughput batching
+      max_num_seqs: 256
+      max_num_batched_tokens: 16384
+      # Performance
+      dtype: auto
+      enable_chunked_prefill: true
+      # Tool calling
+      enable_auto_tool_choice: true
+      tool_call_parser: "llama3_json"
