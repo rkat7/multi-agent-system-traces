@@ -1,0 +1,15 @@
+### Input
+<empty>
+
+### Output
+        # Attempt to make a request (this should raise our wrapped exception)
+        session.get(\"http://example.com\")
+    except RequestException as e:
+        print(f\"Caught RequestException: {e}\")
+        assert \"Socket error occurred\" in str(e), \"Socket error was not properly wrapped\"
+        print(\"Test passed: Socket error was properly caught and wrapped.\")
+    except Exception as e:
+        print(f\"Test failed: Caught unexpected exception: {e}\")
+    finally:
+        # Restore the original socket recv method
+        socket.socket.recv = original_recv

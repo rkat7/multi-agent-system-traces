@@ -1,0 +1,22 @@
+patch = '''def app_index(self, request, app_label, extra_context=None):
+    app_dict = self.build_app_dict(request, app_label)
+    if not app_dict:
+        raise Http404('The requested admin page does not exist.')
+    # Sort the models alphabetically within each app.
+    app_dict['models'].sort(key=lambda x: x['name'])
+    context = {
+        **self.each_context(request),
+        'title': _('%(app)s administration') % {'app': app_dict['name']},
+        'subtitle': None,
+        'app': app_dict,
+        'app_dict': app_dict,
+        'has_permission': self.has_permission(request),
+        'opts': app_dict,
+        'root_path': self.root_path,
+        'app_list': app_dict['models'],
+    }
+    return TemplateResponse(request, self.get_template_name(request, app_dict), context)
+'''
+result = editor._run(relative_file_path="django/contrib/admin/sites.py", start_line=320, end_line=335, patch=patch)
+print(result)
+```

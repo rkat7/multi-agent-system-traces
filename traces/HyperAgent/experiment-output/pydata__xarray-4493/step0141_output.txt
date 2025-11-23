@@ -1,0 +1,15 @@
+    aligned = {}
+    for name, var in variables.items():
+        if isinstance(var, Variable):
+            if var.dims:
+                aligned_var = var.expand_dims(indexes.keys())
+                if copy:
+                    aligned_var = aligned_var.copy(deep=copy)
+                aligned[name] = aligned_var
+            else:
+                aligned[name] = var.copy(deep=copy) if copy else var
+        elif isinstance(var, da.Array):
+            # Preserve chunking for dask arrays
+            aligned[name] = DataArray(var, dims=indexes.keys())
+        else:
+            aligned[name] = var

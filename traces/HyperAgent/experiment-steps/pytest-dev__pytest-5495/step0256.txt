@@ -1,0 +1,24 @@
+### Input
+<empty>
+
+### Output
+    Normally all embedded newlines are escaped, however there are
+    three exceptions: \n{, \n} and \n~.  The first two are intended
+    cover nested explanations, see function and attribute explanations
+    for examples (.visit_Call(), visit_Attribute()).  The last one is
+    for when one explanation needs to span multiple lines, e.g. when
+    displaying diffs.
+    """
+    if isinstance(explanation, str) and explanation.startswith("assert"):
+        # Check if we're dealing with a byte string comparison
+        if "b'" in explanation or 'b"' in explanation:
+            # Extract the byte strings
+            matches = re.findall(r"b['\"](.+?)['\"]", explanation)
+            if len(matches) == 2:
+                left, right = matches
+                # Create a more readable representation
+                left_repr = _format_bytes(left.encode('ascii'))
+                right_repr = _format_bytes(right.encode('ascii'))
+                # Replace the original representations in the explanation
+                explanation = explanation.replace(f"b'{left}'", left_repr)
+                explanation = explanation.replace(f"b'{right}'", right_repr)

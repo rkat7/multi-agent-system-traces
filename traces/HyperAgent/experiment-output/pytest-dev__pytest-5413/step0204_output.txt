@@ -1,0 +1,11 @@
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if exc_type is None:
+            raise AssertionError(self.message)
+        if not isinstance(exc_val, self.exc):
+            raise AssertionError(self.message)
+        if self.match is not None and not self.match(exc_val):
+            raise AssertionError(self.message)
+        if self.text is not None and self.text not in str(exc_val):
+            raise AssertionError(self.message)
+        self.excinfo = (exc_type, exc_val, exc_tb)  # Store the exception info
+        return True

@@ -1,0 +1,17 @@
+### Input
+<empty>
+
+### Output
+```python
+if isinstance(operation, AlterField) and self.is_same_field_operation(operation):
+    # Combine the field attributes, giving precedence to the later operation
+    combined_field = operation.field
+    for name, value in self.field.__dict__.items():
+        if name not in operation.field.__dict__:
+            setattr(combined_field, name, value)
+    return [AlterField(
+        model_name=self.model_name,
+        name=self.name,
+        field=combined_field,
+    )]
+```

@@ -1,0 +1,55 @@
+### Input
+<empty>
+
+### Output
+```python
+0 from django.db import migrations
+1 from django.db.models import Q
+2 
+3 
+4 def update_proxy_model_permissions(apps, schema_editor, reverse=False):
+5     """
+6     Update the content_type of proxy model permissions to use the ContentType
+7     of the proxy model.
+8     """
+9     Permission = apps.get_model('auth', 'Permission')
+10     ContentType = apps.get_model('contenttypes', 'ContentType')
+11     for Model in apps.get_models():
+12         opts = Model._meta
+13         if not opts.proxy:
+14             continue
+15         proxy_default_permissions_codenames = [
+16             '%s_%s' % (action, opts.model_name)
+17             for action in opts.default_permissions
+18         ]
+19         permissions_query = Q(codename__in=proxy_default_permissions_codenames)
+20         for codename, name in opts.permissions:
+21             permissions_query = permissions_query | Q(codename=codename, name=name)
+22         concrete_content_type = ContentType.objects.get_for_model(Model, for_concrete_model=True)
+23         proxy_content_type = ContentType.objects.get_for_model(Model, for_concrete_model=False)
+24         old_content_type = proxy_content_type if reverse else concrete_content_type
+25         new_content_type = concrete_content_type if reverse else proxy_content_type
+26         Permission.objects.filter(
+27             permissions_query,
+28             content_type=old_content_type,
+29         ).update(content_type=new_content_type)
+30 
+31 
+32 def revert_proxy_model_permissions(apps, schema_editor):
+33     """
+34     Update the content_type of proxy model permissions to use the ContentType
+35     of the concrete model.
+36     """
+37     update_proxy_model_permissions(apps, schema_editor, reverse=True)
+38 
+39 
+40 class Migration(migrations.Migration):
+41     dependencies = [
+42         ('auth', '0010_alter_group_name_max_length'),
+43         ('contenttypes', '0002_remove_content_type_name'),
+44     ]
+45     operations = [
+46         migrations.RunPython(update_proxy_model_permissions, revert_proxy_model_permissions),
+47     ]
+48 
+```

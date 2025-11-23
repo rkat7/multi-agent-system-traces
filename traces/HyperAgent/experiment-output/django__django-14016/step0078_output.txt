@@ -1,0 +1,19 @@
+```python
+# Original code
+def _combine(self, other):
+    if isinstance(other, Q):
+        if self.connector == other.connector:
+            return Q(self.connector, *self.children + other.children)
+        elif self.connector == 'AND' and other.connector == 'OR':
+            return Q('OR', self, other)
+        elif self.connector == 'OR' and other.connector == 'AND':
+            return Q('AND', self, other)
+        else:
+            raise ValueError("Cannot combine Q objects with different connectors")
+    elif isinstance(other, dict):
+        if not other:
+            return self  # Return the original Q object if the other is an empty dictionary
+        return Q(self.connector, *self.children, **other)
+    else:
+        raise TypeError("Cannot combine Q objects with non-Q objects")
+```

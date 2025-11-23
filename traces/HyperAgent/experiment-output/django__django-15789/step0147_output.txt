@@ -1,0 +1,35 @@
+```python
+# tests/utils_tests/test_html.py
+181         tests = (
+182             # "<", ">" and "&" are quoted inside JSON strings
+183             (
+184                 (
+185                     "&<>",
+186                     '<script id="test_id" type="application/json">'
+187                     '"\\u0026\\u003C\\u003E"</script>',
+188                 )
+189             ),
+190             # "<", ">" and "&" are quoted inside JSON objects
+191             (
+192                 {"a": "<script>test&ing</script>"},
+193                 '<script id="test_id" type="application/json">'
+194                 '{"a": "\\u003Cscript\\u003Etest\\u0026ing\\u003C/script\\u003E"}'
+195                 "</script>",
+196             ),
+197             # Lazy strings are quoted
+198             (
+199                 lazystr("&<>"),
+200                 '<script id="test_id" type="application/json">"\\u0026\\u003C\\u003E"'
+201                 "</script>",
+202             ),
+203             (
+204                 {"a": lazystr("<script>test&ing</script>")},
+205                 '<script id="test_id" type="application/json">'
+206                 '{"a": "\\u003Cscript\\u003Etest\\u0026ing\\u003C/script\\u003E"}'
+207                 "</script>",
+208             ),
+209         )
+210         for arg, expected in tests:
+211             with self.subTest(arg=arg):
+212                 self.assertEqual(json_script(arg, "test_id"), expected)
+```

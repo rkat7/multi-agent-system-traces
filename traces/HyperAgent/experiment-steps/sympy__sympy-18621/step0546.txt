@@ -1,0 +1,20 @@
+### Input
+Action:
+```python
+
+### Output
+patch = '''
+    @property
+    def blocks(self):
+        from sympy.matrices.immutable import ImmutableDenseMatrix
+        mats = self.args
+        if len(mats) == 1:
+            return ImmutableDenseMatrix([[mats[0]]])
+        data = [[mats[i] if i == j else ZeroMatrix(mats[i].rows, mats[j].cols)
+                        for j in range(len(mats))]
+                        for i in range(len(mats))]
+        return ImmutableDenseMatrix(data)
+'''
+result = editor._run(relative_file_path="sympy/matrices/expressions/blockmatrix.py", start_line=297, end_line=304, patch=patch)
+print(result)
+```

@@ -1,0 +1,24 @@
+### Input
+<empty>
+
+### Output
+    def mktemp(self, basename: str, numbered: bool = True) -> Path:
+        """Create a new temporary directory managed by the factory.
+        :param basename:
+            Directory base name, must be a relative path.
+        :param numbered:
+            If ``True``, ensure the directory is unique by adding a numbered
+            suffix greater than any existing one: ``basename="foo-"`` and ``numbered=True``
+            means that this function will create directories named ``"foo-0"``,
+            ``"foo-1"``, ``"foo-2"`` and so on.
+        :returns:
+            The path to the new directory.
+        """
+        basename = self._ensure_relative_to_basetemp(basename)
+        if not numbered:
+            p = self.getbasetemp().joinpath(basename)
+            p.mkdir()
+        else:
+            p = make_numbered_dir(root=self.getbasetemp(), prefix=basename)
+            self._trace("mktemp", p)
+        return p

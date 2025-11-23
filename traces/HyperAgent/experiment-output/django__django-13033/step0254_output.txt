@@ -1,0 +1,11 @@
+        # Check if this is a self-referencing foreign key
+        if lhs_table == rhs_table and join.join_field.remote_field.model == join.join_field.model:
+            # For self-referencing foreign keys, we can often avoid the extra JOIN
+            # by using the same table alias for both sides of the join
+            if join.join_type == INNER:
+                return ''  # No need for an extra JOIN for INNER JOIN on self-referencing foreign key
+            elif join.join_type == LOUTER:
+                # For LEFT OUTER JOIN, we still need the JOIN, but we can optimize it
+                join_type = 'LEFT OUTER JOIN'
+                alias = self.quote_name_unless_alias(join.table_alias)
+                return f'{join_type} {alias} ON ({lhs_alias}.{lhs_col} = {rhs_alias}.{rhs_col})'

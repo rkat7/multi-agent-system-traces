@@ -1,0 +1,10 @@
+    def add_directive_header(self, sig: str) -> None:
+        domain = getattr(self.env.app, 'add_domain', lambda x: None)(
+            'py').add_object_type(self.objtype, self.directivetype,
+                                  indextemplate=f'pair: {self.objtype}; %s')
+        super().add_directive_header(sig)
+        if hasattr(domain, f'{self.objtype}_sig_prefix'):
+            sig_prefix = getattr(domain, f'{self.objtype}_sig_prefix')
+            self.add_line(f'   :{self.directivetype}-type: {sig_prefix}', '')
+        if self.retann:
+            self.add_line(f'   :annotation: -> {self.retann}', '')

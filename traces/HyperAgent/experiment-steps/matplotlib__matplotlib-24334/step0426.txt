@@ -1,0 +1,44 @@
+### Input
+<empty>
+
+### Output
+```python
+1990     def set_ticks(self, ticks, labels=None, *, minor=False, **kwargs):
+1991         """
+1992         Set this Axis' tick locations and optionally labels.
+1993 
+1994         If necessary, the view limits of the Axis are expanded so that all
+1995         given ticks are visible.
+1996 
+1997         Parameters
+1998         ----------
+1999         ticks : list of floats
+2000             List of tick locations.  The axis `.Locator` is replaced by a
+2001             `~.ticker.FixedLocator`.
+2002 
+2003             Some tick formatters will not label arbitrary tick positions;
+2004             e.g. log formatters only label decade ticks by default. In
+2005             such a case you can set a formatter explicitly on the axis
+2006             using `.Axis.set_major_formatter` or provide formatted
+2007             *labels* yourself.
+2008         labels : list of str, optional
+2009             List of tick labels. If not set, the labels are generated with
+2010             the axis tick `.Formatter`.
+2011         minor : bool, default: False
+2012             If ``False``, set the major ticks; if ``True``, the minor ticks.
+2013         **kwargs
+2014             `.Text` properties for the labels. These take effect only if you
+2015             pass *labels*. In other cases, please use `~.Axes.tick_params`.
+2016 
+2017         Notes
+2018         -----
+2019         The mandatory expansion of the view limits is an intentional design
+2020         choice to prevent the surprise of a non-visible tick. If you need
+2021         other limits, you should set the limits explicitly after setting the
+2022         ticks.
+2023         """
+2024         result = self._set_tick_locations(ticks, minor=minor)
+2025         if labels is not None:
+2026             self.set_ticklabels(labels, minor=minor, **kwargs)
+2027         return result
+```

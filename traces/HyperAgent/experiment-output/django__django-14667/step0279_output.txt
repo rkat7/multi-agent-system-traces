@@ -1,0 +1,21 @@
+Results for keyword: def defer
+1405     def defer(self, *fields):
+1406         """
+1407         Defer the loading of data for certain fields until they are accessed.
+1408         The set of fields to defer is added to any existing set of deferred
+1409         fields. The only exception to this is if None is passed in as the only
+1410         parameter, in which case all deferrals are removed (None acted as
+1411         "reset").
+1412         """
+1413         if self._fields is not None:
+1414             raise TypeError("Cannot call defer() after .values() or .values_list()")
+1415         if len(fields) == 1 and fields[0] is None:
+1416             self._defer_next_filter = False
+1417             return self._clone()
+1418         clone = self._clone()
+1419         if self._defer_next_filter:
+1420             clone.query.add_deferred_loading(fields)
+1421         # We need to set this explicitly on the clone, as the flag is cleared
+1422         # when creating the clone.
+1423         clone._defer_next_filter = True
+1424         return clone

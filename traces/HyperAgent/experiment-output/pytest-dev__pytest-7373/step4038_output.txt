@@ -1,0 +1,12 @@
+17 
+18 def cached_eval(config: Config, expr: str, d: Dict[str, object]) -> Any:
+19     default = {}  # type: Dict[str, object]
+20     evalcache = config._store.setdefault(evalcache_key, default)
+21     try:
+22         return evalcache[expr]
+23     except KeyError:
+24         import _pytest._code
+25 
+26         exprcode = _pytest._code.compile(expr, mode="eval")
+27         evalcache[expr] = x = eval(exprcode, d)
+28         return x

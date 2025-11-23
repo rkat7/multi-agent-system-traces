@@ -1,0 +1,19 @@
+### Input
+<empty>
+
+### Output
+    def visit_Name(self, node):
+        # ... (rest of the code remains the same)
+        elif '.' in node.id:
+            # Handle built-in module types (e.g., struct.Struct)
+            module, name = node.id.rsplit('.', 1)
+            try:
+                __import__(module)
+                mod = sys.modules[module]
+                if hasattr(mod, name):
+                    self.result = node.id
+                    return
+            except ImportError:
+                pass
+        # ... (rest of the code remains the same)
+```

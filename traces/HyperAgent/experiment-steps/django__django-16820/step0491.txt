@@ -1,0 +1,14 @@
+### Input
+<empty>
+
+### Output
+        for operation in operations:
+            if isinstance(operation, AlterIndexTogether):
+                model_name = operation.model_name
+                if model_name not in index_together_ops:
+                    index_together_ops[model_name] = operation
+                else:
+                    # Merge multiple AlterIndexTogether operations
+                    index_together_ops[model_name].index_together.update(operation.index_together)
+            else:
+                new_operations.append(operation)

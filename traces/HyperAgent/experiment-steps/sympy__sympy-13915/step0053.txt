@@ -1,0 +1,28 @@
+### Input
+<empty>
+
+### Output
+    if kwargs.pop('simultaneous', False):  # XXX should this be the default for dict subs?
+        reps = {}
+        rv = self
+        kwargs['hack2'] = True
+        m = Dummy()
+        for old, new in sequence:
+            d = Dummy(commutative=new.is_commutative)
+            # using d*m so Subs will be used on dummy variables
+            # in things like Derivative(f(x, y), x) in which x
+            # is both free and bound
+            rv = rv._subs(old, d*m, **kwargs)
+            if not isinstance(rv, Basic):
+                break
+            reps[d] = new
+        reps[m] = S.One  # get rid of m
+        return rv.xreplace(reps)
+    else:
+        rv = self
+        for old, new in sequence:
+            rv = rv._subs(old, new, **kwargs)
+            if not isinstance(rv, Basic):
+                break
+        return rv
+```

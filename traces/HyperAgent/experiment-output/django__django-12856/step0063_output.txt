@@ -1,0 +1,15 @@
+   ```python
+def _get_dependencies_for_foreign_key(self, field):
+    ...
+    if field.remote_field and field.remote_field.model:
+        dependencies = [(dep_app_label, dep_object_name, None, True)]
+        if getattr(field.remote_field, "through", None) and not field.remote_field.through._meta.auto_created:
+            dependencies.append((
+                field.remote_field.through._meta.app_label,
+                field.remote_field.through._meta.object_name,
+                None,
+                True,
+            ))
+        return dependencies
+    ...
+```

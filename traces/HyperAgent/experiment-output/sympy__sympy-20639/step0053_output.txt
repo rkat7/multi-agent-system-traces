@@ -1,0 +1,48 @@
+2. `_print_nth_root` function (line 1905-1948):
+   ```python
+def _print_nth_root(self, base, expt):
+    bpretty = self._print(base)
+    # In very simple cases, use a single-char root sign
+    if (self._settings['use_unicode_sqrt_char'] and self._use_unicode
+        and expt is S.Half and bpretty.height() == 1
+        and (bpretty.width() == 1
+             or (base.is_Integer and base.is_nonnegative))):
+        return prettyForm(*bpretty.left('\N{SQUARE ROOT}'))
+    # Construct root sign, start with the \/ shape
+    _zZ = xobj('/', 1)
+    rootsign = xobj('\\', 1) + _zZ
+    # Make exponent number to put above it
+    if isinstance(expt, Rational):
+        exp = str(expt.q)
+        if exp == '2':
+            exp = ''
+        else:
+            exp = str(expt.args[0])
+    else:
+        exp = str(expt.args[0])
+    exp = exp.ljust(2)
+    if len(exp) > 2:
+        rootsign = ''*(len(exp) - 2) + rootsign
+    # Stack the exponent
+    rootsign = stringPict(exp + '\n' + rootsign)
+    rootsign.baseline = 0
+    # Diagonal: length is one less than height of base
+    linelength = bpretty.height() - 1
+    diagonal = stringPict('\n'.join(
+       ''*(linelength - i - 1) + _zZ +''*i
+        for i in range(linelength)
+    ))
+    # Put baseline just below lowest line: next to exp
+    diagonal.baseline = linelength - 1
+    # Make the root symbol
+    rootsign = prettyForm(*rootsign.right(diagonal))
+    # Det the baseline to match contents to fix the height
+    # but if the height of bpretty is one, the rootsign must be one higher
+    rootsign.baseline = max(1, bpretty.baseline)
+    #build result
+    s = prettyForm(hobj('_', 2 + bpretty.width()))
+    s = prettyForm(*bpretty.above(s))
+    s = prettyForm(*s.left(rootsign))
+    return s
+```
+   This function handles the pretty printing of nth roots, including expressions like `pi**(1/2)`.

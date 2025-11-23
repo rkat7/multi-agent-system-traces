@@ -1,0 +1,40 @@
+1. `update_normal` method:
+```python
+895     def update_normal(self, mappable):
+896         """
+897         Update the colorbar to the contourf-coloring in the given mappable
+898         if you want to use this colorbar instead of the old one created by
+899         a former call to :func:`colorbar`.
+900 
+901         .. note::
+902           If the image or contour plot was created using the
+903           :func:`~matplotlib.pyplot.pcolor` function, the colorbar
+904           can be updated using this method.
+905 
+906         Parameters
+907         ----------
+908         mappable : `~matplotlib.cm.ScalarMappable`
+909             The mappable to be linked to this colorbar.
+910         """
+911         self.draw_all()
+912         self.solids.set_cmap(mappable.cmap)
+913         self.solids.set_clim(mappable.get_clim())
+914         self.update_ticks()
+915 
+916     def update_bruteforce(self, mappable):
+917         """
+918         Update the colorbar by destroying and rebuilding it.
+919 
+920         Parameters
+921         ----------
+922         mappable : `~matplotlib.cm.ScalarMappable`
+923             The mappable to be linked to this colorbar.
+924         """
+925         _api.warn_deprecated(
+926             "3.7", message="The update_bruteforce method is deprecated since "
+927             "Matplotlib 3.7 and will be removed in a future version. Use "
+928             "update_normal instead.")
+929         self.remove()
+930         self.colorbar = None
+931         self.draw(True, True)
+932 ```

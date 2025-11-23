@@ -1,0 +1,22 @@
+### Input
+<empty>
+
+### Output
+    def state_forwards(self, app_label, state):
+        model = state.models[app_label, self.model_name_lower]
+        if self.old_name:
+            index = next(
+                (index for index in model.indexes if index.name == self.old_name), None
+            )
+        else:
+            index = next(
+                (index for index in model.indexes if index.fields == self.old_fields),
+                None,
+            )
+        if index is None:
+            raise ValueError(
+                f"Index {self.old_name or self.old_fields} does not exist on model {self.model_name}"
+            )
+        index.name = self.new_name
+        model.indexes.remove(index)
+        model.indexes.append(index)

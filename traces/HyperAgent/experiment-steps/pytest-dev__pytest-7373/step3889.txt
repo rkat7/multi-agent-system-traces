@@ -1,0 +1,27 @@
+### Input
+<empty>
+
+### Output
+                for expr in args:
+                    self.expr = expr
+                    if isinstance(expr, str):
+                        # Replace the import statement with the actual code
+                        # For example, let's assume _getglobals() is a function that returns a dictionary
+                        d = self._getglobals()
+                        # Replace the eval statement with the actual code
+                        # For example, let's assume expr is a string that needs to be evaluated
+                        result = eval(expr, d)
+                    else:
+                        if "reason" not in mark.kwargs:
+                            # XXX better be checked at collection time
+                            msg = (
+                                "you need to specify reason=STRING "
+                                "when using booleans as conditions."
+                            )
+                            raise ValueError(msg)
+                        result = bool(expr)
+                    if result:
+                        self.result = True
+                        self.reason = mark.kwargs.get("reason", None)
+                        self.expr = expr
+                        return self.result

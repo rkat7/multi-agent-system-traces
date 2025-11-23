@@ -1,0 +1,30 @@
+### Input
+<empty>
+
+### Output
+# Modify the _serialize_path_type method in the DeconstructableSerializer class
+sed -i '/def _serialize_path_type(self, path):/,/return path/c\
+def _serialize_path_type(self, path):\
+    """\
+    Serialize a path type (a class) into a string that can be used in a migration.\
+    """\
+    if isinstance(path, type):\
+        # If it\'s a class, serialize it as a string\
+        module = path.__module__\
+        qualname = path.__qualname__\
+        \
+        # Split the qualname to handle inner classes\
+        parts = qualname.split('.')\
+        \
+        # If it\'s an inner class (more than one part), reconstruct the path\
+        if len(parts) > 1:\
+            return f"{module}.{'.'.join(parts)}"\
+        else:\
+            return f"{module}.{qualname}"\
+    elif isinstance(path, str):\
+        # If it\'s a string, serialize it as is\
+        return path\
+    else:\
+        # If it\'s neither a class nor a string, raise an error\
+        raise ValueError("Path must be a class or a string")' /path/to/django/db/migrations/serializer.py
+```

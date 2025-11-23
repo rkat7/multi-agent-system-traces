@@ -1,0 +1,25 @@
+### Input
+<empty>
+
+### Output
+```python
+124             other = sympify(other)
+125             if not isinstance(other, Expr):
+126                 return False
+127         except (SympifyError, SyntaxError):
+128             return False
+129         # check for pure number expr
+130         if  not (self.is_Number and other.is_Number) and (
+131                 type(self) != type(other)):
+132             return False
+133         a, b = self._hashable_content(), other._hashable_content()
+134         if a != b:
+135             return False
+136         # check number *in* an expression
+137         for a, b in zip(a, b):
+138             if not isinstance(a, Expr):
+139                 continue
+140             if a.is_Number and type(a) != type(b):
+141                 return False
+142         return True
+```

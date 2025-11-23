@@ -1,0 +1,25 @@
+                # This is a normal uploadedfile that we can stream.
+                else:
+                    # The current umask value is masked out by os.open!
+                    fd = os.open(full_path, self.OS_OPEN_FLAGS, 0o666)
+                    _file = None
+                    try:
+                        locks.lock(fd, locks.LOCK_EX)
+                        for chunk in content.chunks():
+                            if _file is None:
+                                mode = 'wb' if isinstance(chunk, bytes) else 'wt'
+                                _file = os.fdopen(fd, mode)
+                            _file.write(chunk)
+                    finally:
+                        locks.unlock(fd)
+                        if _file is not None:
+                            _file.close()
+                        else:
+                            os.close(fd)
+            except FileExistsError:
+                # A new name is needed if the file exists.
+                name = self.get_available_name(name)
+                full_path = self.path(name)
+            else:
+                # OK, the file save worked. Break out of the loop.
+                break

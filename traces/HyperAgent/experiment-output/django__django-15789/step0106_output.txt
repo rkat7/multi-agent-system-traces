@@ -1,0 +1,24 @@
+    def test_json_script(self):
+        tests = (
+            # "<", ">" and "&" are quoted inside JSON strings
+            (
+                "&<>",
+                '<script id="test_id" type="application/json">"\\u0026\\u003C\\u003E"</script>',
+            ),
+            (
+                {"a": 1, "b": ["c", "&"]},
+                '<script id="test_id" type="application/json">{"a": 1, "b": ["c", "\\u0026"]}</script>',
+            ),
+            (
+                {"a": 1, "b": ["c", "&"], "c": {"d": "e"}},
+                '<script id="test_id" type="application/json">{"a": 1, "b": ["c", "\\u0026"], "c": {"d": "e"}}</script>',
+            ),
+        )
+        for arg, expected in tests:
+            with self.subTest(arg=arg):
+                self.assertEqual(json_script(arg, "test_id"), expected)
+'''
+result = editor._run(relative_file_path="tests/utils_tests/test_html.py", start_line=180, end_line=218, patch=patch)
+print(result)
+```
+HyperAgent_django__django-15789 - INFO - Editor->Planner: Thought: The necessary imports have been added successfully. Now, we need to update the test methods for `json_script` to include the new test cases we created earlier. I'll use the editor to replace the existing `test_json_script` method and add the new test methods.

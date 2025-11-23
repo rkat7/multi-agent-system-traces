@@ -1,0 +1,18 @@
+    def _rename_index(self, model, old_index, new_index):
+        """Rename an index on a model."""
+        if old_index.unique:
+            # Can't use ALTER INDEX ... RENAME TO when the index is a UNIQUE index.
+            # Instead, we must drop and recreate the index.
+            self._delete_constraint(model, old_index.name, type(old_index))
+            self.execute(self.sql_create_index % {
+                "index": self.quote_name(new_index.name),
+                "table": self.quote_name(model._meta.db_table),
+                "columns": ", ".join(self.quote_name(col) for col in new_index.columns),
+                "extra": old_index.extra_sql_args(),
+            })
+        else:
+            self.execute("ALTER INDEX %s RENAME TO %s" % (
+                self.quote_name(old_index.name),
+                self.quote_name(new_index.name),
+            ))
+```

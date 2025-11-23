@@ -1,0 +1,10 @@
+### Input
+<empty>
+
+### Output
+            # Additional logic to handle primary key field renaming
+            if self.old_name == 'id' and self.field.primary_key:
+                # Update the ForeignKey references to the new primary key field name
+                for field in to_model._meta.get_fields():
+                    if isinstance(field, ForeignKey) and field.target_field.name == self.old_name:
+                        field.target_field = to_model._meta.get_field(self.new_name)

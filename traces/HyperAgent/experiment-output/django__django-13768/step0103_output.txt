@@ -1,0 +1,14 @@
+2. Changes made to the codebase:
+   The following changes were made to the `django/dispatch/dispatcher.py` file:
+   a. Added an import statement: `import logging`
+   b. Created a logger: `logger = logging.getLogger('django.dispatch')`
+   c. Modified the `send_robust()` method to include exception logging:
+      ```python
+      try:
+          response = receiver(signal=self, sender=sender, **named)
+      except Exception as err:
+          logger.exception("Error calling %s in Signal.send_robust()", receiver)
+          responses.append((receiver, err))
+      else:
+          responses.append((receiver, response))
+      ```

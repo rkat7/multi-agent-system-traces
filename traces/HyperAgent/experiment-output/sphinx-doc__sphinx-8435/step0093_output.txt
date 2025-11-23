@@ -1,0 +1,11 @@
+    def add_target_and_index(self, signature: str, signode: desc_signature) -> None:
+        if self.objpath:
+            # Be sure the name is unique in the current module
+            domain = getattr(self.env.app, 'get_domain', lambda x: None)('py')
+            if domain:
+                fullname = domain.get_full_qualified_name(self)
+                if fullname and self.env.domaindata['py']['objects'].get(fullname):
+                    self.state_machine.reporter.warning(
+                        f'Duplicate declaration: {fullname}', line=self.lineno)
+        super().add_target_and_index(signature, signode)
+```

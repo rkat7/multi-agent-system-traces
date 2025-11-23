@@ -1,0 +1,21 @@
+### Input
+<empty>
+
+### Output
+        for i in range(n_features):
+            Xi = X[:, i]
+            diff, valid_mask = _encode_check_unknown(Xi, self.categories_[i],
+                                                     return_mask=True)
+            if not np.all(valid_mask):
+                if handle_unknown == 'error':
+                    msg = ("Found unknown categories {0} in column {1}"
+                           " during transform".format(diff, i))
+                    raise ValueError(msg)
+                else:
+                    # Set the problematic rows to an acceptable value and continue
+                    # The rows are marked `X_mask` and will be removed later.
+                    X_mask[:, i] = valid_mask
+                    Xi = Xi.copy()
+                    Xi[~valid_mask] = self.categories_[i][0]
+            _, encoded = _encode(Xi, self.categories_[i], encode=True)
+            X_int[:, i] = encoded

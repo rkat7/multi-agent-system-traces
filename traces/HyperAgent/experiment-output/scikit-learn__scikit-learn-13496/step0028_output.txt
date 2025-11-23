@@ -1,0 +1,29 @@
+    def __init__(self,
+                 n_estimators=100,
+                 max_samples="auto",
+                 contamination="auto",
+                 max_features=1.0,
+                 bootstrap=False,
+                 n_jobs=None,
+                 random_state=None,
+                 verbose=0,
+                 warm_start=False):
+        super().__init__(
+            base_estimator=ExtraTreeRegressor(
+                max_features=1,
+                splitter='random',
+                random_state=random_state,
+            ),
+            # here we need to set bootstrap=False to avoid extraction of 63.2%
+            # of samples on average, as this would lead to a decrease in
+            # performance with the default max_samples="auto" (i.e. 256)
+            bootstrap=bootstrap,
+            n_estimators=n_estimators,
+            max_samples=max_samples,
+            max_features=max_features,
+            bootstrap_features=False,
+            n_jobs=n_jobs,
+            random_state=random_state,
+            verbose=verbose,
+            warm_start=warm_start,
+        )

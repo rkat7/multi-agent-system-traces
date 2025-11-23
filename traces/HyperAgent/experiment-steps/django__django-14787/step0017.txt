@@ -1,0 +1,41 @@
+### Input
+<empty>
+
+### Output
+```python
+53 def method_decorator(decorator, name=''):
+54     """
+55     Convert a function decorator into a method decorator
+56     """
+57     # 'obj' can be a class or a function. If 'obj' is a function at the time it
+58     # is passed to _dec,  it will eventually be a method of the class it is
+59     # defined on. If 'obj' is a class, the 'name' is required to be the name
+60     # of the method that will be decorated.
+61     def _dec(obj):
+62         if not isinstance(obj, type):
+63             return _multi_decorate(decorator, obj)
+64         if not (name and hasattr(obj, name)):
+65             raise ValueError(
+66                 "The keyword argument `name` must be the name of a method "
+67                 "of the decorated class: %s. Got '%s' instead." % (obj, name)
+68             )
+69         method = getattr(obj, name)
+70         if not callable(method):
+71             raise TypeError(
+72                 "Cannot decorate '%s' as it isn't a callable attribute of "
+73                 "%s (%s)." % (name, obj, method)
+74             )
+75         _wrapper = _multi_decorate(decorator, method)
+76         setattr(obj, name, _wrapper)
+77         return obj
+78 
+79     # Don't worry about making _dec look similar to a list/tuple as it's rather
+80     # meaningless.
+81     if not hasattr(decorator, '__iter__'):
+82         update_wrapper(_dec, decorator)
+83     # Change the name to aid debugging.
+84     obj = decorator if hasattr(decorator, '__name__') else decorator.__class__
+85     _dec.__name__ = 'method_decorator(%s)' % obj.__name__
+86     return _dec
+```
+HyperAgent_django__django-14787 - INFO - Planner's Response: Thought: After examining the `method_decorator` function, I can see that it's designed to convert a function decorator into a method decorator. The issue arises because the `method_decorator` is not preserving the attributes of the wrapped function, which is expected by the `logger` decorator. To fix this, we need to modify the `method_decorator` function to ensure it preserves the attributes of the wrapped method.

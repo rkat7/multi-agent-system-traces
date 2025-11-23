@@ -1,0 +1,24 @@
+### Input
+<empty>
+
+### Output
+5. `summary_failures` method:
+   ```python
+def summary_failures(self):
+    if self.config.option.tbstyle!= "no":
+        reports = self.getreports("failed")
+        if not reports:
+            return
+        self.write_sep("=", "FAILURES")
+        if self.config.option.tbstyle == "line":
+            for rep in reports:
+                line = self._getcrashline(rep)
+                self.write_line(line)
+        else:
+            for rep in reports:
+                msg = self._getfailureheadline(rep)
+                self.write_sep("_", msg, red=True, bold=True)
+                self._outrep_summary(rep)
+                self._handle_teardown_sections(rep.nodeid)
+```
+   This method is used to output the failures of a test run. It gets the failed reports, outputs the failures, and then outputs the teardown sections of the reports.

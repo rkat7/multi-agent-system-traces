@@ -1,0 +1,13 @@
+### Input
+<empty>
+
+### Output
+def search_pylint_documentation(query):
+    url = "https://pylint.readthedocs.io/en/latest/"
+    response = requests.get(url)
+    if response.status_code == 200:
+        soup = BeautifulSoup(response.text, 'html.parser')
+        results = soup.find_all(text=lambda text: query.lower() in text.lower())
+        return [result.strip() for result in results]
+    else:
+        return "Failed to retrieve documentation"

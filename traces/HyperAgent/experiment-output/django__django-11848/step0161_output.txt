@@ -1,0 +1,25 @@
+def parse_http_date(date_str):
+    # ... (other code)
+    m = re.match(r'(\d{3})\s+([a-zA-Z]{3},\s+\d{2})\s+([a-zA-Z]{3}\s+\d{4})\s+(\d{2}:\d{2}:\d{2})\s+([+-]\d{4})', date_str)
+    if m:
+        year, month, day, hour, minute, second, tz = m.groups()
+        year, month, day = map(int, (year, month, day))
+        hour, minute, second = map(int, (hour, minute, second))
+        tz = int(tz)
+        if tz < 0:
+            tz = -tz
+            sign = -1
+        else:
+            sign = 1
+        tz = tz * sign
+        dt = datetime(year, month, day, hour, minute, second)
+        if tz:
+            if tz < 60:
+                dt = dt.replace(minute = dt.minute + tz)
+            elif tz < 3600:
+                dt = dt.replace(hour = dt.hour + tz // 60)
+            else:
+                dt = dt.replace(day = dt.day + tz // 3600)
+        return dt
+    return None
+```

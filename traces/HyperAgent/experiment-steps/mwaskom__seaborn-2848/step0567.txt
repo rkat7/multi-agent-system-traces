@@ -1,0 +1,26 @@
+### Input
+<empty>
+
+### Output
+```python
+145     def _lookup_single(self, key):
+146         """Get the color for a single value, using colormap to interpolate."""
+147         try:
+148             # Use a value that's in the original data vector
+149             value = self.lookup_table[key]
+150         except KeyError:
+151             # Use the colormap to interpolate between existing datapoints
+152             # (e.g. in the context of making a continuous legend)
+153             try:
+154                 normed = self.norm(key)
+155             except TypeError as err:
+156                 if np.isnan(key):
+157                     value = (0, 0, 0, 0)
+158                 else:
+159                     raise err
+160             else:
+161                 if np.ma.is_masked(normed):
+162                     normed = np.nan
+163                 value = self.cmap(normed)
+164         return value
+```

@@ -1,0 +1,17 @@
+### Input
+<empty>
+
+### Output
+    def impute_missing_values(self):
+        if self.impute_method == 'drop':
+            self.x = [x for x, y in zip(self.x, self.y) if y is not None]
+            self.y = [y for y in self.y if y is not None]
+        elif self.impute_method == 'mean':
+            mean_y = np.mean(self.y)
+            self.y = [y if y is not None else mean_y for y in self.y]
+        elif self.impute_method == 'median':
+            median_y = np.median(self.y)
+            self.y = [y if y is not None else median_y for y in self.y]
+        elif self.impute_method == 'interpolate':
+            f = interp1d([x for x, y in zip(self.x, self.y) if y is not None], [y for y in self.y if y is not None], kind='linear')
+            self.y = [f(x) if x is not None else f((x + 1) if x < max(self.x) else (x - 1)) for x, y in zip(self.x, self.y)]

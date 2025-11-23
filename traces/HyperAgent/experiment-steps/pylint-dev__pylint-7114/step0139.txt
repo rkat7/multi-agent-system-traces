@@ -1,0 +1,19 @@
+### Input
+<empty>
+
+### Output
+    @param modname: the name of the module to check
+    @type modname: string
+    @param std_path: the path considered as the standard library
+    (rather `sys.prefix` and `sys.exec_prefix`)
+    @type std_path: string or None
+    @return: true if the module seems to be standard
+    @rtype: boolean
+    """
+    try:
+        spec = importlib.util.find_spec(modname)
+        if spec is None:
+            return False
+        filepath = spec.origin
+    except (ImportError, AttributeError):
+        return False

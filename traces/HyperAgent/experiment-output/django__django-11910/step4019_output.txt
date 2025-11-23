@@ -1,0 +1,8 @@
+    def _update_fk_references(self, app_label, state, model_state):
+        for (ref_app_label, ref_model_name), ref_model_state in state.models.items():
+            for field_name, field in ref_model_state.fields:
+                if isinstance(field, models.ForeignKey) and field.remote_field.model == f"{app_label}.{self.model_name_lower}":
+                    if field.to_fields == (self.old_name,):
+                        field.to_fields = (self.new_name,)
+                    if field.db_constraint:
+                        self.add_update_fk_reference(ref_app_label, ref_model_name, field_name)

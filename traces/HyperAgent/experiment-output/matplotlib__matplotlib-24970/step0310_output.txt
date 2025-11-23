@@ -1,0 +1,9 @@
+# Find the lines we want to replace and store the changes
+changes = []
+for i, line in enumerate(lines):
+    if 'xa[xa > self.N - 1] = self._i_over' in line:
+        changes.append((i+1, line, '        xa[xa > self.N - 1] = np.array(self._i_over).astype(xa.dtype)'))
+    elif 'xa[xa < 0] = self._i_under' in line:
+        changes.append((i+1, line, '        xa[xa < 0] = np.array(self._i_under).astype(xa.dtype)'))
+    elif 'xa[mask_bad] = self._i_bad' in line:
+        changes.append((i+1, line, '        xa[mask_bad] = np.array(self._i_bad).astype(xa.dtype)'))

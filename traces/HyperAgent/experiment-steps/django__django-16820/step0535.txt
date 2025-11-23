@@ -1,0 +1,16 @@
+### Input
+<empty>
+
+### Output
+        # Convert AlterIndexTogether to RemoveIndex and AddIndex
+        for model_name, operation in index_together_ops.items():
+            for index_fields in operation.index_together:
+                index_name = f"idx_{'_'.join(index_fields)}"
+                new_operations.append(RemoveIndex(
+                    model_name=model_name,
+                    name=index_name
+                ))
+                new_operations.append(AddIndex(
+                    model_name=model_name,
+                    index=Index(fields=index_fields, name=index_name)
+                ))

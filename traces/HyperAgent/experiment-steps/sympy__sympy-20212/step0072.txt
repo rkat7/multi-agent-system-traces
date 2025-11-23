@@ -1,0 +1,25 @@
+### Input
+<empty>
+
+### Output
+```python
+elif self.exp.is_Rational:
+    re_e, im_e = self.base.as_real_imag(deep=deep)
+    if not im_e:
+        return self, S.Zero
+    a, b = symbols('a b', cls=Dummy)
+    if exp >= 0:
+        if re_e.is_Number and im_e.is_Number:
+            # We can be more efficient in this case
+            expr = expand_multinomial(self.base**exp)
+            if expr!= self:
+                return expr.as_real_imag()
+    else:
+        mag = re_e**2 + im_e**2
+        re_e, im_e = re_e/mag, -im_e/mag
+        if re_e.is_Number and im_e.is_Number:
+            # We can be more efficient in this case
+            expr = expand_multinomial((re_e + im_e*S.ImaginaryUnit)**-exp)
+            if expr!= self:
+                return expr.as_real_imag()
+```

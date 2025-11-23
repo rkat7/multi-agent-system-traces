@@ -1,0 +1,15 @@
+### Input
+<empty>
+
+### Output
+def _get_related_selections_from_field(self, field, select_mask):
+    related_klass = field.remote_field.model
+    if field.is_reverse_relation and isinstance(field, OneToOneRel):
+        # Handle reverse OneToOneField relations
+        if field.name in select_mask:
+            return self._get_related_selections_from_parent(
+                related_klass, field, select_mask, 1
+            )
+    return self._get_related_selections_from_parent(
+        related_klass, field, select_mask, 1
+    )

@@ -1,0 +1,257 @@
+### Input
+<empty>
+
+### Output
+HyperAgent_sympy__sympy-19487 - INFO - Navigator->Planner: Action:
+```python
+result = open_file_gen._run(relative_file_path="sympy/functions/elementary/complexes.py", start_line=91, end_line=190)
+print(result)
+```
+ exitcode: 0 (execution succeeded)
+Code output: The content of sympy/functions/elementary/complexes.py is: 
+91     def as_real_imag(self, deep=True, **hints):
+92         """
+93         Returns the real number with a zero imaginary part.
+94         """
+95         return (self, S.Zero)
+96 
+97     def _eval_derivative(self, x):
+98         if x.is_extended_real or self.args[0].is_extended_real:
+99             return re(Derivative(self.args[0], x, evaluate=True))
+100         if x.is_imaginary or self.args[0].is_imaginary:
+101             return -S.ImaginaryUnit \
+102                 * im(Derivative(self.args[0], x, evaluate=True))
+103 
+104     def _eval_rewrite_as_im(self, arg, **kwargs):
+105         return self.args[0] - S.ImaginaryUnit*im(self.args[0])
+106 
+107     def _eval_is_algebraic(self):
+108         return self.args[0].is_algebraic
+109 
+110     def _eval_is_zero(self):
+111         # is_imaginary implies nonzero
+112         return fuzzy_or([self.args[0].is_imaginary, self.args[0].is_zero])
+113 
+114     def _eval_is_finite(self):
+115         if self.args[0].is_finite:
+116             return True
+117 
+118     def _eval_is_complex(self):
+119         if self.args[0].is_finite:
+120             return True
+121 
+122     def _sage_(self):
+123         import sage.all as sage
+124         return sage.real_part(self.args[0]._sage_())
+125 
+126 
+127 class im(Function):
+128     """
+129     Returns imaginary part of expression. This function performs only
+130     elementary analysis and so it will fail to decompose properly more
+131     complicated expressions. If completely simplified result is needed then
+132     use Basic.as_real_imag() or perform complex expansion on instance of
+133     this function.
+134 
+135     Examples
+136     ========
+137 
+138     >>> from sympy import re, im, E, I
+139     >>> from sympy.abc import x, y
+140     >>> im(2*E)
+141     0
+142     >>> re(2*I + 17)
+143     17
+144     >>> im(x*I)
+145     re(x)
+146     >>> im(re(x) + y)
+147     im(y)
+148 
+149     See Also
+150     ========
+151 
+152     re
+153     """
+154 
+155     is_extended_real = True
+156     unbranched = True  # implicitly works on the projection to C
+157     _singularities = True  # non-holomorphic
+158 
+159     @classmethod
+160     def eval(cls, arg):
+161         if arg is S.NaN:
+162             return S.NaN
+163         elif arg is S.ComplexInfinity:
+164             return S.NaN
+165         elif arg.is_extended_real:
+166             return S.Zero
+167         elif arg.is_imaginary or (S.ImaginaryUnit*arg).is_extended_real:
+168             return -S.ImaginaryUnit * arg
+169         elif arg.is_Matrix:
+170             return arg.as_real_imag()[1]
+171         elif arg.is_Function and isinstance(arg, conjugate):
+172             return -im(arg.args[0])
+173         else:
+174             included, reverted, excluded = [], [], []
+175             args = Add.make_args(arg)
+176             for term in args:
+177                 coeff = term.as_coefficient(S.ImaginaryUnit)
+178 
+179                 if coeff is not None:
+180                     if not coeff.is_extended_real:
+181                         reverted.append(coeff)
+182                 elif not term.has(S.ImaginaryUnit) and term.is_extended_real:
+183                     excluded.append(term)
+184                 else:
+185                     # Try to do some advanced expansion.  If
+186                     # impossible, don't try to do re(arg) again
+187                     # (because this is what we are trying to do now).
+188                     real_imag = term.as_real_imag(ignore=arg)
+189                     if real_imag:
+190                         excluded.append(real_imag[0])
+191                     else:
+192                         included.append(term)
+193 
+194             if len(args) != len(included):
+195                 a, b, c = (Add(*xs) for xs in [included, reverted, excluded])
+196 
+197                 return cls(a) - im(b) + c
+198 
+199 class sign(Function):
+200     """
+201     Returns the sign of the argument.
+202 
+203     Examples
+204     ========
+205 
+206     >>> from sympy import sign, sin, cos, tan
+207     >>> from sympy.abc import x
+208     >>> sign(x**2)
+209     1
+210     >>> sign(x**2 - 1)
+211     Piecewise((-1, x < -1), (1, x > 1), (0, True))
+212     >>> sign(sin(x))
+213     Piecewise((-1, sin(x) < 0), (1, sin(x) > 0), (0, True))
+214     >>> sign(tan(x))
+215     Piecewise((-1, tan(x) < 0), (1, tan(x) > 0), (0, True))
+216 
+217     See Also
+218     ========
+219 
+220     sign
+221     """
+222 
+223     is_real = True
+224     is_extended_real = True
+225     unbranched = True  # implicitly works on the projection to R
+226     _singularities = True  # non-holomorphic
+227 
+228     @classmethod
+229     def eval(cls, arg):
+230         if arg.is_extended_real:
+231             if arg.is_positive:
+232                 return S.One
+233             elif arg.is_negative:
+234                 return S.NegativeOne
+235             else:
+236                 return S.Zero
+237         elif arg.is_zero:
+238             return S.Zero
+239         elif arg.is_finite:
+240             return S.Zero
+241         else:
+242             return S.NaN
+243 
+244     def _eval_rewrite_as_Piecewise(self, *args, **kwargs):
+245         return self.args[0].sign()
+246 
+247     def _eval_is_positive(self):
+248         return self.args[0].is_positive
+249 
+250     def _eval_is_negative(self):
+251         return self.args[0].is_negative
+252 
+253     def _eval_is_zero(self):
+254         return self.args[0].is_zero
+255 
+256     def _eval_is_finite(self):
+257         return self.args[0].is_finite
+258 
+259     def _eval_is_complex(self):
+260         return self.args[0].is_complex
+261 
+262     def _eval_is_real(self):
+263         return self.args[0].is_real
+264 
+265     def _eval_is_extended_real(self):
+266         return self.args[0].is_extended_real
+267 
+268     def _eval_is_nonnegative(self):
+269         return self.args[0].is_nonnegative
+270 
+271     def _eval_is_nonpositive(self):
+272         return self.args[0].is_nonpositive
+273 
+274     def _eval_is_positive(self):
+275         return self.args[0].is_positive
+276 
+277     def _eval_is_negative(self):
+278         return self.args[0].is_negative
+279 
+280     def _eval_is_zero(self):
+281         return self.args[0].is_zero
+282 
+283     def _eval_is_finite(self):
+284         return self.args[0].is_finite
+285 
+286     def _eval_is_complex(self):
+287         return self.args[0].is_complex
+288 
+289     def _eval_is_real(self):
+290         return self.args[0].is_real
+291 
+292     def _eval_is_extended_real(self):
+293         return self.args[0].is_extended_real
+294 
+295     def _eval_is_nonnegative(self):
+296         return self.args[0].is_nonnegative
+297 
+298     def _eval_is_nonpositive(self):
+299         return self.args[0].is_nonpositive
+300 
+301     def _eval_is_positive(self):
+302         return self.args[0].is_positive
+303 
+304     def _eval_is_negative(self):
+305         return self.args[0].is_negative
+306 
+307     def _eval_is_zero(self):
+308         return self.args[0].is_zero
+309 
+310     def _eval_is_finite(self):
+311         return self.args[0].is_finite
+312 
+313     def _eval_is_complex(self):
+314         return self.args[0].is_complex
+315 
+316     def _eval_is_real(self):
+317         return self.args[0].is_real
+318 
+319     def _eval_is_extended_real(self):
+320         return self.args[0].is_extended_real
+321 
+322     def _eval_is_nonnegative(self):
+323         return self.args[0].is_nonnegative
+324 
+325     def _eval_is_nonpositive(self):
+326         return self.args[0].is_nonpositive
+327 
+328     def _eval_is_positive(self):
+329         return self.args[0].is_positive
+330 
+331     def _eval_is_negative(self):
+332         return self.args[0].is_negative
+333 
+334     def _eval_is_zero(self):
+335         return self.args[
+HyperAgent_sympy__sympy-19487 - INFO - Planner's Response: Thought: Thank you for providing the content of the file. I've located the `sign` class definition. Now, we need to add the `_eval_rewrite` method to implement the rewrite rule for `sign` in terms of `Abs`.

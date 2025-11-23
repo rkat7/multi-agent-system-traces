@@ -1,0 +1,14 @@
+```python
+# _pytest/mark/evaluate.py
+21 def cached_eval(config: Config, expr: str, d: Dict[str, object]) -> Any:
+22     default = {}  # type: Dict[str, object]
+23     evalcache = config._store.setdefault(evalcache_key, default)
+24     try:
+25         return evalcache[expr]
+26     except KeyError:
+27         import _pytest._code
+28 
+29         exprcode = _pytest._code.compile(expr, mode="eval")
+30         evalcache[expr] = x = eval(exprcode, d)
+31         return x
+```

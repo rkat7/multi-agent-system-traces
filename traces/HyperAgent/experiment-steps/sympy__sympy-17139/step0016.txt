@@ -1,0 +1,22 @@
+### Input
+<empty>
+
+### Output
+1112 def _futrig(rv, cos=cos, sin=sin, tan=tan, cot=cot, cosh=cosh, sinh=sinh, tanh=tanh, coth=coth, sech=sech, csch=csch, pow=pow, max=max, **kwargs):
+1113     """Helper for futrig."""
+1114     hyper = kwargs.get('hyper', True)
+1115     if isinstance(rv, Mul):
+1116         args = list(rv.args)
+1117         changed = False
+1118         for i, a in enumerate(args):
+1119             if isinstance(a, Pow) and a.base in (cos, sin, tan, cot, cosh, sinh, tanh, coth, sech, csch):
+1120                 if (a.exp < 0) == True:
+1121                     args[i] = 1/a.base**(-a.exp)
+1122                     changed = True
+1123         if changed:
+1124             rv = Mul(*args)
+1125     elif isinstance(rv, Pow) and rv.base in (cos, sin, tan, cot, cosh, sinh, tanh, coth, sech, csch):
+1126         if (rv.exp < 0) == True:
+1127             rv = 1/rv.base**(-rv.exp)
+1128     return rv
+```

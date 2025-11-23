@@ -1,0 +1,33 @@
+    The (sql, params) is what the expression will produce, and alias is the
+    "AS alias" for the column (possibly None).
+    """
+    select = []
+    klass_info = None
+    annotations = {}
+    select_idx = 0
+    for alias, (sql, params) in self.query.extra_select.items():
+        annotations[alias] = select_idx
+        select.append((RawSQL(sql, params), alias))
+        select_idx += 1
+    assert not (self.query.select and self.query.default_cols)
+    select_mask = self.query.get_select_mask()
+    if self.query.default_cols:
+        cols = self.get_default_columns(select_mask)
+    else:
+        # self.query.select is a special case. These columns never go to
+        # any model.
+        cols = self.query.select
+    if cols:
+        select_list = []
+        for col in cols:
+            select_list.append(select_idx)
+            select.append((col, None))
+            select_idx += 1
+        klass_info = {
+            "model": self.query.model,
+            "select_fields": select_list,
+        }
+    for alias, annotation in self.query.annotation_select.items():
+        annotations[alias] = select_idx
+        select.append((annotation, alias))
+        select_idx += 1

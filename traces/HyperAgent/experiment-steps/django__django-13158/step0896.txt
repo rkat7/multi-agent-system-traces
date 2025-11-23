@@ -1,0 +1,13 @@
+### Input
+<empty>
+
+### Output
+    def test_union_method_no_selected_publications_with_union(self):
+        form_data = {
+            'title': 'Article 1',
+            'publications': Publication.objects.none().union(Publication.objects.none())
+        }
+        form = ArticleForm(data=form_data)
+        self.assertFalse(form.is_valid())
+        self.assertEqual(len(form.errors), 1)
+        self.assertEqual(form.errors['publications'], ['This field is required.'])

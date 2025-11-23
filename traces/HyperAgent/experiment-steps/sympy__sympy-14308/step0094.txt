@@ -1,0 +1,20 @@
+### Input
+<empty>
+
+### Output
+def __str__(self, printer=None):
+    ret_str = ''
+    items = list(self.separate().items())
+    items.sort(key=lambda x: x[0].__str__())
+    for system, vect in items:
+        base_vects = system.base_vectors()
+        for x in base_vects:
+            if x in vect.components:
+                coeff = self.components[x]
+                if coeff == 1:
+                    term = str(x)
+                else:
+                    term = f"({pretty(coeff)})*{x}"
+                ret_str += term + " + "
+    return ret_str[:-3] if ret_str else "0"
+```

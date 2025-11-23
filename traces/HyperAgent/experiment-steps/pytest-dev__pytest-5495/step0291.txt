@@ -1,0 +1,20 @@
+### Input
+<empty>
+
+### Output
+def _compare_eq_sequence(left, right, verbose=0):
+    if isinstance(left, bytes) and isinstance(right, bytes):
+        explanation = [f"Comparing byte strings:", f"Left:  {_format_byte_string(left)}", f"Right: {_format_byte_string(right)}"]
+        i = 0
+        for i in range(min(len(left), len(right))):
+            if left[i] != right[i]:
+                explanation.append(f"First differing byte at index {i}:")
+                explanation.append(f"Left:  {left[i]} (ASCII: '{chr(left[i])}')")
+                explanation.append(f"Right: {right[i]} (ASCII: '{chr(right[i])}')")
+                break
+        if len(left) != len(right):
+            if len(left) < len(right):
+                explanation.append(f"Right contains {len(right) - len(left)} more byte(s)")
+            else:
+                explanation.append(f"Left contains {len(left) - len(right)} more byte(s)")
+        return "\n".join(explanation)

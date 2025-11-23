@@ -1,0 +1,14 @@
+    def test_mixed_case_tag(self):
+        node = astroid.extract_node("""
+        # FiXmE: This is a mixed case tag
+        pass
+        """)
+        with self.assertAddsMessages(
+            Message(
+                msg_id='fixme',
+                line=2,
+                args='FiXmE: This is a mixed case tag'
+            )
+        ):
+            self.checker.process_tokens(node.root().tokens)
+```

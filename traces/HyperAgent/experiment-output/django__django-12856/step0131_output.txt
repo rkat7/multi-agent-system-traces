@@ -1,0 +1,20 @@
+1. The `_generate_altered_foo_together()` method in `django/db/migrations/autodetector.py`:
+   ```python
+def _generate_altered_foo_together(self, operation):
+    ...
+    if old_value != new_value:
+        dependencies = []
+        for foo_togethers in new_value:
+            for field_name in foo_togethers:
+                field = self.new_apps.get_model(app_label, model_name)._meta.get_field(field_name)
+                if field.remote_field and field.remote_field.model:
+                    dependencies.extend(self._get_dependencies_for_foreign_key(field))
+                self.add_operation(
+                    app_label,
+                    operation(
+                        name=model_name,
+                        **{option_name: new_value}
+                    ),
+                    dependencies=dependencies,
+                )
+```

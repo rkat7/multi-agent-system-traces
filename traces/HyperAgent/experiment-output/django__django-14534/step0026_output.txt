@@ -1,0 +1,19 @@
+- `CheckboxSelectMultiple` class:
+```python
+# django/forms/widgets.py
+776 class CheckboxSelectMultiple(RadioSelect):
+777     allow_multiple_selected = True
+778     input_type = 'checkbox'
+779     template_name = 'django/forms/widgets/checkbox_select.html'
+780     option_template_name = 'django/forms/widgets/checkbox_option.html'
+781 
+782     def use_required_attribute(self, initial):
+783         # Don't use the 'required' attribute because browser validation would
+784         # require all checkboxes to be checked instead of at least one.
+785         return False
+786 
+787     def value_omitted_from_data(self, data, files, name):
+788         # HTML checkboxes don't appear in POST data if not checked, so it's
+789         # never known if the value is actually omitted.
+790         return False
+```

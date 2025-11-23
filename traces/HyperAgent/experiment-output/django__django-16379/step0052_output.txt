@@ -1,0 +1,13 @@
+patch = '''
+    def has_key(self, key, version=None):
+        fname = self._key_to_file(key, version)
+        try:
+            with open(fname, "rb") as f:
+                not_expired = not self._is_expired(f)
+            return not_expired
+        except FileNotFoundError:
+            return False
+'''
+result = editor._run(relative_file_path="django/core/cache/backends/filebased.py", start_line=92, end_line=102, patch=patch)
+print(result)
+```

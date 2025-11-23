@@ -1,0 +1,18 @@
+    ```python
+def _resolve_option_xref(self, env: "BuildEnvironment", fromdocname: str, builder: "Builder", typ: str, target: str, node: pending_xref, contnode: Element) -> Element:
+    progname = node.get('std:program')
+    target = target.strip()
+    docname, labelid = self.progoptions.get((progname, target), ('', ''))
+    if not docname:
+        commands = []
+        while ws_re.search(target):
+            subcommand, target = ws_re.split(target, 1)
+            commands.append(subcommand)
+            progname = "-".join(commands)
+            docname, labelid = self.progoptions.get((progname, target), ('', ''))
+            if docname:
+                break
+        else:
+            return None
+    return make_refnode(builder, fromdocname, docname, labelid, contnode)
+```

@@ -1,0 +1,14 @@
+    if tag not in settings.LANGUAGES:
+        # Split the language code and check if the base language is available
+        base_lang = tag.split('-')[0]
+        if base_lang not in {lang.split('-')[0] for lang in settings.LANGUAGES}:
+            return [Error(
+                'You have provided a value for the LANGUAGE_CODE setting that is not in '
+                'the LANGUAGES setting and its base language is also not available.',
+                id='translation.E004',
+            )]
+    return []
+'''
+result = editor._run(relative_file_path="django/core/checks/translation.py", start_line=29, end_line=34, patch=patch)
+print(result)
+```

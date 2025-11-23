@@ -1,0 +1,36 @@
+### Input
+<empty>
+
+### Output
+   ```python
+956 class ExpressionWrapper(SQLiteNumericMixin, Expression):
+957     """
+958     An expression that can wrap another expression so that it can provide
+959     extra context to the inner expression, such as the output_field.
+960     """
+961 
+962     def __init__(self, expression, output_field):
+963         super().__init__(output_field=output_field)
+964         self.expression = expression
+965 
+966     def set_source_expressions(self, exprs):
+967         self.expression = exprs[0]
+968 
+969     def get_source_expressions(self):
+970         return [self.expression]
+971 
+972     def get_group_by_cols(self, alias=None):
+973         if isinstance(self.expression, Expression):
+974             expression = self.expression.copy()
+975             expression.output_field = self.output_field
+976             return expression.get_group_by_cols(alias=alias)
+977         # For non-expressions e.g. an SQL WHERE clause, the entire
+978         # `expression` must be included in the GROUP BY clause.
+979         return super().get_group_by_cols()
+980 
+981     def as_sql(self, compiler, connection):
+982         return compiler.compile(self.expression)
+983 
+984     def __repr__(self):
+985         return "{}({})".format(self.__class__.__name__, self.expression)
+```

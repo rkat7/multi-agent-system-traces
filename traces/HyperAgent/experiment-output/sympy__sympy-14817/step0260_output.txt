@@ -1,0 +1,19 @@
+patch = '''
+    def _print_MatAdd(self, expr):
+        terms = []
+        for item in expr.args:
+            pform = self._print(item)
+            if len(terms) == 0:
+                terms.append(pform)
+            else:
+                try:
+                    if item.could_extract_minus_sign():
+                        terms.append(prettyForm(*stringPict.next(prettyForm(' - '), pform)))
+                    else:
+                        terms.append(prettyForm(*stringPict.next(prettyForm(' + '), pform)))
+                except AttributeError:
+                    # Fallback for items that don't have could_extract_minus_sign method
+                    if item.is_Mul and item.args[0].is_Number and item.args[0].is_negative:
+                        terms.append(prettyForm(*stringPict.next(prettyForm(' - '), self._print(-item))))
+                    else:
+                        terms.append(prettyForm(*stringPict.next(prettyForm(' + '), pform)))

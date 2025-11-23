@@ -1,0 +1,18 @@
+### Input
+<empty>
+
+### Output
+    def state_forwards(self, app_label, state):
+        model_state = state.models[app_label, self.model_name_lower]
+        # Rename the field
+        fields = model_state.fields
+        found = False
+        for index, (name, field) in enumerate(fields):
+            if name == self.old_name:
+                fields[index] = (self.new_name, field)
+                found = True
+                break
+        if not found:
+            raise FieldDoesNotExist(
+                "%s.%s has no field named '%s'" % (app_label, self.model_name, self.old_name)
+            )

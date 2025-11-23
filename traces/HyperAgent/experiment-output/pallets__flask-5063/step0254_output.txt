@@ -1,0 +1,16 @@
+patch = '''
+@click.command("routes", short_help="Show the routes for the app.")
+@click.option(
+    "--sort",
+    "-s",
+    type=click.Choice(("endpoint", "methods", "rule", "match", "subdomain")),
+    default="endpoint",
+    help=(
+        'Method to sort routes by. "match" is the order that Flask will match '
+        "routes when dispatching a request."
+    ),
+)
+@click.option("--all-methods", is_flag=True, help="Show HEAD and OPTIONS methods.")
+@with_appcontext
+def routes_command(sort: str, all_methods: bool) -> None:
+    """Show all registered routes with endpoints, methods, and subdomains."""

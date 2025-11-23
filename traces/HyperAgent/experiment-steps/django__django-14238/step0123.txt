@@ -1,0 +1,19 @@
+### Input
+<empty>
+
+### Output
+```python
+def __subclasscheck__(self, subclass):
+    """
+    Check if the given subclass is a valid subclass of AutoField.
+    This method has been modified to correctly handle subclasses of BigAutoField and SmallAutoField.
+    It now checks if the subclass is either directly in self._subclasses,
+    a subclass of any class in self._subclasses, or passes the superclass check.
+    """
+    return (
+        subclass in self._subclasses or
+        issubclass(subclass, self._subclasses) or
+        super().__subclasscheck__(subclass)
+    )
+```
+HyperAgent_django__django-14238 - INFO - Inner-Editor-Assistant's Response: Thought: I need to add a comment above the modified `__subclasscheck__` method in the `AutoFieldMeta` class to document the changes. This will help other developers understand the purpose of the modification and how it addresses the issue with subclasses of `BigAutoField` and `SmallAutoField`.

@@ -1,0 +1,64 @@
+```python
+# denest
+81         if p.func is cls:
+82             # easy
+83             qinner = p.args[1]
+84             if qinner == q:
+85                 return p
+86             # XXX other possibilities?
+87 
+88         # extract gcd; any further simplification should be done by the user
+89         G = gcd(p, q)
+90         if G != 1:
+91             p, q = [
+92                 gcd_terms(i/G, clear=False, fraction=False) for i in (p, q)]
+93         pwas, qwas = p, q
+94 
+95         # simplify terms
+96         # (x + y + 2) % x -> Mod(y + 2, x)
+97         if p.is_Add:
+98             args = []
+99             for i in p.args:
+100                 a = cls(i, q)
+101                 if a.count(cls) > i.count(cls):
+102                     args.append(i)
+103                 else:
+104                     args.append(a)
+105             if args != list(p.args):
+106                 p = Add(*args)
+107 
+108         else:
+109             # handle coefficients if they are not Rational
+110             # since those are not handled by factor_terms
+111             # e.g. Mod(.6*x, .3*y) -> 0.3*Mod(2*x, y)
+112             cp, p = p.as_coeff_Mul()
+113             cq, q = q.as_coeff_Mul()
+114             ok = False
+115             if not cp.is_Rational or not cq.is_Rational:
+116                 r = cp % cq
+117                 if r == 0:
+118                     G *= cq
+119                     p *= int(cp/cq)
+120                     ok = True
+121             if not ok:
+122                 p = cp*p
+123                 q = cq*q
+124 
+125         # simple -1 extraction
+126         if p.could_extract_minus_sign() and q.could_extract_minus_sign():
+127             G, p, q = [-i for i in (G, p, q)]
+128 
+129         # check again to see if p and q can now be handled as numbers
+130         rv = doit(p, q)
+131         if rv is not None:
+132             return rv*G
+133 
+134         # put 1.0 from G on inside
+135         if G.is_Float and G == 1:
+136             p *= G
+137             return cls(p, q, evaluate=False)
+138         elif G.is_Mul and G.args[0].is_Float and G.args[0] == 1:
+139             p = G.args[0]*p
+140             G = Mul._from_args(G.args[1:])
+141         return G*cls(p, q, evaluate=(p, q) != (pwas, qwas))
+```

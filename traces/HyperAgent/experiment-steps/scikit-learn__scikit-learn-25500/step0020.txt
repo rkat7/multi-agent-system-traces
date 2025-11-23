@@ -1,0 +1,12 @@
+### Input
+<empty>
+
+### Output
+   class CalibratedClassifierCVWithPandas(CalibratedClassifierCV):
+       def predict_proba(self, X):
+           proba = np.zeros((X.shape[0], len(self.classes_)))
+           for class_idx, this_pred in zip(self.pos_class_indices_, self.predict(X).T):
+               calibrator = self.calibrated_classifiers_[0].calibrators_[class_idx]
+               proba[:, class_idx] = np.array(calibrator.predict(this_pred)).squeeze()
+           return proba
+   ```

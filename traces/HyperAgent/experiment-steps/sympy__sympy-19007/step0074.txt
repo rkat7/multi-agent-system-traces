@@ -1,0 +1,16 @@
+### Input
+<empty>
+
+### Output
+    # For symbolic indices, create a Piecewise expression
+    result = []
+    row_offset = 0
+    for row_block, numrows in enumerate(self.rowblocksizes):
+        col_offset = 0
+        for col_block, numcols in enumerate(self.colblocksizes):
+            condition = And(row_offset <= i, i < row_offset + numrows,
+                            col_offset <= j, j < col_offset + numcols)
+            block_entry = self.blocks[row_block, col_block][i - row_offset, j - col_offset]
+            result.append((block_entry, condition))
+            col_offset += numcols
+        row_offset += numrows

@@ -1,0 +1,17 @@
+### Input
+<empty>
+
+### Output
+```python
+def __eq__(self, other):
+    try:
+        other = sympify(other)
+        if not isinstance(other, Expr):
+            return False
+    except (SympifyError, SyntaxError):
+        return False
+    # Compare based on type and identity if conversion fails
+    if not isinstance(other, type(self)):
+        return False
+    return self._hashable_content() == other._hashable_content()
+```

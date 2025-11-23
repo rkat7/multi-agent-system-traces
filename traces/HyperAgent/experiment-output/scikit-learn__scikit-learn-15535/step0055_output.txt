@@ -1,0 +1,22 @@
+    classes, class_idx = np.unique(labels_true, return_inverse=True)
+    clusters, cluster_idx = np.unique(labels_pred, return_inverse=True)
+    n_classes = classes.shape[0]
+    n_clusters = clusters.shape[0]
+    # Using coo_matrix to accelerate simple histogram calculation,
+    # i.e. bins are consecutive integers
+    # Currently, coo_matrix is faster than histogram2d for simple cases
+    contingency = sp.coo_matrix((np.ones(class_idx.shape[0]),
+                               (class_idx, cluster_idx)),
+                              shape=(n_classes, n_clusters),
+                              dtype=np.int)
+    if sparse:
+        contingency = contingency.tocsr()
+        contingency.sum_duplicates()
+    else:
+        contingency = contingency.toarray()
+        if eps is not None:
+            # don't use += as contingency is integer
+            contingency = contingency + eps
+    return contingency
+```
+HyperAgent_scikit-learn__scikit-learn-15535 - INFO - Planner's Response: Thought: Thank you for providing the `contingency_matrix` function. After examining both `mutual_info_score` and `contingency_matrix`, it's clear that the type conversion issue is not directly handled in these functions. The problem seems to occur earlier in the processing pipeline, likely during input validation or preprocessing.

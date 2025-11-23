@@ -1,0 +1,15 @@
++        from sympy import sympify, oo, nan, zoo, limit, UndefinedExpression
++
++        # Check if the substitution leads to an undefined expression
++        if any(arg == old for arg in self.args):
++            try:
++                limit_result = limit(self, old, new)
++                if limit_result not in (oo, -oo, nan, zoo):
++                    return limit_result
++                else:
++                    return UndefinedExpression(self)
++            except Exception:
++                return UndefinedExpression(self)
++
++        # If no undefined expression is detected, return the original result
+         return rv

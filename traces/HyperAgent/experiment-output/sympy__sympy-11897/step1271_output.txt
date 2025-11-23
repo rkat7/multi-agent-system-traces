@@ -1,0 +1,12 @@
+    # Modify the part that handles fractions
+    if len(denominators) == 0:
+        tex = r"%s" % numerators
+    elif len(denominators) == 1:
+        # Check if the numerator is 1 and denominator is a sum
+        if len(numerators) == 1 and numerators[0] == '1' and '+' in denominators[0]:
+            tex = r"\frac{1}{%s}" % denominators[0]
+        else:
+            tex = r"\frac{%s}{%s}" % (numerators, denominators[0])
+    else:
+        # Handle nested fractions
+        tex = r"\frac{%s}{%s}" % (numerators, r" \cdot ".join(denominators))

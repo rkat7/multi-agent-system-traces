@@ -1,0 +1,113 @@
+Results for keyword: class Field
+364 class Field(with_metaclass(OptionType, BooleanOption)):
+365     """``field`` option to polynomial manipulation functions. """
+366 
+367     option = 'field'
+368 
+369     requires = []
+370     excludes = ['domain', 'split', 'gaussian']
+Results for keyword: def preprocess
+25     excludes = []
+26 
+27     after = []
+28     before = []
+29 
+30     @classmethod
+31     def default(cls):
+32         return None
+33 
+34     @classmethod
+35     def preprocess(cls, option):
+36         return None
+37 
+38     @classmethod
+39     def postprocess(cls, options):
+40         pass
+41 
+42 
+43 class Flag(Option):
+44     """Base class for all kinds of flags. """
+--------------
+43 class Flag(Option):
+44     """Base class for all kinds of flags. """
+45 
+46     is_Flag = True
+47 
+48 
+49 class BooleanOption(Option):
+50     """An option that must have a boolean value or equivalent assigned. """
+51 
+52     @classmethod
+53     def preprocess(cls, value):
+54         if value in [True, False]:
+55             return bool(value)
+56         else:
+57             raise OptionError("'%s' must have a boolean value assigned, got %s" % (cls.option, value))
+58 
+59 
+60 class OptionType(type):
+61     """Base type for all options that does registers options. """
+62 
+--------------
+129 
+130         if gens and args.get('gens', ()):
+131             raise OptionError(
+132                 "both '*gens' and keyword argument 'gens' supplied")
+133         elif gens:
+134             args = dict(args)
+135             args['gens'] = gens
+136 
+137         defaults = args.pop('defaults', {})
+138 
+139         def preprocess_options(args):
+140             for option, value in args.items():
+141                 try:
+142                     cls = self.__options__[option]
+143                 except KeyError:
+144                     raise OptionError("'%s' is not a valid option" % option)
+145 
+146                 if issubclass(cls, Flag):
+147                     if flags is None or option not in flags:
+148                         if strict:
+--------------
+272     option = 'gens'
+273 
+274     requires = []
+275     excludes = []
+276 
+277     @classmethod
+278     def default(cls):
+279         return ()
+280 
+281     @classmethod
+282     def preprocess(cls, gens):
+283         if isinstance(gens, Basic):
+284             gens = (gens,)
+285         elif len(gens) == 1 and hasattr(gens[0], '__iter__'):
+286             gens = gens[0]
+287 
+288         if gens == (None,):
+289             gens = ()
+290         elif has_dups(gens):
+291             raise GeneratorsError("duplicated generators: %s" % str(gens))
+--------------
+299     """``wrt`` option to polynomial manipulation functions. """
+300 
+301     option = 'wrt'
+302 
+303     requires = []
+304     excludes = []
+305 
+306     _re_split = re.compile(r"\s*,\s*|\s+")
+307 
+308     @classmethod
+309     def preprocess(cls, wrt):
+310         if isinstance(wrt, Basic):
+311             return [str(wrt)]
+312         elif isinstance(wrt, str):
+313             wrt = wrt.strip()
+314             if wrt.endswith(','):
+315                 raise OptionError('Bad input: missing parameter.')
+316             if not wrt:
+317                 return []
+318             return [ gen for gen in cls._re_split.split(wrt) ]

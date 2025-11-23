@@ -1,0 +1,17 @@
+### Input
+<empty>
+
+### Output
+def skipif(expr, reason=None):
+    cache = {}
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            if expr in cache:
+                return cache[expr]
+            result = eval(expr)
+            cache[expr] = result
+            return result
+        return wrapper
+    return decorator
+```

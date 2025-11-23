@@ -1,0 +1,10 @@
+# Test case for DecodeError
+try:
+    # Simulate a DecodeError by providing an invalid encoding
+    response = requests.get('https://httpbin.org/encoding/utf8', headers={'Accept-Encoding': 'invalid_encoding'})
+    response.raise_for_status()
+    response.content.decode('ascii')
+except RequestException as e:
+    print(f'Caught RequestException: {e}')
+except Exception as e:
+    print(f'Caught unexpected exception: {type(e).__name__}: {e}')

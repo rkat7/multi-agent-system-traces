@@ -1,0 +1,13 @@
+### Input
+<empty>
+
+### Output
+38     def test_proxy_model_permissions_contenttype(self):
+39         proxy_model_content_type = ContentType.objects.get_for_model(UserProxy, for_concrete_model=False)
+40         self.assertEqual(self.default_permission.content_type, self.concrete_content_type)
+41         self.assertEqual(self.custom_permission.content_type, self.concrete_content_type)
+42         update_proxy_permissions.update_proxy_model_permissions(apps, None)
+43         self.default_permission.refresh_from_db()
+44         self.assertEqual(self.default_permission.content_type, proxy_model_content_type)
+45         self.custom_permission.refresh_from_db()
+46         self.assertEqual(self.custom_permission.content_type, proxy_model_content_type)

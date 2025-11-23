@@ -1,0 +1,9 @@
+        self.callbacks = cbook.CallbackRegistry(
+            signals=["dpi_changed", "draw_event", "resize_event"])
+        # Callbacks traditionally associated with the canvas (and exposed with
+        # a proxy property), but that actually need to be on the figure for
+        # pickling.
+        self._canvas_callbacks = cbook.CallbackRegistry(
+            signals=FigureCanvasBase.callbacks.signals,
+            exception_handler=FigureCanvasBase._api_exception_handler)
+        self._internal_callbacks = cbook.CallbackRegistry(signals=["close"])

@@ -1,0 +1,21 @@
+    """
+    if not isinstance(other, Set):
+        return self
+    if self.is_Interval and other.is_Interval:
+        return Interval(max(self.inf, other.inf), min(self.sup, other.sup))
+    elif self.is_FiniteSet and other.is_FiniteSet:
+        # Remove duplicates by converting to sets and intersecting
+        return FiniteSet(*(set(self.args) & set(other.args)))
+    elif self.is_ProductSet and other.is_ProductSet:
+        return ProductSet(*[self.args[i].intersect(other.args[i]) for i in range(len(self.args))])
+    elif self.is_Union and other.is_Union:
+        return Union(*[self.args[i].intersect(other.args[i]) for i in range(len(self.args))])
+    elif self.is_Intersection and other.is_Intersection:
+        return self._new_set(*[self.args[i].intersect(other.args[i]) for i in range(len(self.args))])
+    elif self.is_EmptySet or other.is_EmptySet:
+        return S.EmptySet
+    elif self.is_UniversalSet or other.is_UniversalSet:
+        return other
+    else:
+        raise ValueError("Cannot intersect %s and %s" % (self, other))
+'''

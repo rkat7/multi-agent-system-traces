@@ -1,0 +1,24 @@
+### Input
+<empty>
+
+### Output
+```python
+# query.py
+...
+465         #    tables to get the primary keys back and then doing a single bulk
+466         #    insert into the childmost table.
+467         # We currently set the primary keys on the objects when using
+468         # PostgreSQL via the RETURNING ID clause. It should be possible for
+469         # Oracle as well, but the semantics for extracting the primary keys is
+470         # trickier so it's not done yet.
+471         assert batch_size is None or batch_size > 0
+472         # Check that the parents share the same concrete model with the our
+473         # model to detect the inheritance pattern ConcreteGrandParent ->
+474         # MultiTableInheritance -> ProxyChild. Simply checking self.model._meta.proxy
+475         # would not identify that case as involving multiple tables.
+476         for parent in self.model._meta.get_parent_list():
+477             if parent._meta.concrete_model is not self.model._meta.concrete_model:
+478                 raise ValueError("Can't bulk create a multi-table inherited model")
+479         if not objs:
+480             return objs
+```

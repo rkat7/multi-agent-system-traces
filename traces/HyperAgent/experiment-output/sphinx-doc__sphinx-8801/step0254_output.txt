@@ -1,0 +1,13 @@
+# Modify the DocumenterBridge instance creation
+patch4 = '''
+        # generate the output
+        params = DocumenterBridge(self.env, reporter, documenter_options, lineno, self.state,
+                                  include_annotation_only=options.get('include_annotation_only', False))
+        documenter = doccls(params, self.arguments[0])
+        documenter.generate(more_content=self.content)
+        if not params.result:
+            return []
+'''
+result4 = editor._run(relative_file_path="sphinx/ext/autodoc/directive.py", start_line=149, end_line=154, patch=patch4)
+print(result4)
+```

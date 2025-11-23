@@ -1,0 +1,15 @@
+```python
+def get_location(self, config):
+    if self.nodeid:
+        return self.nodeid
+    if self.fslocation:
+        if isinstance(self.fslocation, tuple) and len(self.fslocation) >= 2:
+            filename, linenum = self.fslocation[:2]
+            relpath = py.path.local(filename).relto(config.invocation_dir)
+            if not relpath:
+                relpath = str(filename)
+            return "{}:{}".format(relpath, linenum)
+        else:
+            return str(self.fslocation)
+    return None
+```

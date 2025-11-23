@@ -1,0 +1,44 @@
+1. `add_directive_header` method (in `sphinx/ext/autodoc/__init__.py`):
+   ```python
+1699     def add_directive_header(self, sig: str) -> None:
+1700         super().add_directive_header(sig)
+1701         sourcename = self.get_sourcename()
+1702         if not self.options.annotation:
+1703             # obtain annotation for this data
+1704             try:
+1705                 annotations = get_type_hints(self.parent)
+1706             except NameError:
+1707                 # Failed to evaluate ForwardRef (maybe TYPE_CHECKING)
+1708                 annotations = safe_getattr(self.parent, '__annotations__', {})
+1709             except TypeError:
+1710                 annotations = {}
+1711             except KeyError:
+1712                 # a broken class found (refs: https://github.com/sphinx-doc/sphinx/issues/8084)
+1713                 annotations = {}
+1714             except AttributeError:
+1715                 # AttributeError is raised on 3.5.2 (fixed by 3.5.3)
+1716                 annotations = {}
+1717 
+1718             if self.objpath[-1] in annotations:
+1719                 objrepr = stringify_typehint(annotations.get(self.objpath[-1]))
+1720                 self.add_line('   :type: ' + objrepr, sourcename)
+1721             else:
+1722                 key = ('.'.join(self.objpath[:-1]), self.objpath[-1])
+1723                 if self.analyzer and key in self.analyzer.annotations:
+1724                     self.add_line('   :type: ' + self.analyzer.annotations[key],
+1725                                   sourcename)
+1726 
+1727             try:
+1728                 if self.object is UNINITIALIZED_ATTR:
+1729                     pass
+1730                 else:
+1731                     objrepr = object_description(self.object)
+1732                     self.add_line('   :value: ' + objrepr, sourcename)
+1733             except ValueError:
+1734                 pass
+1735         elif self.options.annotation is SUPPRESS:
+1736             pass
+1737         else:
+1738             self.add_line('   :annotation: %s' % self.options.annotation,
+1739                           sourcename)
+```

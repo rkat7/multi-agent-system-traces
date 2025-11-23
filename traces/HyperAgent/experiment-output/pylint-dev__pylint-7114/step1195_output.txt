@@ -1,0 +1,43 @@
+def _get_module_paths(
+    file_or_dir: str,
+    ignore_list: list[str],
+    ignore_list_re: list[Pattern[str]],
+    ignore_list_paths_re: list[Pattern[str]],
+    current_dir: str,
+    parent_dir: str,
+    parent_module: str,
+) -> list[str]:
+    """Get a list of module paths from a file or directory."""
+    module_paths = []
+    if os.path.isfile(file_or_dir):
+        module_path = _resolve_module_path(
+            _get_module_name_from_path(file_or_dir),
+            file_or_dir,
+            ignore_list,
+            ignore_list_re,
+            ignore_list_paths_re,
+            current_dir,
+            parent_dir,
+            parent_module,
+            _get_module_name_from_path(parent_dir),
+        )
+        if module_path:
+            module_paths.append(module_path)
+    else:
+        for root, _, files in os.walk(file_or_dir):
+            for file in files:
+                if file.endswith(".py"):
+                    module_path = _resolve_module_path(
+                        _get_module_name_from_path(os.path.join(root, file)),
+                        os.path.join(root, file),
+                        ignore_list,
+                        ignore_list_re,
+                        ignore_list_paths_re,
+                        current_dir,
+                        parent_dir,
+                        parent_module,
+                        _get_module_name_from_path(parent_dir),
+                    )
+                    if module_path:
+                        module_paths.append(module_path)
+    return module_paths

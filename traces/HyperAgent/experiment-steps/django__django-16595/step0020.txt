@@ -1,0 +1,24 @@
+### Input
+<empty>
+
+### Output
+```python
+def reduce(self, operation, app_label):
+    if isinstance(operation, AlterField) and self.is_same_field_operation(operation):
+        # Check if the field definitions can be merged
+        if self.field.db_column == operation.field.db_column and \
+           self.field.max_length == operation.field.max_length and \
+           self.field.null == operation.field.null and \
+           self.field.default == operation.field.default and \
+           self.field.help_text == operation.field.help_text:
+            # The field definitions are the same, so we can merge the operations
+            return [AlterField(
+                model_name=self.model_name,
+                name=self.name,
+                field=operation.field,
+            )]
+        else:
+            # The field definitions are different, so we can't merge the operations
+            return [self, operation]
+    return super().reduce(operation, app_label)
+```

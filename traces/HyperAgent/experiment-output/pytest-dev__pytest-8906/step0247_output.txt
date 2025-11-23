@@ -1,0 +1,35 @@
+```python
+141         to skip a doctest statically.
+142     """
+143     __tracebackhide__ = True
+144     if not allow_module_level:
+145         import inspect
+146         frame = inspect.currentframe().f_back
+147         filename = frame.f_code.co_filename
+148         if filename != '<doctest>':
+149             from _pytest.runner import _check_scope
+150             _check_scope(
+151                 'skip',
+152                 frame,
+153                 error_msg="Using pytest.skip outside of a test is not allowed. "
+154                           "To skip a module, use 'skip(msg, allow_module_level=True)' or "
+155                           "use the 'pytestmark = pytest.mark.skip' decorator."
+156             )
+--------------
+142     """
+143     __tracebackhide__ = True
+144     if not allow_module_level:
+145         import inspect
+146         frame = inspect.currentframe().f_back
+147         filename = frame.f_code.co_filename
+148         if filename != '<doctest>':
+149             from _pytest.runner import _check_scope
+150             _check_scope(
+151                 'skip',
+152                 frame,
+153                 error_msg="Using pytest.skip outside of a test is not allowed. "
+154                           "To skip a module, use 'skip(msg, allow_module_level=True)' or "
+155                           "use the 'pytestmark = pytest.mark.skip' decorator."
+156             )
+157     raise Skipped(msg=msg, allow_module_level=allow_module_level)
+```

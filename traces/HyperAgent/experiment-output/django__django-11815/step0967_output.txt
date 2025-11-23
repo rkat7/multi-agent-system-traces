@@ -1,0 +1,20 @@
+    if isinstance(value, models.Field):
+        return ModelFieldSerializer(value)
+    if isinstance(value, models.manager.BaseManager):
+        return ModelManagerSerializer(value)
+    if isinstance(value, Operation):
+        return OperationSerializer(value)
+    if isinstance(value, type):
+        return TypeSerializer(value)
+    # Anything that knows how to deconstruct itself.
+    if hasattr(value, 'deconstruct'):
+        return DeconstructableSerializer(value)
+    for type_, serializer_cls in Serializer._registry.items():
+        if isinstance(value, type_):
+            return serializer_cls(value)
+    raise ValueError(
+        "Cannot serialize: %r\nThere are some values Django cannot serialize into "
+        "migration files.\nFor more, see https://docs.djangoproject.com/en/%s/"
+        "topics/migrations/#migration-serializing" % (value, get_docs_version())
+    )
+```

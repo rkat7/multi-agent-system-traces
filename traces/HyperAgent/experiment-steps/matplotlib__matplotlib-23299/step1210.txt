@@ -1,0 +1,24 @@
+### Input
+<empty>
+
+### Output
+```python
+@classmethod
+def destroy(cls, num):
+    """
+    Destroy manager *num* -- either a manager instance or a manager number.
+    """
+    if all(hasattr(num, attr) for attr in ["num", "destroy"]):
+        manager = num
+        if cls.figs.get(manager.num) is manager:
+            cls.figs.pop(manager.num)
+    else:
+        try:
+            manager = cls.figs.pop(num)
+        except KeyError:
+            return
+    if hasattr(manager, "_cidgcf"):
+        manager.canvas.mpl_disconnect(manager._cidgcf)
+    manager.destroy()
+    del manager, num
+```

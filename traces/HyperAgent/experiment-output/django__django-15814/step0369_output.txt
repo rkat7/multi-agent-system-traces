@@ -1,0 +1,10 @@
+class Command(BaseCommand):
+    def handle(self, *args, **options):
+        queryset = AnotherModel.objects.select_related("custom").only("custom__name").all()
+        self.stdout.write(f"Number of objects: {queryset.count()}")
+        for obj in queryset:
+            self.stdout.write(f"AnotherModel ID: {obj.id}, Custom Name: {obj.custom.name}")
+'''
+result = editor._run(relative_file_path="test_app/management/commands/test_proxy.py", start_line=1, end_line=7, patch=patch)
+print(result)
+```

@@ -1,0 +1,25 @@
+            if first_alias is None:
+                first_alias = alias
+                with time_keeper.timed("  Creating '%s'" % alias):
+                    if not connection.settings_dict['TEST'].get('MIGRATE', True):
+                        connection.creation.create_test_db(
+                            verbosity=verbosity,
+                            autoclobber=not interactive,
+                            keepdb=keepdb,
+                            serialize=False,
+                        )
+                        # Create essential tables respecting dependencies
+                        essential_apps = ['contenttypes', 'auth', 'sessions', 'admin']
+                        for app_label in essential_apps:
+                            app_config = apps.get_app_config(app_label)
+                            with connection.schema_editor() as schema_editor:
+                                for model in app_config.get_models():
+                                    if not model._meta.managed:
+                                        continue
+                                    schema_editor.create_model(model)
+                    else:
+                        connection.creation.create_test_db(
+                            verbosity=verbosity,
+                            autoclobber=not interactive,
+                            keepdb=keepdb,
+                        )

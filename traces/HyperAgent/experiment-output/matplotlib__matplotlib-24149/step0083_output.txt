@@ -1,0 +1,18 @@
+        if self.converter is None:
+            return x
+        try:
+            # Check for NaN values and return them unchanged
+            if np.isscalar(x):
+                return x if np.isnan(x) else self.converter.convert(x, self.units, self)
+            else:
+                x_array = np.asarray(x)
+                return np.where(np.isnan(x_array), x_array, 
+                                self.converter.convert(x_array, self.units, self))
+        except Exception as e:
+            raise munits.ConversionError('Failed to convert value(s) to axis '
+                                         f'units: {x!r}') from e
+'''
+result = editor._run(relative_file_path="matplotlib/axis.py", start_line=1657, end_line=1672, patch=patch)
+print(result)
+```
+HyperAgent_matplotlib__matplotlib-24149 - INFO - Inner-Editor-Assistant's Response: Thought: I apologize for the error. It seems that the `abs_path` variable is a `PosixPath` object, which doesn't have an `endswith` method. Let's modify our approach to use the `str()` function to convert the path to a string before checking its extension.

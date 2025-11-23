@@ -1,0 +1,11 @@
+### Input
+<empty>
+
+### Output
+1. Both the form field and model field implementations of FilePathField now support callable paths.
+2. The `__init__` method in both classes includes this line:
+   ```python
+   self.path_func = path if callable(path) else lambda: path
+   ```
+   This allows the 'path' parameter to be either a string or a callable.
+3. The `update_choices` method in both classes uses `path = self.path_func()` to get the actual path, whether it's a string or the result of a callable.

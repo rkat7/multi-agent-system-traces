@@ -1,0 +1,16 @@
+        Imports must follow this order: standard, 3rd party, local
+        """
+        imports = self._imports_stack
+        current_category = None
+        for node, modname in imports:
+            category = self._get_import_category(modname)
+            # If the module name is the same as its parent directory,
+            # use the grandparent directory to determine the category
+            if self._module_pkg.get(modname) and self._module_pkg[modname] != modname:
+                category = self._get_import_category(self._module_pkg[modname])
+            if current_category is None:
+                current_category = category
+            elif category != current_category:
+                if category < current_category:
+                    self.add_message("wrong-import-order", node=node, args=(modname,))
+                current_category = category

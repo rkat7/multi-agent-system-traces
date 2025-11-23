@@ -1,0 +1,40 @@
+### Input
+<empty>
+
+### Output
+```python
+652     @sharedmethod
+653     def _prepare_then_do_arithmetic(
+654         self_or_cls, operation, operand=None, operand2=None, **kwargs
+655     ):
+656         """Prepare the operands and then do the arithmetic operation."""
+657         if isinstance(self_or_cls, type):
+658             self = None
+659         else:
+660             self = self_or_cls
+661 
+662         if operand is not None and operand.mask is not None:
+663             if operand2 is not None and operand2.mask is not None:
+664                 mask = np.bitwise_or(operand.mask, operand2.mask)
+665             else:
+666                 mask = operand.mask
+667         else:
+668             mask = None
+669 
+670         result = operation(
+671             self._data if self is not None else operand,
+672             operand2._data if operand2 is not None else operand,
+673             **kwargs,
+674         )
+675 
+676         if self is not None:
+677             result_nddata = self.__class__(
+678                 result, mask=mask, **self._get_init_kwargs()
+679             )
+680         else:
+681             result_nddata = operand.__class__(
+682                 result, mask=mask, **operand._get_init_kwargs()
+683             )
+684 
+685         return result_nddata
+```

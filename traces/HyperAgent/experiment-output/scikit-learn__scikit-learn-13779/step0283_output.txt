@@ -1,0 +1,10 @@
+5. The `_predict` method has been added to handle hard voting:
+   ```python
+   def _predict(self, X):
+       predictions = np.asarray([clf.predict(X) for clf in self.estimators_]).T
+       return np.apply_along_axis(
+           lambda x: np.argmax(np.bincount(x, weights=self._weights_not_none)),
+           axis=1,
+           arr=predictions
+       )
+   ```

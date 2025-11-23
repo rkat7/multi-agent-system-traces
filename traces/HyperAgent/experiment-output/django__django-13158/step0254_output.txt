@@ -1,0 +1,6 @@
+    def test_union_method(self):
+        form = ArticleForm(data={'publications': []})
+        form.fields['publications'].queryset = Publication.objects.filter(id__lt=2) | Publication.objects.filter(id__gt=5)
+        form.is_valid()
+        article = form.save()
+        self.assertEqual(article.publications.count(), 6)  # Expected to fail

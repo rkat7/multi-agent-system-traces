@@ -1,0 +1,12 @@
+```python
+585 def join(value, arg, autoescape=True):
+    """Join a list with a string, like Python's ``str.join(list)``."""
+    try:
+        if autoescape:
+            value = [conditional_escape(v) for v in value]
+        data = conditional_escape(arg).join(value)
+    except TypeError:  # Fail silently if arg isn't iterable.
+        return value
+    return mark_safe(data)
+```
+HyperAgent_django__django-16873 - INFO - Planner's Response: Thought: Thank you for providing the implementation of the `join` filter. Now that we can see the code, it's clear why the issue is occurring. The `join` filter is always applying `conditional_escape` to the `arg` parameter (which is the joining string), regardless of the `autoescape` setting. This explains why the joining string is being escaped even when `autoescape` is off.

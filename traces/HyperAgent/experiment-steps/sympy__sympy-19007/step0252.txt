@@ -1,0 +1,22 @@
+### Input
+<empty>
+
+### Output
+            return self.blocks[row_block, col_block][i - row_accum, j - col_accum]
+        else:
+            # If either index is symbolic, we need to return a Piecewise expression
+            result = []
+            row_accum = 0
+            for row_block, numrows in enumerate(self.rowblocksizes):
+                col_accum = 0
+                for col_block, numcols in enumerate(self.colblocksizes):
+                    condition = ((row_accum <= i) & (i < row_accum + numrows) &
+                                 (col_accum <= j) & (j < col_accum + numcols))
+                    result.append((self.blocks[row_block, col_block][i - row_accum, j - col_accum], condition))
+                    col_accum += numcols
+                row_accum += numrows
+            return Piecewise(*result)
+'''
+result = editor._run(relative_file_path="sympy/matrices/expressions/blockmatrix.py", start_line=126, end_line=141, patch=patch)
+print(result)
+```

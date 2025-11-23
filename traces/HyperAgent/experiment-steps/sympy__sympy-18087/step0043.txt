@@ -1,0 +1,23 @@
+### Input
+<empty>
+
+### Output
+    If any of the terms is trigonometric, sin(x) and cos(x) are guaranteed
+    to appear in terms. Similarly for hyperbolic functions. For tan(n*x),
+    sin(n*x) and cos(n*x) are guaranteed.
+    """
+    I = []
+    y = Dummy('y')
+    for fn, coeff in terms:
+        for c, s, t, rel in (
+                [cos, sin, tan, cos(x)**2 + sin(x)**2 - 1],
+                [cosh, sinh, tanh, cosh(x)**2 - sinh(x)**2 - 1]):
+            if coeff == 1 and fn in [c, s]:
+                I.append(rel)
+            elif fn == t:
+                I.append(t(coeff*x)*c(coeff*x) - s(coeff*x))
+            elif fn in [c, s]:
+                cn = fn(coeff*y).expand(trig=True).subs(y, x)
+                I.append(fn(coeff*x) - cn)
+    return list(set(I))
+```

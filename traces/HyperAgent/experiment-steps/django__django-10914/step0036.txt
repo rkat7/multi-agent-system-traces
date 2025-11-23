@@ -1,0 +1,14 @@
+### Input
+<empty>
+
+### Output
+    def _datetime_from_timestamp(self, ts):
+        """
+        If timezone support is enabled, make an aware datetime object in UTC;
+        otherwise make a naive one in the local timezone.
+        """
+        if settings.USE_TZ:
+            # Safe to use .replace() because UTC doesn't have DST
+            return datetime.utcfromtimestamp(ts).replace(tzinfo=timezone.utc)
+        else:
+            return datetime.fromtimestamp(ts)

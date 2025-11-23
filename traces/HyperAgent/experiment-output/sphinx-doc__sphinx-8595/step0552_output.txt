@@ -1,0 +1,15 @@
+        # give the user a chance to decide whether this member
+        # should be skipped
+        if self.env.app:
+            # let extensions preprocess docstrings
+            try:
+                skip_user = self.env.app.emit_firstresult(
+                    'autodoc-skip-member', self.objtype, membername, member,
+                    not keep, self.options)
+                if skip_user is not None:
+                    keep = not skip_user
+            except Exception as exc:
+                logger.warning(__('autodoc: failed to determine %r to be documented, '
+                                  'the following exception was raised:\n%s'),
+                               member, exc, type='autodoc')
+                keep = False

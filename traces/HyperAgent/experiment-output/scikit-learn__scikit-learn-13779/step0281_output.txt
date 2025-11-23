@@ -1,0 +1,11 @@
+3. The `predict` method now handles both soft and hard voting correctly:
+   ```python
+   if self.voting == 'soft':
+       maj = np.argmax(self.predict_proba(X), axis=1)
+   else:  # 'hard' voting
+       predictions = np.asarray([clf.predict(X) for clf in self.estimators_]).T
+       maj = np.apply_along_axis(
+           lambda x: np.argmax(
+               np.bincount(x, weights=self._weights_not_none)),
+           axis=1, arr=predictions)
+   ```

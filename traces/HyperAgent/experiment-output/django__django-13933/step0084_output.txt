@@ -1,0 +1,16 @@
+    def to_python(self, value):
+        """
+        Validates that the input is a choice from the list of valid choices.
+        """
+        if value in self.empty_values:
+            return None
+        try:
+            value = self.to_python(value)
+            if not self.choices:
+                return value
+            if value not in self.choices:
+                raise self.error_messages['invalid_choice']
+            return value
+        except (ValueError, TypeError):
+            raise ValidationError(self.error_messages['invalid_choice'])
+```

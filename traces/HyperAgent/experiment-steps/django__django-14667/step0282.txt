@@ -1,0 +1,21 @@
+### Input
+Action:
+```python
+
+### Output
+patch = '''
+    def defer(self, *fields):
+        """
+        Defer the loading of data for certain fields until they are accessed.
+        The set of fields to defer is added to any existing set of deferred
+        fields. The only exception to this is if None is passed in as the only
+        parameter, in which case all deferrals are removed (None acted as
+        "reset").
+        """
+        clone = self._clone()
+        if self._fields is not None:
+            # If only() has been called, we need to adjust the deferred set
+            clone._fields = set(self._fields) - set(fields)
+        else:
+            clone.query.add_deferred_loading(fields)
+        return clone

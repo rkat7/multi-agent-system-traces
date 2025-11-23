@@ -1,0 +1,10 @@
+```python
+def _validate_unique_constraint_fields(self, model, constraint):
+    for field_name in constraint.fields:
+        try:
+            model._meta.get_field(field_name)
+        except FieldDoesNotExist:
+            raise ValueError(
+                f"UniqueConstraint {constraint.name} contains non-existent field '{field_name}' for model {model.__name__}"
+            )
+```

@@ -1,0 +1,34 @@
+### Input
+<empty>
+
+### Output
+        The default implementation converts ints and floats and arrays of ints
+        and floats into a comma-separated string enclosed in square brackets,
+        unless the artist has an associated colorbar, in which case scalar
+        values are formatted using the colorbar's formatter.
+        """
+        if data is None:
+            return 'None'
+        elif isinstance(data, str):
+            return "'{}'".format(data)
+        elif isinstance(data, (int, float)):
+            if hasattr(self, 'colorbar') and self.colorbar:
+                return self.colorbar.formatter.format_data(data)
+            elif hasattr(self, 'norm') and self.norm:
+                try:
+                    return self.norm.inverse(data)
+                except ValueError:
+                    return f"Value {data:.6g} (non-invertible norm)"
+            else:
+                return '[{:0.3g}]'.format(data)
+        elif isinstance(data, np.ndarray):
+            if data.size > 6:
+                return str(data[:6]).replace('\\n', '') + '...'
+            else:
+                return str(data)
+        else:
+            return str(data)
+'''
+result = editor._run(relative_file_path="lib/matplotlib/artist.py", start_line=1277, end_line=1321, patch=patch)
+print(result)
+```

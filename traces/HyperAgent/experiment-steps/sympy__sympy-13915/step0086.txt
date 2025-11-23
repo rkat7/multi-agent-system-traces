@@ -1,0 +1,17 @@
+### Input
+<empty>
+
+### Output
+```python
+# Check if the substitution leads to an undefined expression
+from sympy import sympify, oo, nan, zoo
+if sympify(rv).has(oo, -oo, nan, zoo):
+    from sympy import Limit
+    # If undefined, try to evaluate the limit
+    limit_result = Limit(self, old, new).doit()
+    if limit_result != oo and limit_result != -oo and limit_result != nan and limit_result != zoo:
+        return limit_result
+    else:
+        from sympy import UndefinedExpression
+        return UndefinedExpression(rv)
+```

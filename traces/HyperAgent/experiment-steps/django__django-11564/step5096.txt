@@ -1,0 +1,54 @@
+### Input
+<empty>
+
+### Output
+Results for keyword: class StaticNode
+103 class StaticNode(template.Node):
+104     def __init__(self, varname=None, path=None):
+105         if path is None:
+106             raise template.TemplateSyntaxError(
+107                 "Static template nodes must be given a path to return.")
+108         self.path = path
+109         self.varname = varname
+110 
+111     def url(self, context):
+112         path = self.path.resolve(context)
+113         return self.handle_simple(path)
+114 
+115     def render(self, context):
+116         script_prefix = get_script_prefix()
+117         url = f"{script_prefix.rstrip('/')}{self.url(context)}"
+118         if context.autoescape:
+119             url = conditional_escape(url)
+120         if self.varname is None:
+121             return url
+122         context[self.varname] = url
+123         return ''
+124 
+125     @classmethod
+126     def handle_simple(cls, path):
+127         if apps.is_installed('django.contrib.staticfiles'):
+128             from django.contrib.staticfiles.storage import staticfiles_storage
+129             return staticfiles_storage.url(path)
+130         else:
+131             return urljoin(PrefixNode.handle_simple("STATIC_URL"), quote(path))
+132 
+133     @classmethod
+134     def handle_token(cls, parser, token):
+135         """
+136         Class method to parse prefix node and return a Node.
+137         """
+138         bits = token.split_contents()
+139 
+140         if len(bits) < 2:
+141             raise template.TemplateSyntaxError(
+142                 "'%s' takes at least one argument (path to file)" % bits[0])
+143 
+144         path = parser.compile_filter(bits[1])
+145 
+146         if len(bits) >= 2 and bits[-2] == 'as':
+147             varname = bits[3]
+148         else:
+149             varname = None
+150 
+151         return cls(varname, path)

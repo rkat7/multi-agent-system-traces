@@ -1,0 +1,27 @@
+### Input
+<empty>
+
+### Output
+Results for keyword: class PolyFit
+21 class PolyFit(Stat):
+22     """
+23     Fit a polynomial of the given order and resample data onto predicted curve.
+24     """
+25     # This is a provisional class that is useful for building out functionality.
+26     # It may or may not change substantially in form or dissappear as we think
+27     # through the organization of the stats subpackage.
+28     order: int = 2
+29     gridsize: int = 100
+30 
+31     def _fit_predict(self, data):
+32         x = data["x"]
+33         y = data["y"]
+34         if x.nunique() <= self.order:
+35             # TODO warn?
+36             xx = yy = []
+37         else:
+38             p = np.polyfit(x, y, self.order)
+39             xx = np.linspace(x.min(), x.max(), self.gridsize)
+40             yy = np.polyval(p, xx)
+41 
+42         return pd.DataFrame(dict(x=xx, y=yy))

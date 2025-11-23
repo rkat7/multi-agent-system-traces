@@ -1,0 +1,18 @@
+```python
+if self_referential:
+    seen_self = sum(
+        from_model == getattr(field.remote_field, 'model', None)
+        for field in self.remote_field.through._meta.fields
+    )
+    if seen_self > 2 and not self.remote_field.through_fields:
+        errors.append(
+            checks.Error(
+                "The model is used as an intermediate model by "
+                "'%s', but it has more than two foreign keys "
+                "to '%s', which is ambiguous. You must specify "
+                "through_fields." % (relationship_model_name, to_model_name),
+                obj=self,
+                id='fields.E332',
+            )
+        )
+```

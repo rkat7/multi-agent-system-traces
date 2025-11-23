@@ -1,0 +1,12 @@
+### Input
+<empty>
+
+### Output
+    def test_bulk_delete_sets_pk_to_none(self):
+        instances = [SimpleModel.objects.create(name=f"Test {i}") for i in range(5)]
+        pks = [instance.pk for instance in instances]
+        SimpleModel.objects.filter(pk__in=pks).delete()
+        for instance in instances:
+            self.assertIsNone(instance.pk)
+        self.assertFalse(SimpleModel.objects.filter(pk__in=pks).exists())
+```

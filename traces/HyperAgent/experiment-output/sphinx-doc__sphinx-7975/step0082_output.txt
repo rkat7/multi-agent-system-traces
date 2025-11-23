@@ -1,0 +1,17 @@
+    def keyfunc3(item: Tuple[str, List]) -> str:
+        # hack: mutating the subitems dicts to a list in the keyfunc
+        k, v = item
+        v[1] = sorted(((si, se) for (si, (se, void, void)) in v[1].items()),
+                      key=keyfunc2)
+        if v[2] is None:
+            # now calculate the key
+            if k.startswith('\N{RIGHT-TO-LEFT MARK}'):
+                k = k[1:]
+            letter = unicodedata.normalize('NFD', k[0])[0].upper()
+            if letter.isalpha() or letter == '_':
+                return letter
+            else:
+                # group all symbols under one heading at the beginning
+                return chr(0) + _('Symbols')
+        else:
+            return v[2]

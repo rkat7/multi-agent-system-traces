@@ -1,0 +1,18 @@
+    >>> from sympy.assumptions.refine import refine_sign
+    >>> from sympy import Symbol, Q, sign, im
+    >>> x = Symbol('x', real = True)
+    >>> expr = sign(x)
+    >>> refine_sign(expr, Q.positive(x) & Q.nonzero(x))
+    1
+    >>> refine_sign(expr, Q.negative(x) & Q.nonzero(x))
+    -1
+    >>> refine_sign(expr, Q.zero(x))
+    0
+    >>> y = Symbol('y', imaginary = True)
+    >>> expr = sign(y)
+    >>> refine_sign(expr, Q.positive(im(y)))
+    I
+    >>> refine_sign(expr, Q.negative(im(y)))
+    -I
+```
+HyperAgent_sympy__sympy-19487 - INFO - Planner's Response: Thought: After reviewing the implementation of the `sign` function and related functions in SymPy, I can see that the current implementation doesn't directly support rewriting `sign` in terms of `Abs`. The issue also raises a valid point about the behavior of `sign(0)`. Let's address these concerns step by step.

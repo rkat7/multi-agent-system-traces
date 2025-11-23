@@ -1,0 +1,25 @@
+patch = '''
+def _entry(self, i, j, **kwargs):
+    if not (isinstance(i, (int, Integer)) and isinstance(j, (int, Integer))):
+        # Handle symbolic indices
+        conditions = []
+        for row_start, row_block, numrows in zip(accumulate([0] + self.rowblocksizes[:-1]), range(len(self.rowblocksizes)), self.rowblocksizes):
+            for col_start, col_block, numcols in zip(accumulate([0] + self.colblocksizes[:-1]), range(len(self.colblocksizes)), self.colblocksizes):
+                condition = And(row_start <= i, i < row_start + numrows, col_start <= j, j < col_start + numcols)
+                result = self.blocks[row_block, col_block][i - row_start, j - col_start]
+                conditions.append((condition, result))
+        return Piecewise(*conditions)
+    else:
+        # Original implementation for concrete indices
+        for row_block, numrows in enumerate(self.rowblocksizes):
+            if i < numrows:
+                break
+            else:
+                i -= numrows
+        for col_block, numcols in enumerate(self.colblocksizes):
+            if j < numcols:
+                break
+            else:
+                j -= numcols
+        return self.blocks[row_block, col_block][i, j]
+'''

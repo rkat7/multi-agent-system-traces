@@ -1,0 +1,22 @@
+```python
+def delete(self, using=None, keep_parents=False):
+    """
+    Delete the model instance.
+    """
+    # ...
+    # Clear cached foreign keys.
+    for field in self._meta.concrete_fields:
+        if field.attname in non_loaded_fields:
+            # This field wasn't refreshed - skip ahead.
+            continue
+        setattr(self, field.attname, getattr(db_instance, field.attname))
+        # Clear cached foreign keys.
+        if field.is_relation and field.is_cached(self):
+            field.delete_cached_value(self)
+    # Clear cached relations.
+    for field in self._meta.related_objects:
+        if field.is_cached(self):
+            field.delete_cached_value(self)
+    self._state.db = db_instance._state.db
+    # ...
+```

@@ -1,0 +1,81 @@
+### Input
+<empty>
+
+### Output
+```python
+334     def execute(self):
+335         """
+336         Given the command-line arguments, figure out which subcommand is being
+337         run, create a parser appropriate to that command, and run it.
+338         """
+339         try:
+340             subcommand = self.argv[1]
+341         except IndexError:
+342             subcommand = 'help'  # Display help if no arguments were given.
+343 
+344         # Preprocess options to extract --settings and --pythonpath.
+345         # These options could affect the commands that are available, so they
+346         # must be processed early.
+347         parser = CommandParser(usage='%(prog)s subcommand [options] [args]', add_help=False, allow_abbrev=False)
+348         parser.add_argument('--settings')
+349         parser.add_argument('--pythonpath')
+350         parser.add_argument('args', nargs='*')  # catch-all
+351         try:
+352             options, args = parser.parse_known_args(self.argv[2:])
+353             handle_default_options(options)
+354         except CommandError:
+355             pass  # Ignore any option errors at this point.
+356 
+357         try:
+358             settings.INSTALLED_APPS
+359         except ImproperlyConfigured as exc:
+360             self.settings_exception = exc
+361         except ImportError as exc:
+362             self.settings_exception = exc
+363 
+364         if settings.configured:
+365             # Start the auto-reloading dev server even if the code is broken.
+366             # The hardcoded condition is a code smell but we can't rely on a
+367             # flag on the command class because we haven't located it yet.
+368             if subcommand == 'runserver' and '--noreload' not in self.argv:
+369                 try:
+370                     autoreload.check_errors(django.setup)()
+371                 except Exception:
+372                     # The exception will be raised later in the child process
+373                     # started by the autoreloader. Pretend it didn't happen by
+374                     # loading an empty list of applications.
+375                     apps.all_models = defaultdict(dict)
+376                     apps.app_configs = {}
+377                     apps.apps_ready = apps.models_ready = apps.ready = True
+378 
+379                     # Remove options not compatible with the built-in runserver
+380                     # (e.g. options for the contrib.staticfiles' runserver).
+381                     # Changes here require manually testing as described in
+382                     # #27522.
+383                     _parser = self.fetch_command('runserver').create_parser('django', 'runserver')
+384                     _options, _args = _parser.parse_known_args(self.argv[2:])
+385                     for _arg in _args:
+386                         self.argv.remove(_arg)
+387 
+388             # In all other cases, django.setup() is required to succeed.
+389             else:
+390                 django.setup()
+391 
+392         self.autocomplete()
+393 
+394         if subcommand == 'help':
+395             if '--commands' in args:
+396                 sys.stdout.write(self.main_help_text(commands_only=True) + '\n')
+397             elif not options.args:
+398                 sys.stdout.write(self.main_help_text() + '\n')
+399             else:
+400                 self.fetch_command(options.args[0]).print_help(self.prog_name, options.args[0])
+401         # Special-cases: We want 'django-admin --version' and
+402         # 'django-admin --help' to work, for backwards compatibility.
+403         elif subcommand == 'version' or self.argv[1:] == ['--version']:
+404             sys.stdout.write(django.get_version() + '\n')
+405         elif self.argv[1:] in (['--help'], ['-h']):
+406             sys.stdout.write(self.main_help_text() + '\n')
+407         else:
+408             self.fetch_command(subcommand).run_from_argv(self.argv)
+```

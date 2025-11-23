@@ -1,0 +1,9 @@
+```python
+# In django/db/migrations/executor.py
+class MigrationExecutor:
+    def output_transaction(self, sql):
+        if self.connection.features.can_rollback_ddl:
+            return "BEGIN;\n%s\nCOMMIT;" % sql
+        else:
+            return sql
+```

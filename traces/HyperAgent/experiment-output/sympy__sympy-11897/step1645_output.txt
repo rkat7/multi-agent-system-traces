@@ -1,0 +1,21 @@
+219 
+220     def _needs_mul_brackets(self, expr, first=False, last=False):
+221         """
+222         Returns True if the expression needs to be wrapped in brackets when
+223         printed as part of a Mul, False otherwise. This is True for Add,
+224         but also for some container objects that would not need brackets
+225         when appearing last in a Mul, e.g. an Integral. ``last=True``
+226         specifies that this expr is the last to appear in a Mul.
+227         ``first=True`` specifies that this expr is the first to appear in a Mul.
+228         """
+229         from sympy import Integral, Piecewise, Product, Sum
+230 
+231         if expr.is_Add:
+232             return True
+233         elif expr.is_Relational:
+234             return True
+235         elif expr.is_Mul:
+236             if not first and _coeff_isneg(expr):
+237                 return True
+238         if any([expr.has(x) for x in (Mod,)]):
+```

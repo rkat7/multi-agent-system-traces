@@ -1,0 +1,10 @@
+    tokens = tokenize.tokenize(io.BytesIO(src).readline)
+    for tp, source, (lineno, offset), _, line in tokens:
+        if tp == tokenize.NAME and source == "assert":
+            assert_lineno = lineno
+        elif assert_lineno is not None:
+            # keep track of depth for the assert-message `,` lookup
+            if tp == tokenize.OP and source in "([{":
+                depth += 1
+            elif tp == tokenize.OP and source in ")]}":
+                depth -= 1

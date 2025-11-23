@@ -1,0 +1,15 @@
+    def validate(self, value):
+        """Checks if the given value is valid."""
+        if value in self.empty_values:
+            return
+        try:
+            key = self.to_field_name or 'pk'
+            if isinstance(value, self.queryset.model):
+                value = getattr(value, key)
+            self.queryset.get(**{key: value})
+        except (ValueError, TypeError, self.queryset.model.DoesNotExist):
+            raise ValidationError(
+                self.error_messages['invalid_choice'],
+                code='invalid_choice',
+                params={'value': value},
+            )

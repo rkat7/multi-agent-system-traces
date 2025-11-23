@@ -1,0 +1,19 @@
+    if self.array is not None:
+        if (
+            self.unit
+            and to_variance(1 * self.unit)
+            != ((1 * self.parent_nddata.unit) ** 2).unit
+        ):
+            d_a = (
+                to_variance(self.array << self.unit)
+                .to((1 * self.parent_nddata.unit) ** 2)
+                .value
+            )
+        else:
+            d_a = to_variance(self.array)
+        left = np.abs(other_uncert.parent_nddata.data**2 * d_a)
+    else:
+        left = 0
+        # If self doesn't have a mask, copy the mask from other_uncert
+        if other_uncert.parent_nddata.mask is not None:
+            result_data.mask = other_uncert.parent_nddata.mask.copy()

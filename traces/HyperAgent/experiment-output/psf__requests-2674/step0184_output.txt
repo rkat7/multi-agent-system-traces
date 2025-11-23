@@ -1,0 +1,15 @@
+    try:
+        response = self._send_request(request, **kwargs)
+    except requests.ConnectionError as e:
+        raise ConnectionError(e)
+    except requests.Timeout as e:
+        raise Timeout(e)
+    except requests.RequestException as e:
+        raise RequestException(e)
+    except Exception as e:
+        raise Exception(e)
+    else:
+        return response
+    finally:
+        self._handle_connections(request, response)
+```

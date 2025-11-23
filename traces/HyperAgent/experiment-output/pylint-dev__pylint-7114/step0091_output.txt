@@ -1,0 +1,25 @@
+```python
+def _get_imported_module(
+    self, importnode: ImportNode, modname: str | None
+) -> nodes.Module | None:
+    try:
+        return importnode.do_import_module(modname)
+    except astroid.TooManyLevelsError:
+        if _ignore_import_failure(importnode, modname, self._ignored_modules):
+            return None
+        self.add_message("relative-beyond-top-level", node=importnode)
+    except astroid.AstroidSyntaxError as exc:
+        message = f"Cannot import {modname!r} due to '{exc.error}'"
+        self.add_message(
+            "syntax-error", line=importnode.lineno, args=message, confidence=HIGH
+        )
+    except astroid.AstroidBuildingError:
+        if not self.linter.is_message_enabled("import-error"):
+            return None
+        if _ignore_import_failure(importnode, modname, self._ignored_modules):
+            return None
+        if (
+            not self.linter.config.analyse_fallback_blocks
+            and is_from_fallback_block(importnode)
+        ):
+            return None

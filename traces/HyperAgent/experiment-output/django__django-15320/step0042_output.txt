@@ -1,0 +1,9 @@
+    def get_group_by_cols(self, alias=None):
+        # If this expression is referenced by an alias for an explicit GROUP BY
+        # through values() a reference to this expression and not the
+        # underlying .query must be returned to ensure external column
+        # references are not grouped against as well.
+        if alias:
+            return [Ref(alias, self)]
+        return self.query.get_group_by_cols()
+'''

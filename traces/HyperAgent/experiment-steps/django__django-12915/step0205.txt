@@ -1,0 +1,16 @@
+### Input
+<empty>
+
+### Output
+```python
+# django/core/handlers/async.py
+def load_middleware(self, is_async):
+    # ...
+    middleware_chain = []
+    for middleware_path in settings.MIDDLEWARE:
+        middleware = import_string(middleware_path)
+        middleware = middleware.asgi if is_async else middleware.wsgi
+        middleware_chain.append(middleware())
+    self._middleware_chain = middleware_chain
+    # ...
+```

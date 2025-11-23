@@ -1,0 +1,81 @@
+HyperAgent_django__django-11019 - INFO - Editor->Planner: exitcode: 0 (execution succeeded)
+Code output: The content of django/forms/widgets.py is: 1 """
+2 HTML Widget classes
+3 """
+4 
+5 import copy
+6 import datetime
+7 import re
+8 import warnings
+9 from itertools import chain
+10 
+11 from django.conf import settings
+12 from django.forms.utils import to_current_timezone
+13 from django.templatetags.static import static
+14 from django.utils import datetime_safe, formats
+15 from django.utils.dates import MONTHS
+16 from django.utils.formats import get_format
+17 from django.utils.html import format_html, html_safe
+18 from django.utils.safestring import mark_safe
+19 from django.utils.translation import gettext_lazy as _
+20 
+21 from .renderers import get_default_renderer
+22 
+23 __all__ = (
+24     'Media', 'MediaDefiningClass', 'Widget', 'TextInput', 'NumberInput',
+25     'EmailInput', 'URLInput', 'PasswordInput', 'HiddenInput',
+26     'MultipleHiddenInput', 'FileInput', 'ClearableFileInput', 'Textarea',
+27     'DateInput', 'DateTimeInput', 'TimeInput', 'CheckboxInput', 'Select',
+28     'NullBooleanSelect', 'SelectMultiple', 'RadioSelect',
+29     'CheckboxSelectMultiple', 'MultiWidget', 'SplitDateTimeWidget',
+30     'SplitHiddenDateTimeWidget', 'SelectDateWidget',
+31 )
+32 
+33 MEDIA_TYPES = ('css', 'js')
+34 
+35 
+36 class MediaOrderConflictWarning(RuntimeWarning):
+37     pass
+38 
+39 
+40 @html_safe
+41 class Media:
+42     def __init__(self, media=None, css=None, js=None):
+43         if media is not None:
+44             css = getattr(media, 'css', {})
+45             js = getattr(media, 'js', [])
+46         else:
+47             if css is None:
+48                 css = {}
+49             if js is None:
+50                 js = []
+51         self._css_lists = [css]
+52         self._js_lists = [js]
+53 
+54     def __repr__(self):
+55         return 'Media(css=%r, js=%r)' % (self._css, self._js)
+56 
+57     def __str__(self):
+58         return self.render()
+59 
+60     @property
+61     def _css(self):
+62         css = self._css_lists[0]
+63         # filter(None, ...) avoids calling merge with empty dicts.
+64         for obj in filter(None, self._css_lists[1:]):
+65             css = {
+66                 medium: self.merge(css.get(medium, []), obj.get(medium, []))
+67                 for medium in css.keys() | obj.keys()
+68             }
+69         return css
+70 
+71     @property
+72     def _js(self):
+73         js = self._js_lists[0]
+74         # filter(None, ...) avoids calling merge() with empty lists.
+75         for obj in filter(None, self._js_lists[1:]):
+76             js = self.merge(js, obj)
+77         return js
+78 
+79     def render(self):
+80         return mark_safe('\n'.join(chain.from_iterable(getattr(self, 'render_' + name)() for name in MEDIA_TYPES)))

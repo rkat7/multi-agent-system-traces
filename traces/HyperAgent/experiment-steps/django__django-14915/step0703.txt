@@ -1,0 +1,12 @@
+### Input
+<empty>
+
+### Output
+    def create_option(self, name, value, label, selected, index, subindex=None, attrs=None):
+        option = super().create_option(name, value, label, selected, index, subindex, attrs)
+        if isinstance(value, ModelChoiceIteratorValue):
+            value = value.value  # Extract the actual value
+        if value in self.show_fields:
+            option['attrs']['data-fields'] = json.dumps(self.show_fields[value])
+        return option
+```

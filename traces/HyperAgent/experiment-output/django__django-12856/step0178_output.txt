@@ -1,0 +1,11 @@
+* `django/db/models/base.py`:
+```python
+def _perform_unique_checks(self, model, exclude=None):
+    ...
+    unique_togethers = [(self.__class__, self._meta.unique_together)]
+    ...
+    for model_class, unique_together in unique_togethers:
+        for check in unique_together:
+            if not any(name in exclude for name in check):
+                unique_checks.append((model_class, tuple(check)))
+```

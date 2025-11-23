@@ -1,0 +1,34 @@
+    Examples
+    --------
+    >>> line = "READ 1 2 3 READ SERR 1 2 READ TERR 3"
+    >>> data, err_specs = _parse_read_command_with_err(line)
+    >>> data
+    [1, 2, 3]
+    >>> err_specs
+    {'serr': [1, 2], 'terr': [3]}
+    """
+    parts = line.upper().split()
+    data = [int(i) for i in parts[1:parts.index("READ", 1)] if i.isdigit()]
+    err_specs = {'serr': [], 'terr': []}
+    i = 1
+    while i < len(parts):
+        if parts[i] == "READ":
+            if i + 1 < len(parts):
+                if parts[i + 1] == "SERR":
+                    i += 2
+                    while i < len(parts) and parts[i].isdigit():
+                        err_specs['serr'].append(int(parts[i]))
+                        i += 1
+                elif parts[i + 1] == "TERR":
+                    i += 2
+                    while i < len(parts) and parts[i].isdigit():
+                        err_specs['terr'].append(int(parts[i]))
+                        i += 1
+                else:
+                    i += 1
+            else:
+                i += 1
+        else:
+            i += 1
+    return data, err_specs
+```

@@ -1,0 +1,9 @@
+def doctree_read(app: Sphinx, doctree: Node) -> None:
+    print(f"DEBUG: doctree_read called. Builder: {app.builder.name}, viewcode_enable_epub: {app.config.viewcode_enable_epub}")
+    env = app.builder.env
+    if not hasattr(env, '_viewcode_modules'):
+        env._viewcode_modules = {}  # type: ignore
+    if app.builder.name == "singlehtml":
+        return
+    if app.builder.name.startswith("epub") and not env.config.viewcode_enable_epub:
+        return

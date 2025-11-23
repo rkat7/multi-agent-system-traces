@@ -1,0 +1,42 @@
+    @classmethod
+    def eval(cls, arg):
+        # handle what we can
+        if arg.is_Mul:
+            c, args = arg.as_coeff_mul()
+            unk = []
+            s = sign(c)
+            for a in args:
+                if a.is_extended_negative:
+                    s = -s
+                elif a.is_extended_positive:
+                    pass
+                else:
+                    ai = im(a)
+                    if a.is_imaginary and ai.is_comparable:  # i.e. a = I*real
+                        s *= S.ImaginaryUnit
+                        if ai.is_extended_negative:
+                            # can't use sign(ai) here since ai might not be
+                            # a Number
+                            s = -s
+                    else:
+                        unk.append(a)
+            if c is S.One and len(unk) == len(args):
+                return None
+            return s * cls(arg._new_rawargs(*unk))
+        if arg is S.NaN:
+            return S.NaN
+        if arg.is_zero:  # it may be an Expr that is zero
+            return S.Zero
+        if arg.is_extended_positive:
+            return S.One
+        if arg.is_extended_negative:
+            return S.NegativeOne
+        if arg.is_Function:
+            if isinstance(arg, sign):
+                return arg
+        if arg.is_imaginary:
+            if arg.is_Pow and arg.exp is S.Half:
+                # we catch this because non-trivial sqrt args are not expanded
+                # e.g. sqrt(1-sqrt(2)) --x-->  to I*sqrt(sqrt(2) - 1)
+                return S.ImaginaryUnit
+```

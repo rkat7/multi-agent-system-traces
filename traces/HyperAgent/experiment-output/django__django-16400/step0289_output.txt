@@ -1,0 +1,13 @@
+```python
+363         # post_migrate signals have access to all models. Ensure that all models
+364         # are reloaded in case any are delayed.
+365         post_migrate_state.clear_delayed_apps_cache()
+366         post_migrate_apps = post_migrate_state.apps
+367 
+368         # Re-render models of real apps to include relationships now that
+369         # we've got a final state. This wouldn't be necessary if real apps
+370         # models were rendered with relationships in the first place.
+371         with post_migrate_apps.bulk_update():
+372             model_keys = []
+373             for model_state in post_migrate_apps.real_models:
+```

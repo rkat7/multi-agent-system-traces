@@ -1,0 +1,23 @@
+### Input
+<empty>
+
+### Output
+    Examples
+    --------
+    >>> lines = ["READ 1 2 3", "READ SERR 1 2", "READ TERR 3"]
+    >>> data, err_specs = _parse_read_command_with_errs(lines)
+    >>> data
+    [1, 2, 3]
+    >>> err_specs
+    {'serr': [1, 2], 'terr': [3]}
+    """
+    data = []
+    err_specs = {'serr': [], 'terr': []}
+    for line in lines:
+        if line.upper().startswith("READ"):
+            new_data, new_err_specs = _parse_read_command_with_err(line)
+            data.extend(new_data)
+            err_specs['serr'].extend(new_err_specs['serr'])
+            err_specs['terr'].extend(new_err_specs['terr'])
+    return data, err_specs
+```

@@ -1,0 +1,26 @@
+        Returns
+        -------
+        result_mask : any type
+            If only one mask was present this mask is returned.
+            If neither had a mask ``None`` is returned. Otherwise
+            ``handle_mask`` must create (and copy) the returned mask.
+        """
+        # If only one mask is present we need not bother about any type checks
+        if handle_mask is None:
+            return None
+        elif self.mask is None and operand is not None and operand.mask is None:
+            return None
+        elif self.mask is None and operand is not None:
+            # Make a copy so there is no reference in the result.
+            return deepcopy(operand.mask)
+        elif operand is None or operand.mask is None:
+            return deepcopy(self.mask)
+        else:
+            # Now lets calculate the resulting mask (operation enforces copy)
+            # Convert both masks to numpy arrays to handle the case where one operand doesn't have a mask
+            self_mask = np.array(self.mask) if self.mask is not None else np.array([])
+            operand_mask = np.array(operand.mask) if operand.mask is not None else np.array([])
+            # Use bitwise_or on the numpy arrays
+            return np.bitwise_or(self_mask, operand_mask, **kwds)
+'''
+```

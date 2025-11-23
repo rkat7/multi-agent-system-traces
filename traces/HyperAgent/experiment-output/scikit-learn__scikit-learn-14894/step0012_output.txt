@@ -1,0 +1,36 @@
+```python
+261     def _sparse_fit(self, X, y, sample_weight, solver_type, kernel,
+262                     random_seed):
+263         X.data = np.asarray(X.data, dtype=np.float64, order='C')
+264         X.sort_indices()
+265 
+266         kernel_type = self._sparse_kernels.index(kernel)
+267 
+268         libsvm_sparse.set_verbosity_wrap(self.verbose)
+269 
+270         self.support_, self.support_vectors_, dual_coef_data, \
+271             self.intercept_, self._n_support, \
+272             self.probA_, self.probB_, self.fit_status_ = \
+273             libsvm_sparse.libsvm_sparse_train(
+274                 X.shape[1], X.data, X.indices, X.indptr, y, solver_type,
+275                 kernel_type, self.degree, self._gamma, self.coef0, self.tol,
+276                 self.C, self.class_weight_,
+277                 sample_weight, self.nu, self.cache_size, self.epsilon,
+278                 int(self.shrinking), int(self.probability), self.max_iter,
+279                 random_seed)
+280 
+281         self._warn_from_fit_status()
+282 
+283         if hasattr(self, "classes_"):
+284             n_class = len(self.classes_) - 1
+285         else:  # regression
+286             n_class = 1
+287         n_SV = self.support_vectors_.shape[0]
+288 
+289         dual_coef_indices = np.tile(np.arange(n_SV), n_class)
+290         dual_coef_indptr = np.arange(0, dual_coef_indices.size + 1,
+291                                      dual_coef_indices.size / n_class)
+292         self.dual_coef_ = sp.csr_matrix(
+293             (dual_coef_data, dual_coef_indices, dual_coef_indptr),
+294             (n_class, n_SV))
+```

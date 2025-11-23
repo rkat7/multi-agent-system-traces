@@ -1,0 +1,28 @@
+class LogXML:
+    def __init__(
+        self,
+        logfile,
+        prefix,
+        suite_name="pytest",
+        logging="no",
+        report_duration="total",
+        family="xunit1",
+        log_passing_tests=True,
+    ):
+        logfile = os.path.expanduser(os.path.expandvars(logfile))
+        self.logfile = os.path.normpath(os.path.abspath(logfile))
+        self.prefix = prefix
+        self.suite_name = suite_name
+        self.logging = logging
+        self.report_duration = report_duration
+        self.family = family
+        self.log_passing_tests = log_passing_tests
+        self.stats = dict.fromkeys(["error", "passed", "failure", "skipped"], 0)
+        self.node_reporters = {}  # nodeid -> _NodeReporter
+        self.node_reporters_ordered = []
+        self.global_properties = []
+        self.open_reports = []
+        self.tests = []
+        self.hostname = socket.gethostname()
+        self.timestamp = datetime.utcnow().isoformat()
+'''

@@ -1,0 +1,12 @@
+### Input
+<empty>
+
+### Output
+    # Test temporary directory creation
+    with tempfile.TemporaryDirectory() as tmp:
+        for username in ['contoso\\john_doe', 'john:doe?<>"|', 'johndoe']:
+            os.environ['LOGNAME'] = username
+            user = get_user()
+            temp_dir = create_temp_dir(tmp, user)
+            assert os.path.isdir(temp_dir), f'Failed to create directory for user {user}'
+            assert '\\' not in temp_dir, f'Directory contains backslash: {temp_dir}'

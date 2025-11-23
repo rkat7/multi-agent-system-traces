@@ -1,0 +1,18 @@
+```python
+for baseid, module, bestrel, argname, fixturedef in available:
+    if currentmodule != module:
+        if not module.startswith("_pytest."):
+            tw.line()
+            tw.sep("-", "fixtures defined from %s" % (module,))
+            currentmodule = module
+    if verbose <= 0 and argname[0] == "_":
+        continue
+    scope = getattr(fixturedef, 'scope', 'unknown')
+    print(f"Debug: Fixture {argname} has scope {scope}")  # Add this line
+    if verbose > 0:
+        funcargspec = "%s (%s) -- %s" % (argname, scope, bestrel)
+    else:
+        funcargspec = "%s (%s)" % (argname, scope)
+    tw.line(funcargspec, green=True)
+    # ... rest of the function remains the same
+```

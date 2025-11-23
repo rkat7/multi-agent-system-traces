@@ -1,0 +1,19 @@
+### Input
+<empty>
+
+### Output
+def get_module_members(self) -> Dict[str, Any]:
+    """
+    Get members of the module, except those beginning with underscore.
+    """
+    try:
+        if inspect.ismodule(self.object):
+            members = {name: obj for name, obj in inspect.getmembers(self.object)
+                       if not (name.startswith('_') or name == '__builtins__')}
+        else:
+            members = {name: obj for name, obj in self.object.__dict__.items()
+                       if not name.startswith('_')}
+    except AttributeError:
+        return {}
+    return members
+```

@@ -1,0 +1,15 @@
+### Input
+<empty>
+
+### Output
+def fix_msg_template(template):
+    # Check to see if all parameters in the template are attributes of the Message
+    arguments = re.findall(r"\{([^}]+)\}", template)
+    for argument in arguments:
+        if argument not in MESSAGE_FIELDS:
+            warnings.warn(
+                f"Don't recognize the argument '{argument}' in the --msg-template. "
+                "Are you sure it is supported on the current version of pylint?"
+            )
+            template = re.sub(r"\{" + argument + r"\}", "", template)
+    return template

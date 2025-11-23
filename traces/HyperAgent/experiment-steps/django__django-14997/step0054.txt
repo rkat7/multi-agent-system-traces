@@ -1,0 +1,24 @@
+### Input
+<empty>
+
+### Output
+    def add_constraint(self, model, constraint):
+        if isinstance(constraint, UniqueConstraint):
+            if constraint.contains_expressions:
+                # Handle F() expressions in the constraint
+                constraint_cols = []
+                for expression in constraint.expressions:
+                    if isinstance(expression, F):
+                        constraint_cols.append(expression.name)
+                    else:
+                        constraint_cols.append(str(expression))
+                sql = self.sql_create_unique % {
+                    "table": self.quote_name(model._meta.db_table),
+                    "name": self.quote_name(constraint.name),
+                    "columns": ", ".join(self.quote_name(col) for col in constraint_cols),
+                }
+                self.execute(sql)
+            else:
+                super().add_constraint(model, constraint)
+        else:
+            self._remake_table(model)

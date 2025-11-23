@@ -1,0 +1,12 @@
+patch = '''def pytest_runtest_makereport(item: Item, call: CallInfo[None]):
+    outcome = yield
+    rep = outcome.get_result()
+    xfailed = item._store.get(xfailed_key, None)
+    # unittest special case, see setting of unexpectedsuccess_key
+    if unexpectedsuccess_key in item._store and rep.when == "call":
+        reason = item._store[unexpectedsuccess_key]
+        if reason:
+            rep.longrepr = "Unexpected success: {}".format(reason)
+        else:
+            rep.longrepr = "Unexpected success"
+        rep.outcome = "failed"

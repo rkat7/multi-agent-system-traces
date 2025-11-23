@@ -1,0 +1,13 @@
+### Input
+<empty>
+
+### Output
+def get_objects():
+    for model in apps.get_models():
+        if (
+            router.allow_migrate_model(using, model)
+            and connection.schema_editor().has_table(model._meta.db_table)
+        ):
+            queryset = model._base_manager.using(using).order_by(model._meta.pk.name)
+            yield from queryset.iterator()
+```

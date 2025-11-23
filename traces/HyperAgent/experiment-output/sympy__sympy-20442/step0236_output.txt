@@ -1,0 +1,8 @@
+patch = '''
+def _is_dimensionally_compatible(expr, target_units):
+    expr_dim = Dimension(expr)
+    if isinstance(target_units, (Iterable, Tuple)):
+        target_dim = Dimension(reduce(lambda x, y: x * y, target_units))
+    else:
+        target_dim = Dimension(target_units)
+    return expr_dim == target_dim and set(Dimension(expr).get_dimensional_dependencies().keys()) == set(target_dim.get_dimensional_dependencies().keys())

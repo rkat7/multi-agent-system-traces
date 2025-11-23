@@ -1,0 +1,8 @@
+class CustomQuerySet(QuerySet):
+    def get_related_populators(self, klass_info, select, db):
+        iterators = []
+        related_klass_infos = klass_info.get("related_klass_infos", [])
+        for rel_klass_info in related_klass_infos:
+            rel_cls = CustomRelatedPopulator(rel_klass_info, select, db)
+            iterators.append(rel_cls)
+        return iterators

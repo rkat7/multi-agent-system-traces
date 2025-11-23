@@ -1,0 +1,24 @@
+### Input
+Action:
+```python
+
+### Output
+patch = '''
+    def _fit_predict(self, data):
+        x = data["x"]
+        y = data["y"]
+        mask = ~(x.isna() | y.isna())  # Create a mask for non-missing values
+        x = x[mask]
+        y = y[mask]
+        if x.nunique() <= self.order:
+            # TODO warn?
+            xx = yy = []
+        else:
+            p = np.polyfit(x, y, self.order)
+            xx = np.linspace(x.min(), x.max(), self.gridsize)
+            yy = np.polyval(p, xx)
+        return pd.DataFrame(dict(x=xx, y=yy))
+'''
+result = editor._run(relative_file_path="seaborn/_stats/regression.py", start_line=24, end_line=34, patch=patch)
+print(result)
+```

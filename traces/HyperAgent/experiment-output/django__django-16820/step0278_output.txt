@@ -1,0 +1,14 @@
+    for operation in squash_operations:
+        if isinstance(operation, AlterIndexTogether):
+            model_name = operation.name
+            if model_name not in index_together_operations:
+                index_together_operations[model_name] = []
+            index_together_operations[model_name].extend(operation.index_together)
+        elif isinstance(operation, CreateModel) and operation.options.get('index_together'):
+            model_name = operation.name
+            if model_name not in index_together_operations:
+                index_together_operations[model_name] = []
+            index_together_operations[model_name].extend(operation.options['index_together'])
+            del operation.options['index_together']
+        else:
+            new_operations.append(operation)

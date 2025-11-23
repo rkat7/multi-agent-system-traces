@@ -1,0 +1,20 @@
+### Input
+<empty>
+
+### Output
+@contextlib.contextmanager
+def rc_context(rc=None, fname=None):
+    """
+    Return a context manager for temporarily changing rcParams.
+    """
+    orig = rcParams.copy()
+    try:
+        if fname:
+            rc_file(fname)
+        if rc:
+            rcParams.update(rc)
+        _CONTEXT_STACK.append(rcParams.copy())
+        yield
+    finally:
+        rcParams.update(orig)
+        _CONTEXT_STACK.pop()

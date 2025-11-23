@@ -1,0 +1,7 @@
+    # Use the correct database connection for all operations
+    with connection.cursor() as cursor:
+        content_type = ContentType.objects.using(database).get_for_model(permission.content_type.model_class())
+        cursor.execute("""
+            INSERT INTO auth_permission (name, content_type_id, codename)
+            VALUES (%s, %s, %s)
+        """, [permission.name, content_type.id, permission.codename])

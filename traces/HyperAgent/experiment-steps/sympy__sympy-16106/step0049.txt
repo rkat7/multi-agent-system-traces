@@ -1,0 +1,212 @@
+### Input
+<empty>
+
+### Output
+Results for keyword: class MathMLPrinter
+15 class MathMLPrinterBase(Printer):
+16     """Contains common code required for MathMLContentPrinter and
+17     MathMLPresentationPrinter.
+18     """
+19 
+20     _default_settings = {
+21         "order": None,
+22         "encoding": "utf-8",
+23         "fold_frac_powers": False,
+24         "fold_func_brackets": False,
+25         "fold_short_frac": None,
+26         "inv_trig_style": "abbreviated",
+27         "ln_notation": False,
+28         "long_frac_ratio": None,
+29         "mat_delim": "[",
+30         "mat_symbol_style": "plain",
+31         "mul_symbol": None,
+32         "root_notation": True,
+33         "symbol_names": {},
+34     }
+35 
+36     def __init__(self, settings=None):
+37         Printer.__init__(self, settings)
+38         from xml.dom.minidom import Document,Text
+39 
+40         self.dom = Document()
+41 
+42         # Workaround to allow strings to remain unescaped
+43         # Based on https://stackoverflow.com/questions/38015864/python-xml-dom-minidom-please-dont-escape-my-strings/38041194
+44         class RawText(Text):
+45             def writexml(self, writer, indent='', addindent='', newl=''):
+46                 if self.data:
+47                     writer.write(u'{}{}{}'.format(indent, self.data, newl))
+48 
+49         def createRawTextNode(data):
+50             r = RawText()
+51             r.data = data
+52             r.ownerDocument = self.dom
+53             return r
+54 
+55         self.dom.createTextNode = createRawTextNode
+56 
+57     def doprint(self, expr):
+58         """
+59         Prints the expression as MathML.
+60         """
+61         mathML = Printer._print(self, expr)
+62         unistr = mathML.toxml()
+63         xmlbstr = unistr.encode('ascii', 'xmlcharrefreplace')
+64         res = xmlbstr.decode()
+65         return res
+66 
+67     def apply_patch(self):
+68         # Applying the patch of xml.dom.minidom bug
+69         # Date: 2011-11-18
+70         # Description: http://ronrothman.com/public/leftbraned/xml-dom-minidom-\
+71         #                   toprettyxml-and-silly-whitespace/#best-solution
+72         # Issue: http://bugs.python.org/issue4147
+73         # Patch: http://hg.python.org/cpython/rev/7262f8f276ff/
+74 
+75         from xml.dom.minidom import Element, Text, Node, _write_data
+76 
+77         def writexml(self, writer, indent="", addindent="", newl=""):
+78             # indent = current indentation
+79             # addindent = indentation to add to higher levels
+80             # newl = newline string
+81             writer.write(indent + "<" + self.tagName)
+82 
+83             attrs = self._get_attributes()
+84             a_names = list(attrs.keys())
+85             a_names.sort()
+86 
+87             for a_name in a_names:
+88                 writer.write(" %s=\"" % a_name)
+89                 _write_data(writer, attrs[a_name].value)
+90                 writer.write("\"")
+91             if self.childNodes:
+92                 writer.write(">")
+93                 if (len(self.childNodes) == 1 and
+94                         self.childNodes[0].nodeType == Node.TEXT_NODE):
+95                     self.childNodes[0].writexml(writer, '', '', '')
+96                 else:
+97                     writer.write(newl)
+98                     for node in self.childNodes:
+99                         node.writexml(
+100                             writer, indent + addindent, addindent, newl)
+101                     writer.write(indent)
+102                 writer.write("</%s>%s" % (self.tagName, newl))
+103             else:
+104                 writer.write("/>%s" % (newl))
+105         self._Element_writexml_old = Element.writexml
+106         Element.writexml = writexml
+107 
+108         def writexml(self, writer, indent="", addindent="", newl=""):
+109             _write_data(writer, "%s%s%s" % (indent, self.data, newl))
+110         self._Text_writexml_old = Text.writexml
+111         Text.writexml = writexml
+112 
+113     def restore_patch(self):
+114         from xml.dom.minidom import Element, Text
+115         Element.writexml = self._Element_writexml_old
+116         Text.writexml = self._Text_writexml_old
+Results for keyword: def _print
+159         }
+160 
+161         for cls in e.__class__.__mro__:
+162             n = cls.__name__
+163             if n in translate:
+164                 return translate[n]
+165         # Not found in the MRO set
+166         n = e.__class__.__name__
+167         return n.lower()
+168 
+169     def _print_Mul(self, expr):
+170 
+171         if _coeff_isneg(expr):
+172             x = self.dom.createElement('apply')
+173             x.appendChild(self.dom.createElement('minus'))
+174             x.appendChild(self._print_Mul(-expr))
+175             return x
+176 
+177         from sympy.simplify import fraction
+178         numer, denom = fraction(expr)
+--------------
+194             terms = Mul._from_args(terms).as_ordered_factors()
+195 
+196         x = self.dom.createElement('apply')
+197         x.appendChild(self.dom.createElement('times'))
+198         if coeff != 1:
+199             x.appendChild(self._print(coeff))
+200         for term in terms:
+201             x.appendChild(self._print(term))
+202         return x
+203 
+204     def _print_Add(self, expr, order=None):
+205         args = self._as_ordered_terms(expr, order=order)
+206         lastProcessed = self._print(args[0])
+207         plusNodes = []
+208         for arg in args[1:]:
+209             if _coeff_isneg(arg):
+210                 # use minus
+211                 x = self.dom.createElement('apply')
+212                 x.appendChild(self.dom.createElement('minus'))
+213                 x.appendChild(lastProcessed)
+--------------
+222                 if arg == args[-1]:
+223                     plusNodes.append(self._print(arg))
+224         if len(plusNodes) == 1:
+225             return lastProcessed
+226         x = self.dom.createElement('apply')
+227         x.appendChild(self.dom.createElement('plus'))
+228         while plusNodes:
+229             x.appendChild(plusNodes.pop(0))
+230         return x
+231 
+232     def _print_MatrixBase(self, m):
+233         x = self.dom.createElement('matrix')
+234         for i in range(m.rows):
+235             x_r = self.dom.createElement('matrixrow')
+236             for j in range(m.cols):
+237                 x_r.appendChild(self._print(m[i, j]))
+238             x.appendChild(x_r)
+239         return x
+240 
+241     def _print_Rational(self, e):
+--------------
+231 
+232     def _print_MatrixBase(self, m):
+233         x = self.dom.createElement('matrix')
+234         for i in range(m.rows):
+235             x_r = self.dom.createElement('matrixrow')
+236             for j in range(m.cols):
+237                 x_r.appendChild(self._print(m[i, j]))
+238             x.appendChild(x_r)
+239         return x
+240 
+241     def _print_Rational(self, e):
+242         if e.q == 1:
+243             # don't divide
+244             x = self.dom.createElement('cn')
+245             x.appendChild(self.dom.createTextNode(str(e.p)))
+246             return x
+247         x = self.dom.createElement('apply')
+248         x.appendChild(self.dom.createElement('divide'))
+249         # numerator
+250         xnum = self.dom.createElement('cn')
+--------------
+249         # numerator
+250         xnum = self.dom.createElement('cn')
+251         xnum.appendChild(self.dom.createTextNode(str(e.p)))
+252         # denominator
+253         xdenom = self.dom.createElement('cn')
+254         xdenom.appendChild(self.dom.createTextNode(str(e.q)))
+255         x.appendChild(xnum)
+256         x.appendChild(xdenom)
+257         return x
+258 
+259     def _print_Limit(self, e):
+260         x = self.dom.createElement('apply')
+261         x.appendChild(self.dom.createElement(self.mathml_tag(e)))
+262 
+263         x_1 = self.dom.createElement('bvar')
+264         x_2 = self.dom.createElement('lowlimit')
+265         x_1.appendChild(self._print(e.args[1]))
+266         x_2.appendChild(self._print(e.args[2]))
+267 
+268         x.appendChild(x_1)

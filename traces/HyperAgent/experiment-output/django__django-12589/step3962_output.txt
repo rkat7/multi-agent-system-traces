@@ -1,0 +1,12 @@
+  ```python
+# The get_compiler() method creates the appropriate SQL compiler for the query, which is responsible for translating the Query object into the final SQL query.
+def get_compiler(self, connection):
+    if self.query.select_for_update:
+        return SQLCompiler(self, connection)
+    elif self.query.select_for_update_nowait:
+        return SQLCompiler(self, connection, use_insert=False)
+    elif self.query.select_for_update_skip_locked:
+        return SQLCompiler(self, connection, use_insert=False, skip_locked=True)
+    else:
+        return SQLCompiler(self, connection)
+```

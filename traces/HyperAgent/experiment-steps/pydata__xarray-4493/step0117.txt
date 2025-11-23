@@ -1,0 +1,34 @@
+### Input
+<empty>
+
+### Output
+    positions = []
+    keys = []
+    out = []
+    targets = []
+    no_key = object()
+    not_replaced = object()
+    for position, variables in enumerate(objects):
+        if is_alignable(variables):
+            positions.append(position)
+            keys.append(no_key)
+            targets.append(variables)
+            out.append(not_replaced)
+        elif is_dict_like(variables):
+            current_out = {}
+            for k, v in variables.items():
+                if is_alignable(v) and k not in indexes:
+                    positions.append(position)
+                    keys.append(k)
+                    targets.append(v)
+                    current_out[k] = not_replaced
+                else:
+                    current_out[k] = v
+            out.append(current_out)
+        elif raise_on_invalid:
+            raise ValueError(
+                "object to align is neither an xarray.Dataset, "
+                "an xarray.DataArray nor a dictionary: {!r}".format(variables)
+            )
+        else:
+            out.append(variables)

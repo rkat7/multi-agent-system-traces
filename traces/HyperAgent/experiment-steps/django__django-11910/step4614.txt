@@ -1,0 +1,60 @@
+### Input
+<empty>
+
+### Output
+3. **State forwards**:
+   ```python
+305     def state_forwards(self, app_label, state):
+306         model_state = state.models[app_label, self.model_name_lower]
+307         # Rename the field
+308         fields = model_state.fields
+309         found = False
+310         delay = True
+311         for index, (name, field) in enumerate(fields):
+312             if not found and name == self.old_name:
+313                 fields[index] = (self.new_name, field)
+314                 found = True
+315             # Fix from_fields to refer to the new field.
+316             from_fields = getattr(field, 'from_fields', None)
+317             if from_fields:
+318                 field.from_fields = tuple([
+319                     self.new_name if from_field_name == self.old_name else from_field_name
+320                 ])
+321             # Delay rendering of relationships if it's not a relational
+322             # field and not referenced by a foreign key.
+323             delay = delay and (
+324                 not field.is_relation and
+325                 not is_referenced_by_foreign_key(state, self.model_name_lower, field, self.name)
+326             )
+327         if not found:
+328             raise FieldDoesNotExist(
+329                 "%s.%s has no field named '%s'" % (app_label, self.model_name, self.old_name)
+330             )
+331         # Fix index/unique_together to refer to the new field
+332         options = model_state.options
+333         for option in ('index_together', 'unique_together'):
+334             if option in options:
+335                 options[option] = [
+336                     [self.new_name if n == self.old_name else n for n in together]
+337                     for together in options[option]
+338                 ]
+339         # Fix to_fields to refer to the new field.
+340         model_tuple = app_label, self.model_name_lower
+341         for (model_app_label, model_name), model_state in state.models.items():
+342             for index, (name, field) in enumerate(model_state.fields):
+343                 remote_field = field.remote_field
+344                 if remote_field:
+345                     remote_model_tuple = self._get_model_tuple(
+346                         remote_field.model, model_app_label, model_name
+347                     )
+348                     if remote_model_tuple == model_tuple:
+349                         if getattr(remote_field, 'field_name', None) == self.old_name:
+350                             remote_field.field_name = self.new_name
+351                         to_fields = getattr(field, 'to_fields', None)
+352                         if to_fields:
+353                             field.to_fields = tuple([
+354                                 self.new_name if to_field_name == self.old_name else to_field_name
+355                             ])
+356         state.reload_model(app_label, self.model_name_lower, delay=delay)
+```
+   This method is used to update the state of the model when the `RenameField` operation is applied.

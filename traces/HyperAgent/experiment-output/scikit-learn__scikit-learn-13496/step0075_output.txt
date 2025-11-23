@@ -1,0 +1,14 @@
+        elif isinstance(self.max_samples, INTEGER_TYPES):
+            if self.max_samples > n_samples:
+                warn("max_samples (%s) is greater than the "
+                     "total number of samples (%s). max_samples "
+                     "will be set to n_samples for estimation."
+                     % (self.max_samples, n_samples))
+                max_samples = n_samples
+            else:
+                max_samples = self.max_samples
+        else:  # float
+            if not (0. < self.max_samples <= 1.):
+                raise ValueError("max_samples must be in (0, 1], got %r"
+                                 % self.max_samples)
+            max_samples = int(self.max_samples * X.shape[0])

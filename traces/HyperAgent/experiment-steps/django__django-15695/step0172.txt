@@ -1,0 +1,22 @@
+### Input
+Action:
+```python
+
+### Output
+patch = '''
+def index_name_exists(self, table_name, index_name):
+    """Check if an index with the given name exists on the specified table."""
+    with self.connection.cursor() as cursor:
+        cursor.execute(
+            """
+            SELECT 1
+            FROM pg_indexes
+            WHERE tablename = %s AND indexname = %s
+            """,
+            [table_name, index_name]
+        )
+        return cursor.fetchone() is not None
+'''
+result = editor._run(relative_file_path="django/db/backends/base/schema.py", start_line=800, end_line=800, patch=patch)
+print(result)
+```

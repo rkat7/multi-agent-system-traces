@@ -1,0 +1,16 @@
+### Input
+<empty>
+
+### Output
+```python
+def _istrue_str(self, expr: str) -> bool:
+    d = self._getglobals()
+    try:
+        import _pytest._code
+        exprcode = _pytest._code.compile(expr, mode="eval")
+        result = eval(exprcode, d)
+    except SyntaxError:
+        # If compilation fails, it might be a simple variable name
+        result = d.get(expr, False)
+    return bool(result)
+```

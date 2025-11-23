@@ -1,0 +1,46 @@
+        self.statements = []
+        self.variables = []
+        self.variable_counter = itertools.count()
+        self.stack = []
+        self.on_failure = []
+        self.push_format_context()
+        # Rewrite assert into a bunch of statements.
+        unrolled_test = self.unroll_all_any(assert_.test)
+        top_condition, explanation = self.visit(unrolled_test)
+        # If in a test module, check if directly asserting None, in order to warn [Issue #3191]
+        if self.module_path is not None:
+            self.statements.append(
+                self.warn_about_none_ast(
+                    top_condition, module_path=self.module_path, lineno=assert_.lineno
+                )
+            )
+        # Create failure message.
+        body = self.on_failure
+        negation = ast.UnaryOp(ast.Not(), top_condition)
+        self.statements.append(ast.If(negation, body, []))
+        if assert_.msg:
+            assertmsg = self.helper("_format_assertmsg", assert_.msg)
+            explanation = "\\n>assert " + explanation
+        else:
+            assertmsg = ast.Str("")
+            explanation = "assert " + explanation
+        template = ast.BinOp(assertmsg, ast.Add(), ast.Str(explanation))
+        msg = self.pop_format_context(template)
+        fmt = self.helper("_format_explanation", msg)
+        err_name = ast.Name("AssertionError", ast.Load())
+        exc = ast_Call(err_name, [fmt], [])
+        if sys.version_info[0] >= 3:
+            raise_ = ast.Raise(exc, None)
+        else:
+            raise_ = ast.Raise(exc, None, None)
+        body.append(raise_)
+        # Clear temporary variables by setting them to None.
+        if self.variables:
+            variables = [ast.Name(name, ast.Store()) for name in self.variables]
+            clear = ast.Assign(variables, _NameConstant(None))
+            self.statements.append(clear)
+        # Fix line numbers.
+        for stmt in self.statements:
+            set_location(stmt, assert_.lineno, assert_.col_offset)
+        return self.statements
+'''

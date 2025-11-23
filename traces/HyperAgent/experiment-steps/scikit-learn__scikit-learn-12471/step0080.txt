@@ -1,0 +1,22 @@
+### Input
+<empty>
+
+### Output
+```python
+def _encode(values, uniques=None, encode=False):
+    if uniques is None:
+        if encode:
+            uniques, encoded = np.unique(values, return_inverse=True)
+            return uniques, encoded
+        else:
+            # unique sorts
+            return np.unique(values)
+    if encode:
+        diff = _encode_check_unknown(values, uniques)
+        if diff:
+            raise ValueError("y contains previously unseen labels: %s" % str(diff))
+        encoded = np.searchsorted(uniques, values)
+        return uniques, encoded
+    else:
+        return uniques
+```

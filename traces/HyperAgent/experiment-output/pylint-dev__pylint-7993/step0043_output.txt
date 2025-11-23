@@ -1,0 +1,12 @@
+        arguments = list(find_arguments(template))
+        for argument in arguments:
+            # Split the argument at the first colon to separate the field name from any formatting
+            field = argument.split(':', 1)[0].strip()
+            if field not in MESSAGE_FIELDS:
+                warnings.warn(
+                    f"Don't recognize the argument '{field}' in the --msg-template. "
+                    "Are you sure it is supported on the current version of pylint?"
+                )
+            else:
+                # Replace the argument in the template with a placeholder
+                template = template.replace(f"{{{argument}}}", f"{{{field}}}")

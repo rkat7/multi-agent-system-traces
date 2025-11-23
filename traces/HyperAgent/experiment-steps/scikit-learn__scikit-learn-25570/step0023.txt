@@ -1,0 +1,24 @@
+### Input
+<empty>
+
+### Output
+    # verbose_feature_names_out is False
+    # Check that names are all unique without a prefix
+    feature_names_count = Counter(
+        chain.from_iterable(s for _, s in transformer_with_feature_names_out)
+    )
+    top_6_overlap = [
+        name for name, count in feature_names_count.most_common(6) if count > 1
+    ]
+    top_6_overlap.sort()
+    if top_6_overlap:
+        if len(top_6_overlap) == 6:
+            # Select the first 6 overlapping names
+            names = [name for name in feature_names_out if name not in top_6_overlap]
+        else:
+            # Select all names that are not in the top 6 overlapping names
+            names = [name for name in feature_names_out if name not in top_6_overlap]
+    else:
+        names = feature_names_out
+    return np.asarray(names, dtype=object)
+```

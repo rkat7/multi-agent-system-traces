@@ -1,0 +1,25 @@
+### Input
+<empty>
+
+### Output
+@contextlib.contextmanager
+def rc_context(rc=None, fname=None):
+    """
+    Return a context manager for temporarily changing rcParams.
+    """
+    orig = rcParams.copy()
+    try:
+        if fname:
+            rc_file(fname)
+        if rc:
+            rcParams.update(rc)
+        _CONTEXT_STACK.append(rcParams.copy())
+        yield
+    finally:
+        rcParams.update(orig)
+        _CONTEXT_STACK.pop()
+'''
+result = editor._run(relative_file_path="lib/matplotlib/__init__.py", start_line=1058, end_line=1098, patch=patch)
+print(result)
+```
+HyperAgent_matplotlib__matplotlib-23299 - INFO - Inner-Editor-Assistant's Response: Thought: The file content appears to be unchanged from the previous attempt. The error might be due to the large patch we're trying to apply. Let's try to modify the functions one at a time, starting with `rc_context`.

@@ -1,0 +1,35 @@
+### Input
+Action:
+```python
+
+### Output
+patch = '''class EnumSerializer(BaseSerializer):
+    def serialize(self):
+        enum_class = self.value.__class__
+        module = enum_class.__module__
+        if hasattr(enum_class, '_decompose'):
+            # Handle combined flags
+            names = [flag.name for flag in enum_class._decompose(self.value)]
+            if len(names) == 1:
+                # Single flag
+                return (
+                    "%s.%s[%r]" % (module, enum_class.__qualname__, names[0]),
+                    {"import %s" % module},
+                )
+            else:
+                # Combined flags
+                flags_expr = " | ".join(f"{enum_class.__qualname__}.{name}" for name in names)
+                return (
+                    f"({flags_expr})",
+                    {"import %s" % module},
+                )
+        else:
+            # Fallback to original behavior for non-flag Enums
+            return (
+                "%s.%s[%r]" % (module, enum_class.__qualname__, self.value.name),
+                {"import %s" % module},
+            )'''
+result = editor._run(relative_file_path="django/db/migrations/serializer.py", start_line=124, end_line=131, patch=patch)
+print(result)
+```
+HyperAgent_django__django-15996 - INFO - Inner-Editor-Assistant's Response: Thought: The modification has been successfully applied to the `EnumSerializer` class in the `django/db/migrations/serializer.py` file. The new implementation now handles combinations of Enum flags as requested. Let's verify if there are any other parts of the codebase that might need to be updated to work with this new serialization method.

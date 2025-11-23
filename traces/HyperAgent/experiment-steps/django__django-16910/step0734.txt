@@ -1,0 +1,25 @@
+### Input
+<empty>
+
+### Output
+    def _get_related_selections_from_parent(self, model, field, select_mask, cur_depth):
+        related_klass_infos = []
+        if field.name in select_mask:
+            related_klass_infos.append({
+                'model': model,
+                'field': field,
+                'reverse': field.is_reverse_relation,
+                'from_parent': False,
+                'select_fields': self.get_default_columns(select_mask, field.name, model._meta, model),
+            })
+        else:
+            for f in model._meta.get_fields():
+                if f.is_relation and f.name in select_mask:
+                    related_klass_infos.extend(self._get_related_selections_from_parent(
+                        f.remote_field.model, f, select_mask, cur_depth + 1
+                    ))
+        return related_klass_infos
+'''
+result = editor._run(relative_file_path="django/db/models/sql/compiler.py", start_line=1143, end_line=1375, patch=patch)
+print(result)
+```

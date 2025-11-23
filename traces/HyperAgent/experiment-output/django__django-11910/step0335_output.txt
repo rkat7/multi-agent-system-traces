@@ -1,0 +1,21 @@
+    def reduce(self, operation, app_label=None):
+        if (isinstance(operation, RenameField) and
+                self.is_same_model_operation(operation) and
+                self.new_name_lower == operation.old_name_lower):
+            return [
+                RenameField(
+                    self.model_name,
+                    self.old_name,
+                    operation.new_name,
+                ),
+            ]
+        # Skip `FieldOperation.reduce` as we want to run `references_field`
+        # against self.new_name.
+        return (
+            super(FieldOperation, self).reduce(operation, app_label=app_label) or
+            not operation.references_field(self.model_name, self.new_name, app_label)
+        )
+'''
+result = editor._run(relative_file_path="django/db/migrations/operations/fields.py", start_line=1, end_line=402, patch=patch)
+print(result)
+```

@@ -1,0 +1,12 @@
+`django/urls/resolvers.py`:
+```python
+def get_ns_resolver(ns_pattern, resolver, converters):
+    # Build a namespaced resolver for the given parent URLconf pattern.
+    # This makes it possible to have captured parameters in the parent
+    # URLconf pattern.
+    pattern = RegexPattern(ns_pattern)
+    pattern.converters = dict(converters)
+    ns_resolver = URLResolver(pattern, resolver.url_patterns)
+    return URLResolver(RegexPattern(r'^/'), [ns_resolver])
+```
+HyperAgent_django__django-12184 - INFO - Planner's Response: Thought: Thank you for the detailed analysis of the Django 3.0 source code. It seems that the core URL routing and view function calling mechanisms haven't changed significantly between Django 2.2 and 3.0 in a way that would directly cause the reported issue. However, the problem might be related to how Django 3.0 handles the regex pattern for optional parameters.

@@ -1,0 +1,20 @@
+### Input
+Action:
+```bash
+
+### Output
+# Apply the changes to the _combine method in the django/db/models/query_utils.py file
+sed -i '/def _combine(self, other, conn):/,/return obj/c\
+def _combine(self, other, conn):\
+    if not isinstance(other, Q):\
+        raise TypeError(other)\
+    if not other:\
+        return type(self)(*self.children, _connector=self.connector, _negated=self.negated)\
+    elif not self:\
+        return type(self)(*other.children, _connector=other.connector, _negated=other.negated)\
+    obj = type(self)()\
+    obj.connector = conn\
+    obj.add(self, conn)\
+    obj.add(other, conn)\
+    return obj' django/db/models/query_utils.py
+```

@@ -1,0 +1,21 @@
+```python
+def get_order_by(self):
+    ...
+    result = []
+    seen = set()
+    for expr, is_ref in order_by:
+        resolved = expr.resolve_expression(self.query, allow_joins=True, reuse=None)
+        ...
+        sql, params = self.compile(resolved)
+        # Don't add the same column twice, but the order direction is
+        # not taken into account so we strip it. When this entire method
+        # is refactored into expressions, then we can check each part as we
+        # generate it.
+        without_ordering = self.ordering_parts.search(sql).group(1)
+        params_hash = make_hashable(params)
+        if (without_ordering, params_hash) in seen:
+            continue
+        seen.add((without_ordering, params_hash))
+        result.append((resolved, (sql, params, is_ref)))
+    return result
+```

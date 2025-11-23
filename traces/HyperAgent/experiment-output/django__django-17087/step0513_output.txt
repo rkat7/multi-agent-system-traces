@@ -1,0 +1,7 @@
+        # Check that the fields are correctly defined in the database
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT json_field, array_field, char_field FROM test_app_complextestmodel WHERE id = %s", [instance.id])
+            row = cursor.fetchone()
+            self.assertEqual(row[0], {"key": "value"})
+            self.assertEqual(row[1], ["item1", "item2"])
+            self.assertEqual(row[2], "default")

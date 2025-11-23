@@ -1,0 +1,19 @@
+# From lib/matplotlib/__init__.py
+136 def __getattr__(name):
+137     if name == "__version__":
+138         import setuptools_scm
+139         global __version__  # cache it.
+140         # Only shell out to a git subprocess if really needed, and not on a
+141         # shallow clone, such as those used by CI, as the latter would trigger
+142         # a warning from setuptools_scm.
+143         root = Path(__file__).resolve().parents[2]
+144         if (root / ".git").exists() and not (root / ".git/shallow").exists():
+145             __version__ = setuptools_scm.get_version(
+146                 root=root,
+147                 version_scheme="post-release",
+148                 local_scheme="node-and-date",
+149                 fallback_version=_version.version,
+150             )
+151         else:  # Get the version from the _version.py setuptools_scm file.
+152             __version__ = _version.version
+```

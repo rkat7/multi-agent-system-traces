@@ -1,0 +1,12 @@
+```python
+def _propagate_divide(self, other, to_variance=None, from_variance=None):
+    if self.is_constant():
+        return other
+    if other.is_constant():
+        return self
+    if self.is_variance() and other.is_variance():
+        return self / other
+    if self.is_variance() or other.is_variance():
+        return self._propagate_multiply_divide(other, divide=True, to_variance=to_variance, from_variance=from_variance)
+    return self._propagate_multiply(other, to_variance, from_variance)
+```

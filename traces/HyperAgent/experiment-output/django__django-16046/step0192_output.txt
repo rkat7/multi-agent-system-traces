@@ -1,0 +1,32 @@
+    # decimal part
+    if "." in str_number:
+        int_part, dec_part = str_number.split(".")
+        if decimal_pos is not None:
+            dec_part = dec_part[:decimal_pos]
+    else:
+        int_part, dec_part = str_number, ""
+    if decimal_pos is not None:
+        dec_part = dec_part + ("0" * (decimal_pos - len(dec_part)))
+    dec_part = dec_part and decimal_sep + dec_part
+    # grouping
+    if use_grouping:
+        try:
+            # if grouping is a sequence
+            intervals = list(grouping)
+        except TypeError:
+            # grouping is a single value
+            intervals = [grouping, 0]
+        active_interval = intervals.pop(0)
+        int_part_gd = ""
+        cnt = 0
+        for digit in int_part[::-1]:
+            if cnt and cnt == active_interval:
+                if intervals:
+                    active_interval = intervals.pop(0) or active_interval
+                int_part_gd += thousand_sep[::-1]
+                cnt = 0
+            int_part_gd += digit
+            cnt += 1
+        int_part = int_part_gd[::-1]
+    return sign + int_part + dec_part
+```

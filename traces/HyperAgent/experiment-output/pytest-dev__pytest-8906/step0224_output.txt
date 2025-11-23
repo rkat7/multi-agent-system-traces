@@ -1,0 +1,20 @@
+```python
+def _check_scope(
+    self,
+    argname: str,
+    invoking_scope: "_Scope",
+    requested_scope: "_Scope",
+) -> None:
+    if argname == "request":
+        return
+    if scopemismatch(invoking_scope, requested_scope):
+        # Try to report something helpful.
+        lines = self._factorytraceback()
+        fail(
+            "ScopeMismatch: You tried to access the %r scoped "
+            "fixture %r with a %r scoped request object, "
+            "\n%s"
+            % ((requested_scope, argname, invoking_scope, "\n".join(lines))),
+            pytrace=False,
+        )
+```

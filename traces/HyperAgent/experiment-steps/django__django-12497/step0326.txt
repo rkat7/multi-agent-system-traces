@@ -1,0 +1,52 @@
+### Input
+<empty>
+
+### Output
+```python
+1430     def _check_table_uniqueness(self, **kwargs):
+1431         if isinstance(self.remote_field.through, str) or not self.remote_field.through._meta.managed:
+1432             return []
+1433 
+1434         registered_tables = {
+1435             model._meta.db_table: model
+1436             for model in self.opts.apps.get_models(include_auto_created=True)
+1437             if model != self.remote_field.through and model._meta.managed
+1438         }
+1439         m2m_db_table = self.m2m_db_table()
+1440         model = registered_tables.get(m2m_db_table)
+1441 
+1442         # The second condition allows multiple m2m relations on a model if
+1443         # some point to a through model that proxies another through model.
+1444         if model and model._meta.concrete_model != self.remote_field.through._meta.concrete_model:
+1445             if model._meta.auto_created:
+1446                 def _get_field_name(model):
+1447                     for field in model._meta.auto_created._meta.many_to_many:
+1448                         if field.remote_field.through is model:
+1449                             return field.name
+1450                 opts = model._meta.auto_created._meta
+1451                 clashing_obj = '%s.%s' % (opts.label, _get_field_name(model))
+1452             else:
+1453                 clashing_obj = model._meta.label
+1454 
+1455             if settings.DATABASE_ROUTERS:
+1456                 error_class, error_id = checks.Warning, 'fields.W344'
+1457                 error_hint = (
+1458                     'You have configured settings.DATABASE_ROUTERS. Verify '
+1459                     'that the table of %r is correctly routed to a separate '
+1460                     'database.' % clashing_obj
+1461                 )
+1462             else:
+1463                 error_class, error_id = checks.Error, 'fields.E340'
+1464                 error_hint = None
+1465 
+1466             return [
+1467                 error_class(
+1468                     "The field's intermediary table '%s' clashes with the "
+1469                     "table name of '%s'." % (m2m_db_table, clashing_obj),
+1470                     obj=self,
+1471                     hint=error_hint,
+1472                     id=error_id,
+1473                 )
+1474             ]
+1475         return []
+```

@@ -1,0 +1,17 @@
+patch = '''
+def __subclasscheck__(self, subclass):
+    """
+    Check if the given subclass is a valid subclass of AutoField.
+    This method has been modified to correctly handle subclasses of BigAutoField and SmallAutoField.
+    It now checks if the subclass is either directly in self._subclasses,
+    a subclass of any class in self._subclasses, or passes the superclass check.
+    """
+    return (
+        subclass in self._subclasses or
+        issubclass(subclass, self._subclasses) or
+        super().__subclasscheck__(subclass)
+    )
+'''
+result = editor._run(relative_file_path="django/db/models/fields/__init__.py", start_line=2525, end_line=2528, patch=patch)
+print(result)
+```

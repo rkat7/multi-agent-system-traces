@@ -1,0 +1,13 @@
+```python
+def migrate(self, projector, state):
+    # Check if the new index name already exists
+    if not projector.index_name_exists(self.model_name, self.new_name):
+        if self.old_name:
+            projector.rename_index(self.model_name, self.old_name, self.new_name)
+        else:
+            projector.rename_index(self.model_name, self.old_fields, self.new_name)
+    else:
+        # If the new index name already exists, log a warning
+        import warnings
+        warnings.warn(f"Index '{self.new_name}' already exists on model '{self.model_name}'. Skipping rename operation.")
+```

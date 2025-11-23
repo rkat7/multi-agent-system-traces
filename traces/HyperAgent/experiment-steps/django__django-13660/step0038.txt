@@ -1,0 +1,27 @@
+### Input
+<empty>
+
+### Output
+```python
+84     def handle(self, **options):
+85         # Execute the command and exit.
+86         if options['command']:
+87             exec(options['command'])
+88             return
+89 
+90         # Execute stdin if it has anything to read and exit.
+91         # Not supported on Windows due to select.select() limitations.
+92         if sys.platform != 'win32' and not sys.stdin.isatty() and select.select([sys.stdin], [], [], 0)[0]:
+93             exec(sys.stdin.read())
+94             return
+95 
+96         available_shells = [options['interface']] if options['interface'] else self.shells
+97 
+98         for shell in available_shells:
+99             try:
+100                 return getattr(self, shell)(options)
+101             except ImportError:
+102                 pass
+103         raise CommandError("Couldn't import {} interface.".format(shell))
+```
+HyperAgent_django__django-13660 - INFO - Planner's Response: Thought: Now that we have the `handle` method, we can clearly see the issue. On line 87, the `exec` function is called with only the command string as an argument, without providing a global dictionary. This is the root cause of the problem described in the issue. To fix this, we need to modify the `exec` call to include a global dictionary that contains the necessary imports and variables.

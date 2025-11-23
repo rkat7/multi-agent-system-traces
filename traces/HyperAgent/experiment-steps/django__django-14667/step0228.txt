@@ -1,0 +1,19 @@
+### Input
+<empty>
+
+### Output
+        # Apply deferred fields to the query
+        for field in deferred_fields:
+            # If the field is a related field, we need to apply it to the related query
+            if isinstance(field, RelatedField):
+                # Get the related model
+                related_model = field.related_model
+                # Get the related query
+                related_query = query._clone()
+                # Apply deferred fields to the related query
+                related_query._apply_deferred_fields()
+                # Apply the related query to the current query
+                query = query._add_related(related_model, related_query)
+            else:
+                # If the field is not a related field, we can simply add it to the query
+                query = query.defer(field.name)

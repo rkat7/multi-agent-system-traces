@@ -1,0 +1,13 @@
+        except (_SSLError, _HTTPError, socket.timeout, SocketError, ProtocolError, DecodeError, ReadTimeoutError, ProxyError) as e:
+            if isinstance(e, DecodeError):
+                raise DecodeError(e, request=request)
+            elif isinstance(e, (socket.timeout, ReadTimeoutError)):
+                raise Timeout(e, request=request)
+            elif isinstance(e, _SSLError):
+                raise SSLError(e, request=request)
+            elif isinstance(e, ProxyError):
+                raise ProxyError(e, request=request)
+            elif isinstance(e, (_HTTPError, SocketError)):
+                raise ConnectionError(e, request=request)
+            else:
+                raise RequestException(e, request=request)

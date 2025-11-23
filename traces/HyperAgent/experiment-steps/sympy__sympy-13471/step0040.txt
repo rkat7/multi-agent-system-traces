@@ -1,0 +1,25 @@
+### Input
+<empty>
+
+### Output
+    if isinstance(num, string_types):
+        num = num.replace(' ', '')
+        if num.startswith('.') and len(num) > 1:
+            num = '0' + num
+        elif num.startswith('-.') and len(num) > 2:
+            num = '-0.' + num[2:]
+    elif isinstance(num, float) and num == 0:
+        num = '0'
+    elif isinstance(num, (SYMPY_INTS, Integer)):
+        num = str(num)  # faster than mlib.from_int
+    elif num is S.Infinity:
+        num = '+inf'
+    elif num is S.NegativeInfinity:
+        num = '-inf'
+    elif type(num).__module__ == 'numpy': # support for numpy datatypes
+        num = _convert_numpy_types(num)
+    elif isinstance(num, mpmath.mpf):
+        if precision is None:
+            if dps is None:
+                precision = num.context.prec
+        num = num._mpf_

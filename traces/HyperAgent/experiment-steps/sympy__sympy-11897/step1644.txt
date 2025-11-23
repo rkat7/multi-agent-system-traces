@@ -1,0 +1,77 @@
+### Input
+<empty>
+
+### Output
+```python
+9 from sympy.core import S, Add, Symbol, Mod
+10 from sympy.core.function import _coeff_isneg
+11 from sympy.core.sympify import SympifyError
+12 from sympy.core.alphabets import greeks
+13 from sympy.core.operations import AssocOp
+14 from sympy.core.containers import Tuple
+15 from sympy.logic.boolalg import true
+16 
+17 ## sympy.printing imports
+18 from sympy.printing.precedence import precedence_traditional
+19 from .printer import Printer
+20 from .conventions import split_super_sub, requires_partial
+21 from .precedence import precedence, PRECEDENCE
+22 
+23 import mpmath.libmp as mlib
+24 from mpmath.libmp import prec_to_dps
+25 
+26 from sympy.core.compatibility import default_sort_key, range
+27 from sympy.utilities.iterables import has_variety
+28 
+29 import re
+30 
+31 # Hand-picked functions which can be used directly in both LaTeX and MathJax
+32 # Complete list at http://www.mathjax.org/docs/1.1/tex.html#supported-latex-commands
+33 # This variable only contains those functions which sympy uses.
+34 accepted_latex_functions = ['arcsin', 'arccos', 'arctan', 'sin', 'cos', 'tan',
+35                     'sinh', 'cosh', 'tanh', 'sqrt', 'ln', 'log', 'sec', 'csc',
+36                     'cot', 'coth', 're', 'im', 'frac', 'root', 'arg',
+37                     ]
+38 
+39 tex_greek_dictionary = {
+40     'Alpha': 'A',
+41     'Beta': 'B',
+42     'Gamma': r'\Gamma',
+43     'Delta': r'\Delta',
+44     'Epsilon': 'E',
+45     'Zeta': 'Z',
+46     'Eta': 'H',
+47     'Theta': r'\Theta',
+48     'Iota': 'I',
+49     'Kappa': 'K',
+50     'Lambda': r'\Lambda',
+51     'Mu': 'M',
+52     'Nu': 'N',
+53     'Xi': r'\Xi',
+54     'omicron': 'o',
+55     'Omicron': 'O',
+56     'Pi': r'\Pi',
+57     'Rho': 'P',
+58     'Sigma': r'\Sigma',
+59     'Tau': 'T',
+60     'Upsilon': r'\Upsilon',
+61     'Phi': r'\Phi',
+62     'Chi': 'X',
+63     'Psi': r'\Psi',
+64     'Omega': r'\Omega',
+65     'lamda': r'\lambda',
+66     'Lamda': r'\Lambda',
+67     'khi': r'\chi',
+68     'Khi': r'X',
+69     'varepsilon': r'\varepsilon',
+70     'varkappa': r'\varkappa',
+71     'varphi': r'\varphi',
+72     'varpi': r'\varpi',
+73     'varrho': r'\varrho',
+74     'varsigma': r'\varsigma',
+75     'vartheta': r'\vartheta',
+76 }
+77 
+78 other_symbols = set(['aleph', 'beth', 'daleth', 'gimel', 'ell', 'eth', 'hbar',
+79                      'hslash', 'mho', 'wp', ])
+80 

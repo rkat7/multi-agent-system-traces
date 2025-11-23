@@ -1,0 +1,21 @@
+```python
+try:
+    # ... (request sending code)
+except (ProtocolError, socket.error) as err:
+    raise ConnectionError(err, request=request)
+except MaxRetryError as e:
+    if isinstance(e.reason, ConnectTimeoutError):
+        raise ConnectTimeout(e, request=request)
+    if isinstance(e.reason, ResponseError):
+        raise RetryError(e, request=request)
+    raise ConnectionError(e, request=request)
+except _ProxyError as e:
+    raise ProxyError(e)
+except (_SSLError, _HTTPError) as e:
+    if isinstance(e, _SSLError):
+        raise SSLError(e, request=request)
+    elif isinstance(e, ReadTimeoutError):
+        raise ReadTimeout(e, request=request)
+    else:
+        raise
+```

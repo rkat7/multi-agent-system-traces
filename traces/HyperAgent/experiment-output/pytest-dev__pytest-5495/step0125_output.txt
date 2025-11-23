@@ -1,0 +1,11 @@
+    def repr_bytes(self, obj, level):
+        if len(obj) == 0:
+            return "b''"
+        hex_repr = ' '.join(f'{b:02x}' for b in obj)
+        ascii_repr = ''.join(chr(b) if 32 <= b < 127 else '.' for b in obj)
+        result = f"b'{hex_repr}' ({ascii_repr})"
+        if len(result) > self.maxstring:
+            i = max(0, (self.maxstring - 3) // 2)
+            j = max(0, self.maxstring - 3 - i)
+            result = result[:i] + "..." + result[len(result) - j :]
+        return result

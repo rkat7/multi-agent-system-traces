@@ -1,0 +1,18 @@
+### Input
+<empty>
+
+### Output
+        # Use a transaction to ensure data integrity
+        with schema_editor.connection.cursor() as cursor:
+            cursor.execute('BEGIN')
+            try:
+                # Update permissions, avoiding conflicts
+                for perm in Permission.objects.filter(permissions_query, content_type=concrete_content_type):
+                    # Check if a permission with the same codename already exists for the proxy content type
+                    if not Permission.objects.filter(codename=perm.codename, content_type=proxy_content_type).exists():
+                        perm.content_type = proxy_content_type
+                        perm.save()
+                cursor.execute('COMMIT')
+            except Exception:
+                cursor.execute('ROLLBACK')
+                raise

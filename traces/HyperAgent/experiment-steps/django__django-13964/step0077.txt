@@ -1,0 +1,13 @@
+### Input
+<empty>
+
+### Output
+    def __set__(self, instance, value):
+        if isinstance(value, self.field.remote_field.model) or value is None:
+            instance.__dict__[self.field.name] = value
+        else:
+            raise ValueError(
+                f'Cannot assign "{value}": "{self.field.name}" must be a '
+                f'"{self.field.remote_field.model._meta.object_name}" instance.'
+            )
+```

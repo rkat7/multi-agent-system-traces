@@ -1,0 +1,18 @@
+```python
+# Check if the model has a unique constraint on the foreign key
+if not has_unique_constraint:
+    field_name = self.foreign_related_fields[0].name
+    model_name = self.remote_field.model.__name__
+    return [
+        checks.Error(
+            "'%s.%s' must be unique because it is referenced by "
+            "a foreign key." % (model_name, field_name),
+            hint=(
+                "Add unique=True to this field or add a "
+                "UniqueConstraint (without condition) in the model "
+                "Meta.constraints."
+            ),
+            obj=self,
+            id="fields.E311",
+        )
+    ]

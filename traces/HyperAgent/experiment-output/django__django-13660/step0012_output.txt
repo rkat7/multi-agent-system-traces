@@ -1,0 +1,17 @@
+```python
+def handle(self, **options):
+    # Execute the command and exit.
+    if options['command']:
+        # Create a global namespace with the necessary imports
+        global_namespace = {
+            'django': django,
+            '__builtins__': __builtins__
+        }
+        exec(options['command'], global_namespace)
+        return
+    # Execute stdin if it has anything to read and exit.
+    # Not supported on Windows due to select.select() limitations.
+    if sys.platform != 'win32' and not sys.stdin.isatty() and select.select([sys.stdin], [], [], 0)[0]:
+        exec(sys.stdin.read())
+        return
+```

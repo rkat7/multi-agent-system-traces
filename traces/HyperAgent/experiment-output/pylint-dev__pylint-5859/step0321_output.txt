@@ -1,0 +1,13 @@
+    def test_todo_standard(self):
+        node = astroid.extract_node("""
+        # TODO: Implement this feature
+        pass
+        """)
+        with self.assertAddsMessages(
+            Message(
+                msg_id='fixme',
+                line=2,
+                args='TODO: Implement this feature'
+            )
+        ):
+            self.checker.process_tokens(node.root().tokens)

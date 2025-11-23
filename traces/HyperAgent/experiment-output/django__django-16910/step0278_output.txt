@@ -1,0 +1,15 @@
+    def test_only_with_select_related(self):
+        query = Main.objects.select_related('secondary').only('main_field_1', 'secondary__secondary_field_1')
+        # Print the SQL query
+        print(query.query)
+        # Execute the query and check the results
+        result = list(query)
+        self.assertEqual(len(result), 1)
+        main = result[0]
+        self.assertTrue(hasattr(main, 'main_field_1'))
+        self.assertFalse(hasattr(main, 'main_field_2'))
+        self.assertFalse(hasattr(main, 'main_field_3'))
+        self.assertTrue(hasattr(main.secondary, 'secondary_field_1'))
+        self.assertFalse(hasattr(main.secondary, 'secondary_field_2'))
+        self.assertFalse(hasattr(main.secondary, 'secondary_field_3'))
+```

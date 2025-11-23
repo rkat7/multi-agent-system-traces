@@ -1,0 +1,36 @@
+    if isinstance(args[0], (six.integer_types, float)):
+        # Handle scalar inputs
+        return func(args, 0)
+    elif isinstance(args[0], (list, tuple)) and len(args) == 2:
+        # Handle coordinate pair inputs
+        origin = kwargs.pop('origin', 0)
+        if len(args[0]) != len(args[1]):
+            raise ValueError("Coordinate arrays have different lengths")
+        if len(args[0]) == 0:  # Handle empty input arrays
+            return [], []
+        axes = [np.asanyarray(arg) for arg in args]
+        if ra_dec_order and sky == 'input':
+            axes = self._denormalize_sky(axes)
+        output = func(np.column_stack(axes), origin)
+        if ra_dec_order and sky == 'output':
+            output = self._normalize_sky(output)
+        return _return_list_of_arrays(output, origin)
+    elif isinstance(args[0], np.ndarray) and len(args) == 1:
+        # Handle array inputs
+        origin = kwargs.pop('origin', 0)
+        if args[0].shape == ():
+            return func([args[0].item()], origin)
+        elif args[0].ndim != 2:
+            raise ValueError("Array must be 2-dimensional")
+        if args[0].shape[0] == 0:  # Handle empty input arrays
+            return np.array([], dtype=float), np.array([], dtype=float)
+        axes = [np.asanyarray(arg) for arg in np.rollaxis(args[0], -1)]
+        if ra_dec_order and sky == 'input':
+            axes = self._denormalize_sky(axes)
+        output = func(np.column_stack(axes), origin)
+        if ra_dec_order and sky == 'output':
+            output = self._normalize_sky(output)
+        return _return_list_of_arrays(output, origin)
+    else:
+        raise TypeError("Input must be a scalar, pair of 1-D arrays, or a single 2-D array")
+```

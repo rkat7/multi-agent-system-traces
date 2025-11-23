@@ -1,0 +1,139 @@
+### Input
+<empty>
+
+### Output
+```python
+# ... (omitted for brevity)
+735         seen = {}
+736         must_include = {orig_opts.concrete_model: {orig_opts.pk}}
+737         for field_name in field_names:
+738             parts = field_name.split(LOOKUP_SEP)
+739             cur_model = self.model._meta.concrete_model
+740             opts = orig_opts
+741             for name in parts[:-1]:
+742                 old_model = cur_model
+743                 if name in self._filtered_relations:
+744                     name = self._filtered_relations[name].relation_name
+745                 source = opts.get_field(name)
+746                 if is_reverse_o2o(source):
+747                     cur_model = source.related_model
+748                 else:
+749                     cur_model = source.remote_field.model
+750                 opts = cur_model._meta
+751                 # Even if we're "just passing through" this model, we must add
+752                 # both the current model's pk and the related reference field
+753                 # (if it's not a reverse relation) to the things we select.
+754                 if not is_reverse_o2o(source):
+755                     must_include[cur_model] = must_include.get(cur_model, {})
+756                     must_include[cur_model][source.name] = source
+757                 # If we're traversing a proxy model, we need to add the
+758                 # proxy model's fields to the select list.
+759                 if cur_model != self.model._meta.concrete_model:
+760                     for field in cur_model._meta.fields:
+761                         if field.concrete:
+762                             must_include[cur_model][field.name] = field
+763                         elif field.remote_field:
+764                             must_include[cur_model][field.name] = field.remote_field.model._meta.pk
+765                     # Add the proxy model's pk to the select list.
+766                     must_include[cur_model][cur_model._meta.pk.name] = cur_model._meta.pk
+767                 # If we're traversing a reverse relation, we need to add the
+768                 # related model's fields to the select list.
+769                 if is_reverse_o2o(source):
+770                     for field in source.related_model._meta.fields:
+771                         if field.concrete:
+772                             must_include[cur_model][field.name] = field
+773                         elif field.remote_field:
+774                             must_include[cur_model][field.name] = field.remote_field.model._meta.pk
+775                     # Add the related model's pk to the select list.
+776                     must_include[cur_model][source.related_model._meta.pk.name] = source.related_model._meta.pk
+777                 # If we're traversing a many-to-many relation, we need to add
+778                 # the related model's fields to the select list.
+779                 if source.remote_field.many_to_many:
+780                     for field in source.remote_field.model._meta.fields:
+781                         if field.concrete:
+782                             must_include[cur_model][field.name] = field
+783                         elif field.remote_field:
+784                             must_include[cur_model][field.name] = field.remote_field.model._meta.pk
+785                     # Add the related model's pk to the select list.
+786                     must_include[cur_model][source.remote_field.model._meta.pk.name] = source.remote_field.model._meta.pk
+787                 # If we're traversing a one-to-one relation, we need to add
+788                 # the related model's fields to the select list.
+789                 if source.remote_field.one_to_one:
+790                     for field in source.remote_field.model._meta.fields:
+791                         if field.concrete:
+792                             must_include[cur_model][field.name] = field
+793                         elif field.remote_field:
+794                             must_include[cur_model][field.name] = field.remote_field.model._meta.pk
+795                     # Add the related model's pk to the select list.
+796                     must_include[cur_model][source.remote_field.model._meta.pk.name] = source.remote_field.model._meta.pk
+797                 # If we're traversing a foreign key relation, we need to add
+798                 # the related model's fields to the select list.
+799                 if source.remote_field.concrete:
+800                     for field in source.remote_field.model._meta.fields:
+801                         if field.concrete:
+802                             must_include[cur_model][field.name] = field
+803                         elif field.remote_field:
+804                             must_include[cur_model][field.name] = field.remote_field.model._meta.pk
+805                     # Add the related model's pk to the select list.
+806                     must_include[cur_model][source.remote_field.model._meta.pk.name] = source.remote_field.model._meta.pk
+807                 # If we're traversing a many-to-many relation, we need to add
+808                 # the related model's fields to the select list.
+809                 if source.remote_field.many_to_many:
+810                     for field in source.remote_field.model._meta.fields:
+811                         if field.concrete:
+812                             must_include[cur_model][field.name] = field
+813                         elif field.remote_field:
+814                             must_include[cur_model][field.name] = field.remote_field.model._meta.pk
+815                     # Add the related model's pk to the select list.
+816                     must_include[cur_model][source.remote_field.model._meta.pk.name] = source.remote_field.model._meta.pk
+817                 # If we're traversing a one-to-one relation, we need to add
+818                 # the related model's fields to the select list.
+819                 if source.remote_field.one_to_one:
+820                     for field in source.remote_field.model._meta.fields:
+821                         if field.concrete:
+822                             must_include[cur_model][field.name] = field
+823                         elif field.remote_field:
+824                             must_include[cur_model][field.name] = field.remote_field.model._meta.pk
+825                     # Add the related model's pk to the select list.
+826                     must_include[cur_model][source.remote_field.model._meta.pk.name] = source.remote_field.model._meta.pk
+827                 # If we're traversing a foreign key relation, we need to add
+828                 # the related model's fields to the select list.
+829                 if source.remote_field.concrete:
+830                     for field in source.remote_field.model._meta.fields:
+831                         if field.concrete:
+832                             must_include[cur_model][field.name] = field
+833                         elif field.remote_field:
+834                             must_include[cur_model][field.name] = field.remote_field.model._meta.pk
+835                     # Add the related model's pk to the select list.
+836                     must_include[cur_model][source.remote_field.model._meta.pk.name] = source.remote_field.model._meta.pk
+837                 # If we're traversing a many-to-many relation, we need to add
+838                 # the related model's fields to the select list.
+839                 if source.remote_field.many_to_many:
+840                     for field in source.remote_field.model._meta.fields:
+841                         if field.concrete:
+842                             must_include[cur_model][field.name] = field
+843                         elif field.remote_field:
+844                             must_include[cur_model][field.name] = field.remote_field.model._meta.pk
+845                     # Add the related model's pk to the select list.
+846                     must_include[cur_model][source.remote_field.model._meta.pk.name] = source.remote_field.model._meta.pk
+847                 # If we're traversing a one-to-one relation, we need to add
+848                 # the related model's fields to the select list.
+849                 if source.remote_field.one_to_one:
+850                     for field in source.remote_field.model._meta.fields:
+851                         if field.concrete:
+852                             must_include[cur_model][field.name] = field
+853                         elif field.remote_field:
+854                             must_include[cur_model][field.name] = field.remote_field.model._meta.pk
+855                     # Add the related model's pk to the select list.
+856                     must_include[cur_model][source.remote_field.model._meta.pk.name] = source.remote_field.model._meta.pk
+857                 # If we're traversing a foreign key relation, we need to add
+858                 # the related model's fields to the select list.
+859                 if source.remote_field.concrete:
+860                     for field in source.remote_field.model._meta.fields:
+861                         if field.concrete:
+862                             must_include[cur_model][field.name] = field
+863                         elif field.remote_field:
+864                             must_include[cur_model][field.name] = field.remote_field.model._meta.pk
+865                     # Add the related model's pk to the select list.
+866                     must_include[cur_model][source.remote_field.model._meta.pk.name] =
+HyperAgent_django__django-15814 - INFO - Planner's Response: Thought: After examining the provided code snippets, I can see that the issue is related to how Django handles proxy models in the query optimization process. The problem occurs when using `select_related()` and `only()` methods on a proxy model. The current implementation doesn't properly handle the case where a proxy model is involved in the query.

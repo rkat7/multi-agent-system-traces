@@ -1,0 +1,25 @@
+### Input
+<empty>
+
+### Output
+    # Handle xfail tests
+    xfail = item._store.get(xfail_key, None)
+    if xfail:
+        if item.config.option.runxfail:
+            if call.excinfo:
+                rep.outcome = "failed"
+                rep.wasxfail = xfail.reason
+            elif call.when == "call":
+                rep.outcome = "passed"
+                rep.wasxfail = xfail.reason
+        else:
+            if call.excinfo and call.excinfo.errisinstance(xfail.raises):
+                rep.outcome = "skipped"
+                rep.wasxfail = xfail.reason
+            elif call.when == "call":
+                if rep.passed:
+                    rep.outcome = "failed"
+                    rep.longrepr = "[XPASS(strict)] " + xfail.reason if xfail.strict else "[XPASS] " + xfail.reason
+                else:
+                    rep.outcome = "skipped"
+                    rep.wasxfail = xfail.reason

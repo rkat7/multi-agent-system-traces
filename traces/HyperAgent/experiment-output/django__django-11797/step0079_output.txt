@@ -1,0 +1,13 @@
+    The `group_by` parameter can have one of the following forms:
+    - None: no group by at all in the query
+    - A tuple of expressions: group by (at least) those expressions.
+      String refs are also allowed for now.
+    - True: group by all select fields of the model
+    """
+    if group_by is None:
+        return []
+    elif group_by is True:
+        return [expr.alias or expr.field.name for expr in select]
+    else:
+        return [self.compile(g)[0] for g in group_by]
+```

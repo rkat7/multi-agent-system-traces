@@ -1,0 +1,27 @@
+### Input
+<empty>
+
+### Output
+    # Copy all the constants from the C extension into this module's namespace
+    for key, val in _wcs.__dict__.items():
+        if key.startswith(('WCSSUB', 'WCSHDR', 'WCSHDO')):
+            globals()[key] = val
+            __all__.append(key)
+except ImportError:
+    if not _ASTROPY_SETUP_:
+        raise
+    else:
+        _wcs = None
+        WCSBase = object
+        Wcsprm = object
+        DistortionLookupTable = object
+        Sip = object
+        Tabprm = object
+        WcsError = None
+        InvalidTransformError = None
+        InvalidCoordinateError = None
+        NoSolutionError = None
+        InvalidSubimageSpecificationError = None
+        NonseparableSubimageCoordinateSystemError = None
+        NoWcsKeywordsFoundError = None
+        InvalidTabularParametersError = None

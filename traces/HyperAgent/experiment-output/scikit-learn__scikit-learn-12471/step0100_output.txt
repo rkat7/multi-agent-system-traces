@@ -1,0 +1,10 @@
+        for i in range(n_features):
+            Xi = X[:, i]
+            if handle_unknown == 'ignore':
+                X_int[:, i] = _encode_with_ignore(Xi, self.categories_[i])
+                X_mask[:, i] = np.isin(Xi, self.categories_[i])
+            else:
+                diff, valid_mask = _encode_check_unknown(Xi, self.categories_[i],
+                                                         handle_unknown)
+                X_int[:, i] = _encode(Xi, self.categories_[i], handle_unknown)
+                X_mask[:, i] = valid_mask

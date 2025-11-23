@@ -1,0 +1,17 @@
+### Input
+<empty>
+
+### Output
+    def as_sqlite(self, compiler, connection):
+        lhs = self.lhs.lhs
+        key_transforms = self.lhs.key_transforms
+        if not self.rhs:
+            return HasKey(lhs, key_transforms).as_sqlite(compiler, connection)
+        # For isnull=True, we need to exclude both missing keys and JSON null
+        sql, params = Json(key_transforms, encoder=None).as_sql(compiler, connection)
+        return (
+            f"(JSON_TYPE({lhs.as_sql(compiler, connection)[0]}, {sql}) IS NULL "
+            f"OR JSON_TYPE({lhs.as_sql(compiler, connection)[0]}, {sql}) = 'null')",
+            params * 2,
+        )
+```

@@ -1,0 +1,37 @@
+1. The `default_error_messages` attribute (lines 763-765) defines the default error messages for various validation errors:
+```python
+default_error_messages = {
+    'invalid_choice': _('Select a valid choice. That choice is not one of the available choices.'),
+    # other error messages...
+}
+```
+2. The `to_python` method (lines 766-777) is responsible for converting the input value to a Python object:
+```python
+def to_python(self, value):
+    if value in self.empty_values:
+        return None
+    try:
+        return self.to_python_value(value)
+    except (ValueError, TypeError):
+        raise ValidationError(self.error_messages['invalid'])
+```
+3. The `validate` method (lines 778-785) performs validation on the input value:
+```python
+def validate(self, value):
+    if value in self.empty_values:
+        return
+    try:
+        self.to_python(value)
+    except ValidationError:
+        raise
+```
+4. The `clean` method (lines 786-792) combines the `to_python` and `validate` methods to clean the input value:
+```python
+def clean(self, value):
+    try:
+        return self.to_python(value)
+    except ValidationError:
+        raise
+```
+Note that the `ModelChoiceField` class is a subclass of `ChoiceField`, and it inherits its validation and error message handling behavior. However, it also adds some additional functionality specific to model choice fields.
+HyperAgent_django__django-13933 - INFO - Planner's Response: Thought: After examining the implementation of both ModelChoiceField and ChoiceField, it's clear that the issue lies in how ModelChoiceField handles its error messages. While ChoiceField includes the invalid value in its error message, ModelChoiceField does not. To fix this, we need to modify the ModelChoiceField class to include the invalid value in its error message, similar to how ChoiceField does it.

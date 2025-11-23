@@ -1,0 +1,6 @@
+    def test_or_operator(self):
+        form = ArticleForm(data={'title': 'Test Article', 'content': 'Test content', 'publications': []})
+        form.fields['publications'].queryset = Publication.objects.filter(id__lt=2) | Publication.objects.filter(id__gt=5)
+        self.assertTrue(form.is_valid())
+        article = form.save()
+        self.assertEqual(article.publications.count(), 0)

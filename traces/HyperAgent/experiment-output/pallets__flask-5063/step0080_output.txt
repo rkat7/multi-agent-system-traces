@@ -1,0 +1,24 @@
+```python
+@click.command("routes", short_help="Show the routes for the app.")
+@click.option(
+    "--sort",
+    "-s",
+    type=click.Choice(("endpoint", "methods", "rule", "match")),
+    default="endpoint",
+    help=(
+        'Method to sort routes by. "match" is the order that Flask will match '
+        "routes when dispatching a request."
+    ),
+)
+@click.option("--all-methods", is_flag=True, help="Show HEAD and OPTIONS methods.")
+@with_appcontext
+def routes_command(sort: str, all_methods: bool) -> None:
+    """Show all registered routes with endpoints and methods."""
+    rows = []
+    for rule in current_app.url_map.iter_rules():
+        methods = ", ".join(rule.methods)
+        if "HEAD" in rule.methods and not all_methods:
+            methods = methods.replace("HEAD", "")
+        if "OPTIONS" in rule.methods and not all_methods:
+            methods = methods.replace("OPTIONS", "")
+        rows.append((rule.endpoint, methods, str(rule)))

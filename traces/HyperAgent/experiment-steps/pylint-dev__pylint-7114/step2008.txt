@@ -1,0 +1,19 @@
+### Input
+<empty>
+
+### Output
+```python
+def _record_import(self, node, imported_module):
+    """Record the imported module."""
+    if imported_module not in self._module_pkg:
+        # Check if the module name is the same as its parent directory
+        parent_dir = os.path.dirname(node.root().file)
+        module_name = os.path.basename(parent_dir)
+        if imported_module == module_name:
+            # If it is, use the grandparent directory as the package
+            self._module_pkg[imported_module] = os.path.basename(os.path.dirname(parent_dir))
+        else:
+            self._module_pkg[imported_module] = None
+    if imported_module not in self._imports_stack:
+        self._imports_stack.append((imported_module, node))
+```

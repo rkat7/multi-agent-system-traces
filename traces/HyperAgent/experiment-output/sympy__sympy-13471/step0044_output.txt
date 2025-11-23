@@ -1,0 +1,34 @@
+    if isinstance(num, float):
+        _mpf_ = mlib.from_float(num, precision, rnd)
+    elif isinstance(num, string_types):
+        _mpf_ = mlib.from_str(num, precision, rnd)
+    elif isinstance(num, decimal.Decimal):
+        if num.is_finite():
+            _mpf_ = mlib.from_str(str(num), precision, rnd)
+        elif num.is_nan():
+            _mpf_ = _mpf_nan
+        elif num.is_infinite():
+            if num > 0:
+                _mpf_ = _mpf_inf
+            else:
+                _mpf_ = _mpf_ninf
+        else:
+            raise ValueError("unexpected decimal value %s" % str(num))
+    elif isinstance(num, tuple) and len(num) in (3, 4):
+        if type(num[1]) is str:
+            # it's a hexadecimal (coming from a pickled object)
+            # assume that it is in standard form
+            num = list(num)
+            num[1] = long(num[1], 16)
+            _mpf_ = tuple(num)
+        else:
+            if len(num) == 4:
+                # handle normalization hack
+                return Float._new(num, precision)
+            else:
+                return (S.NegativeOne**num[0]*num[1]*S(2)**num[2]).evalf(precision)
+    else:
+        try:
+            _mpf_ = num._as_mpf_val(precision)
+        except (NotImplementedError, AttributeError):
+            _mpf_ = mpmath.mpf(num, prec=precision)._mpf_

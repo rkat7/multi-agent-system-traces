@@ -1,0 +1,21 @@
+def method_decorator(decorator, name=''):
+    def _dec(obj):
+        if not isinstance(obj, type):
+            @wraps(obj)
+            def wrapper(*args, **kwargs):
+                return decorator(obj)(*args, **kwargs)
+            return wrapper
+        if not (name and hasattr(obj, name)):
+            raise ValueError(
+                "The keyword argument `name` must be the name of a method "
+                "of the decorated class: %s. Got '%s' instead." % (obj, name)
+            )
+        method = getattr(obj, name)
+        if not callable(method):
+            raise TypeError(
+                "Cannot decorate '%s' as it isn't a callable attribute of "
+                "%s (%s)." % (name, obj, method)
+            )
+        _wrapper = decorator(method)
+        setattr(obj, name, _wrapper)
+        return obj

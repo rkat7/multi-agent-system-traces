@@ -1,0 +1,27 @@
+### Input
+<empty>
+
+### Output
+```python
+# tests/admin_views/tests.py
+8701 class QuestionAdminTest(TestCase):
+8702     def setUp(self):
+8703         self.site = AdminSite()
+8704         self.question_admin = QuestionAdmin(Question, self.site)
+8705 
+8706     def test_list_display(self):
+8707         self.assertEqual(
+8708             list(self.question_admin.list_display),
+8709             ['question_text', 'pub_date', 'get_choices']
+8710         )
+8711 
+8712     def test_get_choices(self):
+8713         question = Question.objects.create(question_text="Test Question", pub_date="2023-01-01")
+8714         Choice.objects.create(question=question, choice_text="Choice 1")
+8715         Choice.objects.create(question=question, choice_text="Choice 2")
+8716 
+8717         self.assertEqual(
+8718             self.question_admin.get_choices(question),
+8719             "Choice 1, Choice 2"
+8720         )
+```

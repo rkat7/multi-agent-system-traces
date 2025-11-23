@@ -1,0 +1,23 @@
+   The relevant code snippet is:
+   ```python
+1727     def only(self, *fields):
+1728         """
+1729         Essentially, the opposite of defer(). Only the fields passed into this
+1730         method and that are not already specified as deferred are loaded
+1731         immediately when the queryset is evaluated.
+1732         """
+1733         self._not_support_combined_queries("only")
+1734         if self._fields is not None:
+1735             raise TypeError("Cannot call only() after .values() or .values_list()")
+1736         if fields == (None,):
+1737             # Can only pass None to defer(), not only(), as the rest option.
+1738             # That won't stop people trying to do this, so let's be explicit.
+1739             raise TypeError("Cannot pass None as an argument to only().")
+1740         for field in fields:
+1741             field = field.split(LOOKUP_SEP, 1)[0]
+1742             if field in self.query._filtered_relations:
+1743                 raise ValueError("only() is not supported with FilteredRelation.")
+1744         clone = self._chain()
+1745         clone.query.add_immediate_loading(fields)
+1746         return clone
+```

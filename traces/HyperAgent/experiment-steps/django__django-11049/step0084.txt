@@ -1,0 +1,64 @@
+### Input
+<empty>
+
+### Output
+```python
+1580 class DurationField(Field):
+1581     """
+1582     Store timedelta objects.
+1583 
+1584     Use interval on PostgreSQL, INTERVAL DAY TO SECOND on Oracle, and bigint
+1585     of microseconds on other databases.
+1586     """
+1587     empty_strings_allowed = False
+1588     default_error_messages = {
+1589         'invalid': _("'%(value)s' value has an invalid format. It must be in "
+1590                      "[DD] [HH:[MM:]]ss[.uuuuuu] format.")
+1591     }
+1592     description = _("Duration")
+1593 
+1594     def get_internal_type(self):
+1595         return "DurationField"
+1596 
+1597     def to_python(self, value):
+1598         if value is None:
+1599             return value
+1600         if isinstance(value, datetime.timedelta):
+1601             return value
+1602         try:
+1603             parsed = parse_duration(value)
+1604         except ValueError:
+1605             pass
+1606         else:
+1607             if parsed is not None:
+1608                 return parsed
+1609 
+1610         raise exceptions.ValidationError(
+1611             self.error_messages['invalid'],
+1612             code='invalid',
+1613             params={'value': value},
+1614         )
+1615 
+1616     def get_db_prep_value(self, value, connection, prepared=False):
+1617         if connection.features.has_native_duration_field:
+1618             return value
+1619         if value is None:
+1620             return None
+1621         return duration_microseconds(value)
+1622 
+1623     def get_db_converters(self, connection):
+1624         converters = []
+1625         if not connection.features.has_native_duration_field:
+1626             converters.append(connection.ops.convert_durationfield_value)
+1627         return converters + super().get_db_converters(connection)
+1628 
+1629     def value_to_string(self, obj):
+1630         val = self.value_from_object(obj)
+1631         return '' if val is None else duration_string(val)
+1632 
+1633     def formfield(self, **kwargs):
+1634         return super().formfield(**{
+1635             'form_class': forms.DurationField,
+1636             **kwargs,
+1637         })
+```

@@ -1,0 +1,15 @@
+### Input
+<empty>
+
+### Output
+    def __call__(self, value):
+        try:
+            scheme, netloc, path, query, fragment = urlsplit(value)
+            if not scheme:
+                raise ValidationError(self.message, code=self.code, params={'value': value})
+            # Rebuild the URL to normalize it
+            url = urlunsplit((scheme, netloc, path, query, fragment))
+            # ... (keep existing validation logic)
+        except ValueError:
+            raise ValidationError(self.message, code=self.code, params={'value': value})
+```

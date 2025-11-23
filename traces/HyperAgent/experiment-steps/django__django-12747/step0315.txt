@@ -1,0 +1,11 @@
+### Input
+<empty>
+
+### Output
+    with transaction.atomic(using=self.using, savepoint=False):
+        # send pre_delete signals
+        for model, obj in self.instances_with_model():
+            if not model._meta.auto_created:
+                signals.pre_delete.send(
+                    sender=model, instance=obj, using=self.using
+                )

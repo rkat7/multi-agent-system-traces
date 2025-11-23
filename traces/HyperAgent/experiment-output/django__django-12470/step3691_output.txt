@@ -1,0 +1,23 @@
+```python
+def _get_ordering(self, ordering):
+    """
+    Applies any necessary ordering to the `QuerySet`. If the `ordering`
+    parameter is provided, then any ordering on the `QuerySet` is ignored
+    and the new `ordering` is applied.
+    """
+    if ordering:
+        return ordering
+    elif self._order_by:
+        return self._order_by
+    elif self.query.annotations:
+        # If we have annotations, we can't use the model's ordering
+        # because it might not be valid for the annotated fields.
+        return []
+    else:
+        # If we don't have any annotations, we can use the model's ordering
+        # if it exists.
+        meta = self.model._meta
+        if meta.ordering:
+            return meta.ordering
+        return []
+```

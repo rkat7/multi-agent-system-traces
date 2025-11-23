@@ -1,0 +1,9 @@
+    # sort the sub-index entries
+    def keyfunc2(entry: Tuple[str, List]) -> str:
+        key = unicodedata.normalize('NFD', entry[0].lower())
+        if key.startswith('\N{RIGHT-TO-LEFT MARK}'):
+            key = key[1:]
+        if key[0:1].isalpha() or key.startswith('_'):
+            return chr(127) + key
+        else:
+            return chr(0) + key

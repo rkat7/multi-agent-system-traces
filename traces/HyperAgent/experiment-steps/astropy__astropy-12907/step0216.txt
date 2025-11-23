@@ -1,0 +1,21 @@
+### Input
+<empty>
+
+### Output
+```python
+def _separable(transform):
+    if isinstance(transform, CompoundModel):
+        # Recursively call _separable on each component model
+        sub_matrices = [_separable(sub_model) for sub_model in transform.models]
+        # Combine the results to produce the final separability matrix
+        separable_matrix = np.zeros((transform.n_outputs, transform.n_inputs), dtype=np.bool_)
+        output_offset = 0
+        for sub_model, sub_matrix in zip(transform.models, sub_matrices):
+            n_outputs = sub_model.n_outputs
+            separable_matrix[output_offset:output_offset + n_outputs, :] = sub_matrix
+            output_offset += n_outputs
+        return separable_matrix
+    else:
+        # For non-compound models, the separability matrix is a diagonal of True values
+        return np.eye(transform.n_outputs, transform.n_inputs, dtype=np.bool_)
+```

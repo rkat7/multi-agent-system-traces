@@ -1,0 +1,43 @@
+### Input
+<empty>
+
+### Output
+   - `iter_modules_and_files` function (django/utils/autoreload.py):
+     ```python
+113     # aren't loaded on the fly.
+114     keys = sorted(sys.modules)
+115     modules = tuple(m for m in map(sys.modules.__getitem__, keys) if not isinstance(m, weakref.ProxyTypes))
+116     return iter_modules_and_files(modules, frozenset(_error_files))
+117 
+118 
+119 @functools.lru_cache(maxsize=1)
+120 def iter_modules_and_files(modules, extra_files):
+121     """Iterate through all modules needed to be watched."""
+122     sys_file_paths = []
+123     for module in modules:
+124         # During debugging (with PyDev) the 'typing.io' and 'typing.re' objects
+125         # are added to sys.modules, however they are types not modules and so
+126         # cause issues here.
+127         if not isinstance(module, ModuleType):
+128             continue
+129         if module.__name__ == '__main__':
+130             # __main__ (usually manage.py) doesn't always have a __spec__ set.
+131             # Handle this by falling back to using __file__, resolved below.
+132             # See https://docs.python.org/reference/import.html#main-spec
+133             # __file__ may not exists, e.g. when running ipdb debugger.
+134             if hasattr(module, '__file__'):
+135                 sys_file_paths.append(module.__file__)
+136             continue
+137         if getattr(module, '__spec__', None) is None:
+138             continue
+139         spec = module.__spec__
+140 
+141         # If the module is a package, watch all its submodules.
+142         if spec and spec.submodule_search_locations:
+143             for submodule in pkgutil.iter_modules(spec.submodule_search_locations):
+144                 sys_file_paths.append(submodule.module_finder.find_spec(submodule.name).origin)
+145         else:
+146             sys_file_paths.append(spec.origin)
+147 
+148     return sys_file_paths
+```

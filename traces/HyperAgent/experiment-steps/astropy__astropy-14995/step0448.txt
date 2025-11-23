@@ -1,0 +1,24 @@
+### Input
+Action:
+```python
+
+### Output
+patch = '''
+    if handle_mask == np.logical_or:
+        # Handle cases where one or both operands don't have a mask
+        if self.mask is None and operand.mask is None:
+            result = None
+        elif self.mask is None:
+            result = operand.mask.copy()
+        elif operand.mask is None:
+            result = self.mask.copy()
+        else:
+            if axis is None:
+                result = np.logical_or(self.mask, operand.mask)
+            else:
+                result = np.logical_or(self.mask, np.swapaxes(operand.mask, 0, axis))
+                result = np.swapaxes(result, 0, axis)
+'''
+result = editor._run(relative_file_path="astropy/nddata/mixins/ndarithmetic.py", start_line=522, end_line=527, patch=patch)
+print(result)
+```

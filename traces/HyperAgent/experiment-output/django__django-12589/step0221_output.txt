@@ -1,0 +1,12 @@
+query = A.objects.filter(Q(pk=1) | Q(ab_a__b=1)).annotate(
+    status=Case(
+        When(ab_a__b=1, then=F('ab_a__status')),
+        default=None,
+        output_field=IntegerField()
+    ),
+    c_count=Count('c')
+)
+answer = query.values('status').annotate(total_count=Count('status'))
+print(answer.query)
+print(list(answer))
+```

@@ -1,0 +1,16 @@
+  ```python
+# Decide if we need to use a subquery.
+#
+# Existing annotations would cause incorrect results as get_aggregation()
+# must produce just one result and thus must not use GROUP BY. But we
+# aren't smart enough to remove the existing annotations from the
+# query, so those would force us to use GROUP BY.
+if (isinstance(self.group_by, tuple) or self.is_sliced or existing_annotations or
+        self.distinct or self.combinator):
+    from django.db.models.sql.subqueries import AggregateQuery
+    outer_query = AggregateQuery(self.model)
+    inner_query = self.clone()
+    inner_query.select_for_update = False
+    inner_query.select_related = False
+    inner_query.set_annotation_mask(self.annotation_select)
+```

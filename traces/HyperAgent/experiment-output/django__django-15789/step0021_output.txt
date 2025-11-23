@@ -1,0 +1,16 @@
+    Args:
+        value: The value to be JSON-encoded and wrapped in a script tag.
+        element_id: Optional ID for the script tag.
+        encoder: Optional JSON encoder class (default: DjangoJSONEncoder).
+    """
+    encoder = encoder or DjangoJSONEncoder
+    json_str = json.dumps(value, cls=encoder).translate(_json_script_escapes)
+    if element_id:
+        template = '<script id="{}" type="application/json">{}</script>'
+        args = (element_id, mark_safe(json_str))
+    else:
+        template = '<script type="application/json">{}</script>'
+        args = (mark_safe(json_str),)
+    return format_html(template, *args)
+```
+HyperAgent_django__django-15789 - INFO - Inner-Editor-Assistant's Response: Thought: To update the `json_script()` function in the `django/utils/html.py` file, I need to first open the file to see its current content, then use the editor to make the necessary changes. Let's start by opening the file.

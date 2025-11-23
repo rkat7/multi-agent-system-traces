@@ -1,0 +1,21 @@
+### Input
+<empty>
+
+### Output
+    sequence = list(sequence)
+    for i in range(len(sequence)):
+        s = list(sequence[i])
+        for j, si in enumerate(s):
+            try:
+                si = sympify(si, strict=True)
+            except SympifyError:
+                if type(si) is str:
+                    si = Symbol(si)
+                else:
+                    # if it can't be sympified, skip it
+                    sequence[i] = None
+                    break
+        s[j] = si
+    else:
+        sequence[i] = None if _aresame(*s) else tuple(s)
+    sequence = list(filter(None, sequence))

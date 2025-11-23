@@ -1,0 +1,13 @@
+4. **Database forwards**:
+   ```python
+359     def database_forwards(self, app_label, schema_editor, from_state, to_state):
+360         to_model = to_state.apps.get_model(app_label, self.model_name)
+361         if self.allow_migrate_model(schema_editor.connection.alias, to_model):
+362             from_model = from_state.apps.get_model(app_label, self.model_name)
+363             schema_editor.alter_field(
+364                 from_model,
+365                 from_model._meta.get_field(self.old_name),
+366                 to_model._meta.get_field(self.new_name),
+367             )
+```
+   This method is used to apply the `RenameField` operation to the database.

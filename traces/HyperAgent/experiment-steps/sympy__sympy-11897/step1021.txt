@@ -1,0 +1,23 @@
+### Input
+<empty>
+
+### Output
+        if denom is S.One:
+            tex += convert(expr)
+        else:
+            snumer = convert(numer)
+            sdenom = convert(denom)
+            if numer == 1:
+                # For expressions like 1/(x + y)/2
+                if denom.is_Mul:
+                    denom_parts = list(denom.args)
+                    if len(denom_parts) >= 2 and denom_parts[-1].is_Number:
+                        last_factor = denom_parts.pop()
+                        remaining_denom = self._print(Mul(*denom_parts))
+                        tex += r"\\frac{1}{%s} \\cdot \\frac{1}{%s}" % (remaining_denom, self._print(last_factor))
+                    else:
+                        tex += r"\\frac{1}{%s}" % sdenom
+                else:
+                    tex += r"\\frac{1}{%s}" % sdenom
+            else:
+                tex += r"\\frac{%s}{%s}" % (snumer, sdenom)

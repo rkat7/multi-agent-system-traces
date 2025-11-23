@@ -1,0 +1,17 @@
+patch = '''
+    if isinstance(number, Decimal):
+        if decimal_pos is not None:
+            # If the provided number is too small to affect any of the visible
+            # decimal places, consider it equal to '0'.
+            cutoff = Decimal("0." + "1".rjust(decimal_pos, "0"))
+            if abs(number) < cutoff:
+                number = Decimal("0")
+        # Format values with more than 200 digits (an arbitrary cutoff) using
+        # scientific notation.
+        if abs(number) >= 10**200:
+            coefficient, exponent = format_number(number)
+            return "{}e{}".format(coefficient, exponent)
+        else:
+            str_number = "{:f}".format(number)
+    else:
+        str_number = str(number)

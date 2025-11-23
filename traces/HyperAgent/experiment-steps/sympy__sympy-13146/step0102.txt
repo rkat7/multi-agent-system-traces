@@ -1,0 +1,43 @@
+### Input
+<empty>
+
+### Output
+    Examples
+    ========
+    >>> from sympy import powsimp, exp, log, symbols
+    >>> from sympy.abc import x, y, z, n
+    >>> powsimp(x**y*x**z*y**z, combine='all')
+    x**(y + z)*y**z
+    >>> powsimp(x**y*x**z*y**z, combine='exp')
+    x**(y + z)*y**z
+    >>> powsimp(x**y*x**z*y**z, combine='base', force=True)
+    x**y*(x*y)**z
+    >>> powsimp(x**z*x**y*n**z*n**y, combine='all', force=True)
+    (n*x)**(y + z)
+    >>> powsimp(x**z*x**y*n**z*n**y, combine='exp')
+    n**(y + z)*x**(y + z)
+    >>> powsimp(x**z*x**y*n**z*n**y, combine='base', force=True)
+    (n*x)**y*(n*x)**z
+    >>> x, y = symbols('x y', positive=True)
+    >>> powsimp(log(exp(x)*exp(y)))
+    log(exp(x)*exp(y))
+    >>> powsimp(log(exp(x)*exp(y)), deep=True)
+    x + y
+    >>> from sympy import sqrt, Mul
+    >>> x, y = symbols('x y')
+    >>> # Two radicals are automatically joined through Mul:
+    >>> a=sqrt(x*sqrt(y))
+    >>> a*a**3 == a**4
+    True
+    >>> # But if an integer power of that radical has been
+    >>> # autoexpanded then Mul does not join the resulting factors:
+    >>> a**4 # auto expands to a Mul, no longer a Pow
+    x**2*y
+    >>> _*a # so Mul doesn't combine them
+    x**2*y*sqrt(x*sqrt(y))
+    >>> powsimp(_) # but powsimp will
+    (x*sqrt(y))**(5/2)
+    >>> powsimp(x*y*a) # but won't when doing so would violate assumptions
+    x*y*sqrt(x*sqrt(y))
+    """
+    from sympy.matrices.expressions.matexpr import MatrixSymbol

@@ -1,0 +1,13 @@
+```python
+def get_order_by(self, order_by):
+    # ...
+    result = []
+    for expr, (sql, params, is_ref) in order_by:
+        without_ordering = self.ordering_parts.search(sql).group(1)
+        params_hash = make_hashable(params)
+        if (without_ordering, params_hash) in seen:
+            continue
+        seen.add((without_ordering, params_hash))
+        result.append((resolved, (sql, params, is_ref)))
+    return result
+```

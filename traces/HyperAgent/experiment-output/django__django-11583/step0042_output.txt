@@ -1,0 +1,12 @@
+    results = set()
+    for filename in itertools.chain(sys_file_paths, extra_files):
+        if not filename:
+            continue
+        path = Path(filename)
+        try:
+            # Resolve the path and add the absolute path to the results set
+            resolved_path = path.resolve(strict=True).absolute()
+            results.add(resolved_path)
+        except FileNotFoundError:
+            # Ignore files that no longer exist
+            continue

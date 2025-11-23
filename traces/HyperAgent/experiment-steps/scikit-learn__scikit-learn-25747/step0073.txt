@@ -1,0 +1,17 @@
+### Input
+<empty>
+
+### Output
+```python
+def _fit_transform_one(transformer, X, y, w, message_clsname, message, **fit_params):
+    """Fit estimator on X and returns X transformed according to transformer"""
+    if hasattr(transformer, "named_steps"):
+        # non-optimized default to fit on X, select all features
+        X, fit_params = transformer.fit_transform(X, y, **fit_params)
+    else:
+        # non-optimized default to fit on X, select all features
+        X, fit_params = transformer.fit(X, y, **fit_params)
+    if message_clsname is not None:
+        _log(message % (transformer, ender), cls=message_clsname)
+    return X, transformer
+```

@@ -1,0 +1,10 @@
+class TenantDatabaseRouter:
+    def _default_db(self):
+        subdomain = getattr(local_state, "subdomain", None)
+        if subdomain is not None and subdomain in settings.TENANT_MAP:
+            db_name = settings.TENANT_MAP[local_state.subdomain]
+            logger.debug(f"_default_db called. Subdomain: {subdomain}, DB: {db_name}")
+            return db_name
+        else:
+            logger.warning("Invalid tenant exception raised in _default_db")
+            raise InvalidTenantException()

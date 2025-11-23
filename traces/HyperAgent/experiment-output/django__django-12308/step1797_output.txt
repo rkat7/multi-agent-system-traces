@@ -1,0 +1,11 @@
+def display_for_field(value, field, empty_value_display):
+    # ... (previous code remains the same)
+    elif isinstance(field, models.JSONField):
+        if value is None:
+            return empty_value_display
+        if getattr(field, 'readonly', False):
+            return json.dumps(value, cls=DjangoJSONEncoder, ensure_ascii=False, indent=2)
+        return value  # Return the editable value for non-readonly fields
+    else:
+        return display_for_value(value, empty_value_display)
+```

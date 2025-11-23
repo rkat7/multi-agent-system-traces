@@ -1,0 +1,33 @@
+### Input
+<empty>
+
+### Output
+2. **_compare_eq_any function in util.py**:
+   ```python
+def _compare_eq_any(left, right, verbose):
+    if isinstance(left, (list, tuple)):
+        if len(left) != len(right):
+            return f"List/tuple of length {len(left)} != {len(right)}"
+        for l, r in zip(left, right):
+            explanation = _compare_eq_any(l, r, verbose)
+            if explanation:
+                return explanation
+    elif isinstance(left, dict):
+        if set(left.keys()) != set(right.keys()):
+            return f"Dict keys {set(left.keys())} != {set(right.keys())}"
+        for k in left:
+            explanation = _compare_eq_any(left[k], right[k], verbose)
+            if explanation:
+                return explanation
+    elif isinstance(left, set):
+        if left != right:
+            return f"Set {left} != {right}"
+    elif isinstance(left, (int, float)):
+        if left != right:
+            return f"{left} != {right}"
+    elif isinstance(left, str):
+        if left != right:
+            return f"'{left}' != '{right}'"
+    return None
+```
+   This function is in `src/_pytest/assertion/util.py` and is used to compare two values and return an explanation for the difference.

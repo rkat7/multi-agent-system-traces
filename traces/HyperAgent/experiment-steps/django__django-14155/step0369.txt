@@ -1,0 +1,25 @@
+### Input
+<empty>
+
+### Output
+class ResolverMatchTests(SimpleTestCase):
+    def test_resolver_match_repr_with_partial(self):
+        partial_view = functools.partial(sample_view, arg1='value1')
+        resolver_match = ResolverMatch(
+            func=partial_view,
+            args=(),
+            kwargs={'arg2': 'value2'},
+            url_name='test_url',
+            app_names=['test_app'],
+            namespaces=['test_namespace'],
+            route='test_route'
+        )
+        expected_repr = (
+            "ResolverMatch(func=functools.partial"
+            "({}.sample_view, args=(), keywords={{'arg1': 'value1'}}), "
+            "args=(), kwargs={{'arg2': 'value2'}}, "
+            "url_name=test_url, app_names=['test_app'], "
+            "namespaces=['test_namespace'], route=test_route)"
+        ).format(__name__)
+        self.assertEqual(repr(resolver_match), expected_repr)
+```

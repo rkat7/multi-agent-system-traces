@@ -1,0 +1,23 @@
+patch = '''
+    def get_admin_url(self, remote_field, remote_obj):
+        url_name = '%s:%s_%s_change' % (
+            self.model_admin.admin_site.name,
+            remote_field.model._meta.app_label,
+            remote_field.model._meta.model_name,
+        )
+        try:
+            url = reverse(
+                url_name,
+                args=[quote(remote_obj.pk)],
+                current_app=self.model_admin.admin_site.name
+            )
+            return format_html('<a href="{}"{}>{}</a>', 
+                               url, 
+                               ' class="readonly-link"' if self.field.name in self.model_admin.readonly_fields else '',
+                               remote_obj)
+        except NoReverseMatch:
+            return str(remote_obj)
+'''
+result = editor._run(relative_file_path="django/contrib/admin/helpers.py", start_line=207, end_line=220, patch=patch)
+print(result)
+```

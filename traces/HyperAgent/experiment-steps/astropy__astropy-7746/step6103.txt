@@ -1,0 +1,20 @@
+### Input
+<empty>
+
+### Output
+```python
+def _array_converter(self, func, sky, *args, ra_dec_order=False):
+    """
+    A helper function to support reading either a pair of arrays
+    or a single Nx2 array.
+    """
+    def _return_list_of_arrays(axes, origin):
+        try:
+            axes = [np.asarray(x) for x in axes]
+            if all(len(x) == 0 for x in axes):
+                # Return empty arrays if all input arrays are empty
+                return [np.array([]) for _ in range(len(axes))]
+            axes = np.broadcast_arrays(*axes)
+        except ValueError:
+            raise ValueError(
+                "Coordinate arrays are not broadcastable to each other")

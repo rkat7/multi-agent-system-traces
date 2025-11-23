@@ -1,0 +1,12 @@
+Thought: I now have a good understanding of the Sphinx codebase's handling of `rst_prolog` and domain directives, which should help me identify the cause of the reported issue and propose a solution.
+HyperAgent_sphinx-doc__sphinx-11445 - INFO - Navigator->Planner: ```python
+# sphinx/util/rst.py
+def prepend_prolog(content: StringList, prolog: str) -> None:
+    """Prepend a string to content body as prolog."""
+    if prolog:
+        pos = 0
+        for line in content:
+            if docinfo_re.match(line):
+                pos += 1
+            else:
+                break

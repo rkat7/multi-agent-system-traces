@@ -1,0 +1,31 @@
+### Input
+<empty>
+
+### Output
+```python
+def expand_modules(
+    linter: PyLinter,
+    files: list[str],
+    ignore_list: list[str],
+    ignore_list_re: list[Pattern[str]],
+    ignore_list_paths_re: list[Pattern[str]],
+) -> list[str]:
+    """
+    Expand a list of files or modules to a list of modules.
+    """
+    modules: list[str] = []
+    for element in files:
+        module_path = _resolve_module_path(
+            element,
+            ignore_list,
+            ignore_list_re,
+            ignore_list_paths_re,
+            linter.current_dir,
+            linter.parent_dir,
+            linter.parent_module,
+            linter.parent_module_path,
+        )
+        if module_path:
+            module_name = _get_module_name_from_path(module_path)
+            modules.append(module_name)
+    return modules

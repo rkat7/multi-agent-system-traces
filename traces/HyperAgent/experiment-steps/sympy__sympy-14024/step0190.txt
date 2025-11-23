@@ -1,0 +1,17 @@
+### Input
+Action:
+```python
+
+### Output
+patch = '''
+    # Special case: don't simplify (-a)**x * a**(-x) when 'a' is a concrete positive integer
+    if expr.is_Mul and len(expr.args) == 2:
+        arg1, arg2 = expr.args
+        if arg1.is_Pow and arg2.is_Pow:
+            base1, exp1 = arg1.as_base_exp()
+            base2, exp2 = arg2.as_base_exp()
+            if (base1 == -base2 and exp1 == -exp2) or (base2 == -base1 and exp2 == -exp1):
+                if base1.is_positive and base1.is_integer and base1.is_number:
+                    return expr  # Don't simplify for concrete positive integers
+                elif base2.is_positive and base2.is_integer and base2.is_number:
+                    return expr  # Don't simplify for concrete positive integers

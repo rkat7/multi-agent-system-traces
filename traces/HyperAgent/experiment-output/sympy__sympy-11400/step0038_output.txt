@@ -1,0 +1,14 @@
+```python
+def _print_Function(self, expr):
+    func = expr.func
+    if func in self.known_functions:
+        arg_conditions, cfunc = self.known_functions[func]
+        if arg_conditions:
+            args = [self._print(arg) for arg in expr.args]
+            if all(arg_conditions(arg) for arg in args):
+                return cfunc + "(" + ", ".join(args) + ")"
+        else:
+            return cfunc + "(" + ", ".join([self._print(arg) for arg in expr.args]) + ")"
+    else:
+        return super(CCodePrinter, self)._print_Function(expr)
+```

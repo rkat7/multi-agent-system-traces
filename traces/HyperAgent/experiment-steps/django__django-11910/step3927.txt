@@ -1,0 +1,17 @@
+### Input
+<empty>
+
+### Output
+    def _update_fk_references(self, app_label, state, model_state):
+        for (ref_app_label, ref_model_name), ref_model_state in state.models.items():
+            for field_name, field in ref_model_state.fields:
+                if isinstance(field, models.ForeignKey) and field.remote_field.model == self.model_name_lower:
+                    if field.to_fields == (self.old_name,):
+                        field.to_fields = (self.new_name,)
+                    if field.db_constraint:
+                        # Update the database constraint name
+                        old_constraint_name = f'{ref_model_name}_{field_name}_{app_label}_{self.model_name_lower}_{self.old_name}_fk'
+                        new_constraint_name = f'{ref_model_name}_{field_name}_{app_label}_{self.model_name_lower}_{self.new_name}_fk'
+                        self.add_sql_operation(
+                            f'ALTER TABLE {ref_model_name} RENAME CONSTRAINT {old_constraint_name} TO {new_constraint_name};'
+                        )

@@ -1,0 +1,17 @@
+### Input
+<empty>
+
+### Output
+    if subcommand == 'help':
+        if len(options.args) <= 1:
+            self.fetch_command(options.args[0] if options.args else 'help').print_help(
+                self.prog_name, options.args[0] if options.args else 'help')
+        else:
+            self.fetch_command(options.args[1]).print_help(
+                self.prog_name, options.args[0])
+    elif subcommand == 'version' or options.version:
+        self.fetch_command('version').run_from_argv(['version'])
+    elif options.help:
+        self.fetch_command(subcommand).print_help(self.prog_name, subcommand)
+    else:
+        self.fetch_command(subcommand).run_from_argv(self.argv, prog_name=self.prog_name)

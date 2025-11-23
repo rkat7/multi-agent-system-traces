@@ -1,0 +1,22 @@
+### Input
+<empty>
+
+### Output
+```python
+@pytest.mark.parametrize("dim", ["x", "y", "z", "month"])
+@pytest.mark.parametrize("obj", [repr_da, repr_da.to_dataset(name="a")])
+def test_groupby_repr(obj, dim):
+    actual = repr(obj.groupby(dim))
+    expected = "%sGroupBy" % obj.__class__.__name__
+    expected += ", grouped over %r" % dim  # Removed trailing space
+    expected += "\n%r groups with labels " % (len(np.unique(obj[dim])))
+    if dim == "x":
+        expected += "1, 2, 3, 4, 5."  # Added trailing period
+    elif dim == "y":
+        expected += "0, 1, 2, 3, 4, 5, ..., 15, 16, 17, 18, 19."  # Added trailing period
+    elif dim == "z":
+        expected += "'a', 'b', 'c'."  # Added trailing period
+    elif dim == "month":
+        expected += "1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12."  # Added trailing period
+    assert actual == expected
+```

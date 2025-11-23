@@ -1,0 +1,10 @@
+    def test_form_with_union(self):
+        form = ArticleForm(data={
+            "publications": Publication.objects.filter(id__lt=2).union(
+                Publication.objects.filter(id__gt=5)
+            ).values_list('id', flat=True)
+        })
+        self.assertTrue(form.is_valid())
+        article = form.save()
+        self.assertEqual(article.publications.count(), 6)
+```

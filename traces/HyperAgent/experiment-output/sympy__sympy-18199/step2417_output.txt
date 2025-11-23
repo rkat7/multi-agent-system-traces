@@ -1,0 +1,46 @@
+```python
+743 from sympy.core.numbers import igcdex
+744 from sympy.ntheory.factor_ import factorint
+745 
+746 def nthroot_mod(a, n, p, all_roots=False):
+747     """
+748     Find the solutions to ``x**n = a mod p``
+749 
+750     Parameters
+751     ==========
+752 
+753     a : integer
+754     n : positive integer
+755     p : positive integer
+756     all_roots : if False returns the smallest root, else the list of roots
+757 
+758     Examples
+759     ========
+760 
+761     >>> from sympy.ntheory.residue_ntheory import nthroot_mod
+762     >>> nthroot_mod(11, 4, 19)
+763     8
+764     >>> nthroot_mod(11, 4, 19, True)
+765     [8, 11]
+766     >>> nthroot_mod(68, 3, 109)
+767     23
+768     """
+769     from sympy.core.numbers import igcdex
+770     a, n, p = as_int(a), as_int(n), as_int(p)
+771 
+772     # Check for the case a % p == 0
+773     if a % p == 0:
+774         return [0] if all_roots else 0
+775 
+776     if n == 2:
+777         return sqrt_mod(a, p, all_roots)
+778 
+779     # see Hackman "Elementary Number Theory" (2009), page 76
+780     if not is_nthpow_residue(a, n, p):
+781         return None
+782     if not isprime(p):
+783         raise NotImplementedError("Not implemented for composite p")
+784 
+785     if (p - 1) % n == 0:
+786         return _nthroot_mod1(a, n, p, all_roots)
+787 ```

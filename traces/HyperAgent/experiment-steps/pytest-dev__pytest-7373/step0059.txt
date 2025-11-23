@@ -1,0 +1,22 @@
+### Input
+<empty>
+
+### Output
+        # TODO: Use a better API to declare parametrization (#8090).
+        if (
+            request is not None
+            and hasattr(request, "param")
+            and not isinstance(holder, pytest.FixtureDef)
+        ):
+            param = request.param
+            if not isinstance(param, (tuple, list, dict)):
+                param = (param,)
+            if not isinstance(param, dict):
+                param = {keyword: param[0]}
+            mark = Mark(
+                keywords={**param, **mark.kwargs},
+                # TODO: Causes internal error.
+                # name=mark.name,  # type: ignore[attr-defined]
+                # args=mark.args,  # type: ignore[attr-defined]
+            )
+        node.add_marker(mark, False)  # type: ignore[attr-defined]

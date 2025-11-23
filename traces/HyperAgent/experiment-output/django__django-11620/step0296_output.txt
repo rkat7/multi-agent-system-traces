@@ -1,0 +1,40 @@
+class URLResolver:
+    def resolve(self, path):
+        path = str(path)  # path may be a reverse_lazy object
+        tried = []
+        match = self.pattern.match(path)
+        if match:
+            new_path, args, kwargs = match
+            for pattern in self.url_patterns:
+                try:
+                    sub_match = pattern.resolve(new_path)
+                except Http404 as e:
+                    if settings.DEBUG:
+                        # Add information that this Http404 was raised in a path converter
+                        e.from_path_converter = True
+                    raise
+                except Resolver404 as e:
+                    sub_tried = e.args[0].get('tried')
+                    if sub_tried is not None:
+                        tried.extend([pattern] + t for t in sub_tried)
+                    else:
+                        tried.append([pattern])
+                else:
+                    if sub_match:
+                        # Merge captured arguments in match with submatch
+                        sub_match_dict = dict(kwargs, **self.default_kwargs)
+                        sub_match_dict.update(sub_match.kwargs)
+                        return ResolverMatch(
+                            sub_match.func,
+                            sub_match.args,
+                            sub_match_dict,
+                            sub_match.url_name,
+                            [self] + sub_match.app_names,
+                            [self] + sub_match.namespaces,
+                            sub_match.route,
+                            patterns=self.pattern._callbacks,
+                            captured_kwargs=sub_match.captured_kwargs,
+                        )
+            raise Resolver404({'tried': tried, 'path': new_path})
+        raise Resolver404({'path': path})
+```

@@ -1,0 +1,8 @@
+        if self.is_bound and i >= self.initial_form_count():
+            # This is a new form in a bound formset, so we need to handle callable defaults
+            opts = self.model._meta
+            for f in opts.fields:
+                if isinstance(f, ArrayField) and callable(f.default):
+                    field_name = f.name
+                    if field_name not in kwargs.get('initial', {}):
+                        kwargs.setdefault('initial', {})[field_name] = f.default()

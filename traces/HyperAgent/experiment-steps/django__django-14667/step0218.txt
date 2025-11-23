@@ -1,0 +1,9 @@
+### Input
+<empty>
+
+### Output
+1. The method first checks if the `_deferred_filter` attribute is set, which indicates that either `only()` or `defer()` has been called on the QuerySet.
+2. If `_deferred_filter` is set, it extracts the `negate`, `fields`, and `kwargs` values from the `_deferred_filter` attribute.
+3. If `negate` is `True`, it means that `only()` was called. In this case, the method removes the deferred fields from the `select_related` and `deferred_loading` attributes of the QuerySet's `query` object.
+4. If `negate` is `False`, it means that `defer()` was called. In this case, the method adds the deferred fields to the `deferred_loading` attribute of the QuerySet's `query` object.
+5. Finally, the method sets the `_deferred_filter` attribute to `None`, as the deferred fields have been applied to the query.

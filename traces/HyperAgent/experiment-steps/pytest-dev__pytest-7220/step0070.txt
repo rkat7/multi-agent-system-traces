@@ -1,0 +1,22 @@
+### Input
+<empty>
+
+### Output
+6. `summary_errors` method:
+   ```python
+def summary_errors(self):
+    if self.config.option.tbstyle!= "no":
+        reports = self.getreports("error")
+        if not reports:
+            return
+        self.write_sep("=", "ERRORS")
+        for rep in self.stats["error"]:
+            msg = self._getfailureheadline(rep)
+            if rep.when == "collect":
+                msg = "ERROR collecting " + msg
+            else:
+                msg = "ERROR at {} of {}".format(rep.when, msg)
+            self.write_sep("_", msg, red=True, bold=True)
+            self._outrep_summary(rep)
+```
+   This method is used to output the errors of a test run. It gets the error reports, outputs the errors, and then outputs the teardown sections of the reports.

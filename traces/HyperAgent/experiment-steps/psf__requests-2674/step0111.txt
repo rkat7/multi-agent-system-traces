@@ -1,0 +1,19 @@
+### Input
+<empty>
+
+### Output
+    try:
+        # ... (existing code)
+    except (_SSLError, _HTTPError, SocketTimeout, BaseSSLError, ReadTimeoutError, ProtocolError, DecodeError, ReadTimeoutError, ProxyError) as e:
+        if isinstance(e, DecodeError):
+            raise DecodeError(e, request=request)
+        elif isinstance(e, (SocketTimeout, ReadTimeoutError)):
+            raise Timeout(e, request=request)
+        elif isinstance(e, _SSLError):
+            raise SSLError(e, request=request)
+        elif isinstance(e, ProxyError):
+            raise ProxyError(e, request=request)
+        elif isinstance(e, (_HTTPError, SocketError)):
+            raise ConnectionError(e, request=request)
+        else:
+            raise RequestException(e, request=request)

@@ -1,0 +1,26 @@
+Results for keyword: class BlockMatrix
+90 class BlockMatrix(MatrixExpr):
+91     """A BlockMatrix is a Matrix composed of other smaller, submatrices
+92 
+93     The submatrices are stored in a SymPy Matrix object but accessed as part of
+94     a Matrix Expression
+95 
+96     >>> from sympy import (MatrixSymbol, BlockMatrix, symbols,
+97     ...     Identity, ZeroMatrix, block_collapse)
+98     >>> n,m,l = symbols('n m l')
+99     >>> X = MatrixSymbol('X', n, n)
+100     >>> Y = MatrixSymbol('Y', m ,m)
+101     >>> Z = MatrixSymbol('Z', n, m)
+102     >>> B = BlockMatrix([[X, Z], [ZeroMatrix(m,n), Y]])
+103     >>> print(B)
+104     Matrix([
+105     [X, Z],
+106     [0, Y]])
+107 
+108     >>> C = BlockMatrix([[Identity(n), Z]])
+109     >>> print(C)
+110     Matrix([[I, Z]])
+111 
+112     >>> block_collapse(C*B)
+113     Matrix([[X, Z*Y + Z]])
+114     """

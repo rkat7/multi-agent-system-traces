@@ -1,0 +1,17 @@
+```python
+def __getitem__(self, item):
+    if isinstance(item, tuple):
+        i, j = item
+        if isinstance(i, slice) or isinstance(j, slice):
+            # Slicing
+            return BlockMatrix([
+                [self.blocks[i_idx][j_idx] for j_idx in range(len(self.blocks[0]))]
+                for i_idx in range(len(self.blocks))
+            ])
+        else:
+            # Individual element
+            return self.blocks[i][j]
+    else:
+        # Linear indexing
+        return self.as_explicit()[item]
+```

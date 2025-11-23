@@ -1,0 +1,65 @@
+Observation: The content of django/contrib/admin/helpers.py is: 1 import datetime
+2 import json
+...
+Results for keyword: class AdminReadonlyField
+465 class AdminReadonlyField:
+466     def __init__(self, form, field, is_first, model_admin=None):
+467         self.is_first = is_first
+468         self.field = field
+469         self.form = form
+470         self.model_admin = model_admin
+471         self.is_readonly = True
+472 
+473     def contents(self):
+474         from django.contrib.admin.templatetags.admin_list import _boolean_icon
+475         from django.contrib.admin.utils import display_for_field, display_for_value
+476         from django.forms.utils import flatatt
+477         from django.urls import NoReverseMatch, reverse
+478         from django.utils.html import conditional_escape, format_html
+479         from django.utils.safestring import mark_safe
+480 
+481         field = self.form.fields[self.field]
+482         value = self.form.initial.get(self.field, field.initial)
+483         if callable(value):
+484             value = value()
+485         if value is None:
+486             return mark_safe('&nbsp;')
+487         if self.field in self.form.cleaned_data:
+488             value = self.form.cleaned_data[self.field]
+489         if hasattr(field, 'choices') and field.choices:
+490             return display_for_field(value, field, self.model_admin)
+491         if isinstance(field, models.BooleanField):
+492             return _boolean_icon(value)
+493         if isinstance(field, models.DateTimeField):
+494             return formats.localize(timezone.template_localtime(value))
+495         if isinstance(field, (models.DateField, models.TimeField)):
+496             return formats.localize(value)
+497         if isinstance(field, models.DecimalField):
+498             return formats.number_format(value, field.decimal_places)
+499         if isinstance(field, (models.IntegerField, models.FloatField)):
+500             return formats.number_format(value)
+501         if isinstance(field, models.FileField) and value:
+502             return format_html('<a href="{}">{}</a>', value.url, value)
+503         if isinstance(field, models.related.ManyToManyField):
+504             return format_html_join(
+505                 ', ', '<a href="{}">{}</a>',
+506                 ((self.url_for_result(obj), obj) for obj in value.all())
+507             )
+508         if isinstance(field, models.related.ForeignObjectRel):
+509             return format_html_join(
+510                 ', ', '<a href="{}">{}</a>',
+511                 ((self.url_for_result(obj), obj) for obj in value.all())
+512             )
+513         if isinstance(field, models.related.ForeignKey):
+514             if value is not None:
+515                 return format_html('<a href="{}">{}</a>',
+516                                    self.url_for_result(value), value)
+517             else:
+518                 return mark_safe('&nbsp;')
+519         return display_for_value(value)
+520 
+521     def url_for_result(self, result):
+522         if self.model_admin:
+523             return self.model_admin.get_admin_url(result)
+524         else:
+525             return reverse('admin:%s_%s_change' % (result._meta.app_label, result._meta.model_name), args=[result.pk])

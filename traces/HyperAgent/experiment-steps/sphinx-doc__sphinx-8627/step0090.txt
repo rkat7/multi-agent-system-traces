@@ -1,0 +1,28 @@
+### Input
+<empty>
+
+### Output
+2. Update the `visit_Name` method in the `TypeHintVisitor` class to include a new `elif` clause to handle module-level attributes:
+```python
+def visit_Name(self, node):
+    """Handle a Name node."""
+    if node.id == 'Any':
+        self.result = 'typing.Any'
+    elif node.id == 'Union':
+        self.result = 'typing.Union'
+    # ...
+    elif '.' in node.id:
+        # Handle built-in module types (e.g., struct.Struct)
+        module, name = node.id.rsplit('.', 1)
+        try:
+            __import__(module)
+            mod = sys.modules[module]
+            if hasattr(mod, name):
+                self.result = node.id
+                return
+        except ImportError:
+            pass
+    # ...
+    else:
+        self.generic_visit(node)
+```

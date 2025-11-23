@@ -1,0 +1,50 @@
+### Input
+<empty>
+
+### Output
+```python
+class BlockMatrix(MatrixExpr):
+    """A BlockMatrix is a Matrix comprised of other matrices.
+    The submatrices are stored in a SymPy Matrix object but accessed as part of
+    a Matrix Expression
+    """
+    def __new__(cls, *args, **kwargs):
+        # ...
+    @property
+    def blocks(self):
+        return self.args[0]
+    def _entry(self, i, j, **kwargs):
+        # Find row entry
+        for row_block, numrows in enumerate(self.rowblocksizes):
+            if (i < numrows) != False:
+                break
+            else:
+                i -= numrows
+        for col_block, numcols in enumerate(self.colblocksizes):
+            if (j < numcols) != False:
+                break
+            else:
+                j -= numcols
+        return self.blocks[row_block, col_block][i, j]
+    def _eval_transpose(self):
+        # Flip all the individual matrices
+        matrices = [transpose(matrix) for matrix in self.blocks]
+        # Make a copy
+        M = Matrix(self.blockshape[0], self.blockshape[1], matrices)
+        # Transpose the block structure
+        M = M.transpose()
+        return BlockMatrix(M)
+    def _entry(self, i, j, **kwargs):
+        # Find row entry
+        for row_block, numrows in enumerate(self.rowblocksizes):
+            if (i < numrows) != False:
+                break
+            else:
+                i -= numrows
+        for col_block, numcols in enumerate(self.colblocksizes):
+            if (j < numcols) != False:
+                break
+            else:
+                j -= numcols
+        return self.blocks[row_block, col_block][i, j]
+```

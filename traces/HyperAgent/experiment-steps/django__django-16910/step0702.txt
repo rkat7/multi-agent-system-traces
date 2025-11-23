@@ -1,0 +1,19 @@
+### Input
+<empty>
+
+### Output
+```diff
+--- a/django/db/models/sql/compiler.py
++++ b/django/db/models/sql/compiler.py
+@@ -278,6 +278,7 @@
+         klass_info["related_klass_infos"] = related_klass_infos
++
++    def get_related_selections(self, select, select_mask):
++        related_klass_infos = []
++        for field in self.query.select_related:
++            if isinstance(field, dict):
++                related_klass_infos.append(self._get_related_selections_from_dict(field))
++            else:
++                related_klass_infos.append(self._get_related_selections_from_field(field))
++        return related_klass_infos
+```

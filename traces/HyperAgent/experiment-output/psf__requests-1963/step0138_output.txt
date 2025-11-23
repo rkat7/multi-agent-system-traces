@@ -1,0 +1,8 @@
+    # Mock the send method to simulate the redirect chain
+    def mock_send(request, **kwargs):
+        if request.url == 'http://example.com/initial':
+            resp = Mock(status_code=303, headers={'Location': '/redirect1'}, is_redirect=True)
+        elif request.url == 'http://example.com/redirect1':
+            resp = Mock(status_code=307, headers={'Location': '//example.org/final'}, is_redirect=True)
+        else:
+            resp = Mock(status_code=200, is_redirect=False)

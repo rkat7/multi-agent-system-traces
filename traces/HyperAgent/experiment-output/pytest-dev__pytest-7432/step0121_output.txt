@@ -1,0 +1,26 @@
+@hookimpl(hookwrapper=True)
+def pytest_runtest_makereport(item: Item, call: CallInfo[None]) -> TestReport:
+    when = call.when
+    duration = call.duration
+    keywords = {x: 1 for x in item.keywords}
+    excinfo = call.excinfo
+    sections = []
+    if not call.excinfo:
+        outcome = "passed"
+        longrepr = None
+    else:
+        if not isinstance(excinfo, ExceptionInfo):
+            outcome = "failed"
+            longrepr = excinfo
+        elif excinfo.errisinstance(skip.Exception):
+            outcome = "skipped"
+            r = excinfo._getreprcrash()
+            longrepr = (str(r.path), r.lineno, r.message)
+        else:
+            outcome = "failed"
+            if call.when == "call":
+                longrepr = item.repr_failure(excinfo)
+            else:
+                longrepr = item._repr_failure_py(
+                    excinfo, style=item.config.option.tbstyle
+                )

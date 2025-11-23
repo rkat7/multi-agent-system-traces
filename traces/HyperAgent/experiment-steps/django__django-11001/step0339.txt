@@ -1,0 +1,18 @@
+### Input
+<empty>
+
+### Output
+    for expr, is_ref in order_by:
+        resolved = expr.resolve_expression(self.query, allow_joins=True, reuse=None)
+        sql, params = self.compile(resolved)
+        # Split the SQL statement by newline and check each line individually for deduplication
+        lines = sql.split('\n')
+        for line in lines:
+            without_ordering = self.ordering_parts.search(line).group(1)
+            params_hash = make_hashable(params)
+            if (without_ordering, params_hash) in seen:
+                continue
+            seen.add((without_ordering, params_hash))
+            result.append((resolved, (line, params, is_ref)))
+    return result
+```

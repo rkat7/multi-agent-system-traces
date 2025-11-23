@@ -1,0 +1,35 @@
+patch = '''
+    def reduce(self, operation, app_label):
+        if isinstance(operation, AlterField) and self.is_same_field_operation(operation):
+            # Combine the field attributes, giving precedence to the later operation
+            combined_field = operation.field
+            for name, value in self.field.__dict__.items():
+                if name not in operation.field.__dict__:
+                    setattr(combined_field, name, value)
+            return [AlterField(
+                model_name=self.model_name,
+                name=self.name,
+                field=combined_field,
+            )]
+        if isinstance(operation, RemoveField) and self.is_same_field_operation(
+            operation
+        ):
+            return [operation]
+        elif (
+            isinstance(operation, RenameField)
+            and self.is_same_field_operation(operation)
+            and self.field.db_column is None
+        ):
+            return [
+                operation,
+                AlterField(
+                    model_name=self.model_name,
+                    name=operation.new_name,
+                    field=self.field,
+                ),
+            ]
+        return super().reduce(operation, app_label)
+'''
+result = editor._run(relative_file_path="django/db/migrations/operations/fields.py", start_line=249, end_line=267, patch=patch)
+print(result)
+```

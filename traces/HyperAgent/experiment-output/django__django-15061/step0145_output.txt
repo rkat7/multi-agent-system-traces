@@ -1,0 +1,32 @@
+updated_splitdatetimewidget = '''
+904     class SplitDateTimeWidget(MultiWidget):
+905         """
+906         A widget that splits datetime input into two <input type="text"> boxes.
+907         """
+908         supports_microseconds = False
+909         template_name = 'django/forms/widgets/splitdatetime.html'
+910 
+911         def __init__(self, attrs=None, date_format=None, time_format=None, date_attrs=None, time_attrs=None):
+912             widgets = (
+913                 DateInput(
+914                     attrs=attrs if date_attrs is None else date_attrs,
+915                     format=date_format,
+916                 ),
+917                 TimeInput(
+918                     attrs=attrs if time_attrs is None else time_attrs,
+919                     format=time_format,
+920                 ),
+921             )
+922             super().__init__(widgets)
+923 
+924         def decompress(self, value):
+925             if value:
+926                 value = to_current_timezone(value)
+927                 return [value.date(), value.time()]
+928             return [None, None]
+929 
+930         def id_for_label(self, id_):
+931             if id_:
+932                 id_ += '_0'
+933             return id_
+'''

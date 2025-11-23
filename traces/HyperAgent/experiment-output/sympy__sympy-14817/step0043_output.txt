@@ -1,0 +1,11 @@
+patch = '''
+    def _print_MatAdd(self, expr):
+        terms = []
+        for item in expr.args:
+            pform = self._print(item)
+            if isinstance(item, MatrixSymbol):
+                terms.append(pform)
+            elif item.could_extract_minus_sign():
+                terms.append(prettyForm(*stringPict.next(prettyForm(u'+'), pform)))
+            else:
+                terms.append(prettyForm(*stringPict.next(prettyForm(u'+'), pform)))

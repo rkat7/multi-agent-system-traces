@@ -1,0 +1,17 @@
+### Input
+<empty>
+
+### Output
+        Returns
+        -------
+        C : ndarray of shape (n_samples, n_classes)
+            The predicted probabilities.
+        """
+        check_is_fitted(self)
+        X = self._validate_data(X, reset=False)
+        # Compute the arithmetic mean of the predictions of the calibrated
+        # classifiers
+        mean_proba = np.zeros((X.shape[0], len(self.classes_)))
+        for calibrated_classifier in self.calibrated_classifiers_:
+            mean_proba += calibrated_classifier.predict_proba(X)
+        mean_proba /= len(self.calibrated_classifiers_)

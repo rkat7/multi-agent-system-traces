@@ -1,0 +1,11 @@
+    first_obj = objects[0]
+    if isinstance(first_obj, DataArray):
+        objs = [obj.variable if isinstance(obj, DataArray) else obj for obj in objects]
+        aligned = deep_align(objs, join=join, copy=copy, indexes=indexes, exclude=exclude, fill_value=fill_value)
+        return DataArray(aligned)
+    elif isinstance(first_obj, Dataset):
+        aligned = align(*objects, join=join, copy=copy, indexes=indexes, exclude=exclude, fill_value=fill_value)
+        return aligned
+    else:
+        aligned = align_variables(objects, join=join, copy=copy, indexes=indexes, fill_value=fill_value)
+        return aligned

@@ -1,0 +1,18 @@
+### Input
+<empty>
+
+### Output
+    if self.sparse_output_:
+        # ... (keep the existing sparse output code)
+    else:
+        X_stacked = np.hstack(list_Xs)
+        if self._feature_names_in is not None:
+            names_out = self._add_prefix_for_feature_names_out(
+                list(self.named_transformers_.feature_names_out_)
+            )
+            # Remove feature names for empty transformers
+            names_out = [name for name in names_out if name.split("__")[0] not in self._empty_transformers]
+            if isinstance(X_stacked, pd.DataFrame):
+                X_stacked.columns = names_out
+        return X_stacked
+```

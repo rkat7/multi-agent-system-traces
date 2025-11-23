@@ -1,0 +1,62 @@
+### Input
+Action:
+```python
+
+### Output
+patch = '''
+    def _array_converter(self, func, sky, *args, ra_dec_order=False):
+        """
+        A helper function to support variable-length input arrays
+        """
+        if isinstance(args[0], (six.integer_types, float)):
+            # Handle scalar inputs
+            return func(args, 0)
+        elif isinstance(args[0], (list, tuple)) and len(args) == 2:
+            # Handle coordinate pair inputs
+            origin = args[1]
+            if len(args[0]) != len(args[1]):
+                raise ValueError("Coordinate arrays have different lengths")
+            if len(args[0]) == 0:  # Handle empty input arrays
+                return [], []
+            return _return_list_of_arrays(args[0], origin)
+        elif isinstance(args[0], np.ndarray) and len(args) == 2:
+            # Handle array inputs
+            xy, origin = args
+            if xy.shape == ():
+                return func([xy.item()], origin)
+            elif xy.ndim != 2:
+                raise ValueError("Array must be 2-dimensional")
+            if xy.shape[0] == 0:  # Handle empty input arrays
+                return np.array([], dtype=float), np.array([], dtype=float)
+            return _return_single_array(xy, origin)
+        else:
+            # Original implementation for other cases
+            if len(args) == 2:
+                try:
+                    xy, origin = args
+                    xy = np.asarray(xy)
+                    origin = int(origin)
+                except Exception:
+                    raise TypeError(
+                        "When providing two arguments, they must be "
+                        "(coords[N][{0}], origin)".format(self.naxis))
+                if self.naxis == 1 and len(xy.shape) == 1:
+                    return _return_list_of_arrays([xy], origin)
+                return _return_single_array(xy, origin)
+            elif len(args) == self.naxis + 1:
+                axes = args[:-1]
+                origin = args[-1]
+                try:
+                    axes = [np.asarray(x) for x in axes]
+                    origin = int(origin)
+                except Exception:
+                    raise TypeError(
+                        "When providing more than two arguments, they must be " +
+                        "a 1-D array for each axis, followed by an origin.")
+                return _return_list_of_arrays(axes, origin)
+            raise TypeError(
+                "WCS projection has {0} dimensions, so expected 2 (an Nx{0} array "
+                "and the origin argument) or {1} arguments (the position in each "
+                "dimension, and the origin argument). Instead, {2} arguments were "
+                "given.".format(
+                    self.naxis, self.naxis + 1, len(args)))

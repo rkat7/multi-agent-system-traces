@@ -1,0 +1,29 @@
+        c = {
+            'is_email': self.is_email,
+            'unicode_hint': unicode_hint,
+            'frames': frames,
+            'request': self.request,
+            'filtered_POST_items': list(self.filter.get_post_parameters(self.request).items()),
+            'filtered_GET_items': list(self.filter.get_get_parameters(self.request).items()),
+            'filtered_COOKIES_items': list(self.filter.get_cookies(self.request).items()),
+            'filtered_META_items': list(self.filter.get_headers(self.request).items()),
+            'settings': self.filter.get_safe_settings(),
+            'sys_executable': sys.executable,
+            'sys_version_info': '%d.%d.%d' % sys.version_info[0:3],
+            'server_time': timezone.now(),
+            'django_version_info': get_version(),
+            'sys_path': sys.path,
+            'template_info': self.template_info,
+            'template_does_not_exist': self.template_does_not_exist,
+            'postmortem': self.postmortem,
+            'is_http404': is_http404,
+            'from_path_converter': from_path_converter,
+        }
+        if self.exc_type:
+            c['exception_type'] = self.exc_type.__name__
+        if self.exc_value:
+            c['exception_value'] = str(self.exc_value)
+        if frames:
+            c['lastframe'] = frames[-1]
+        return c
+```

@@ -1,0 +1,14 @@
+        if not options['no_startup']:
+            for pythonrc in OrderedSet([os.environ.get("PYTHONSTARTUP"), os.path.expanduser('~/.pythonrc.py')]):
+                if not pythonrc:
+                    continue
+                if not os.path.isfile(pythonrc):
+                    continue
+                with open(pythonrc) as handle:
+                    pythonrc_code = handle.read()
+                # Match the behavior of the cpython shell where an error in
+                # PYTHONSTARTUP prints an exception and continues.
+                try:
+                    exec(compile(pythonrc_code, pythonrc, 'exec'), imported_objects)
+                except Exception:
+                    traceback.print_exc()

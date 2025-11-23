@@ -1,0 +1,72 @@
+    See Also
+    ========
+    apart_list, assemble_partfrac_list
+    """
+    allowed_flags(options, [])
+    f = sympify(f)
+    if f.is_Atom:
+        return f
+    else:
+        P, Q = f.as_numer_denom()
+    _options = options.copy()
+    options = set_defaults(options, extension=True)
+    try:
+        (P, Q), opt = parallel_poly_from_expr((P, Q), x, **options)
+    except PolynomialError as msg:
+        if f.is_commutative:
+            raise PolynomialError(msg)
+        # non-commutative
+        if f.is_Mul:
+            c, nc = f.args_cnc(split_1=False)
+            nc = f.func(*nc)
+            if c:
+                c = apart(f.func._from_args(c), x=x, full=full, **_options)
+                return c*nc
+            else:
+                return nc
+        elif f.is_Add:
+            c = []
+            nc = []
+            for i in f.args:
+                if i.is_commutative:
+                    c.append(i)
+                else:
+                    try:
+                        nc.append(apart(i, x=x, full=full, **_options))
+                    except NotImplementedError:
+                        nc.append(i)
+            return apart(f.func(*c), x=x, full=full, **_options) + f.func(*nc)
+        else:
+            reps = []
+            pot = preorder_traversal(f)
+            next(pot)
+            for e in pot:
+                try:
+                    reps.append((e, apart(e, x=x, full=full, **_options)))
+                    pot.skip()  # this was handled successfully
+                except NotImplementedError:
+                    pass
+            return f.xreplace(dict(reps))
+    if P.is_multivariate:
+        fc = f.cancel()
+        if fc != f:
+            return apart(fc, x=x, full=full, **_options)
+        raise NotImplementedError(
+            "multivariate partial fraction decomposition")
+    common, P, Q = P.cancel(Q)
+    poly, P = P.div(Q, auto=True)
+    P, Q = P.rat_clear_denoms(Q)
+    if Q.degree() <= 1:
+        partial = P/Q
+    else:
+        if not full:
+            partial = apart_undetermined_coeffs(P, Q)
+        else:
+            partial = apart_full_decomposition(P, Q)
+    terms = S.Zero
+    for term in Add.make_args(partial):
+        if term.has(RootSum):
+            terms += term
+        else:
+            terms += factor(term)
+    return common*(poly.as_expr() + terms)

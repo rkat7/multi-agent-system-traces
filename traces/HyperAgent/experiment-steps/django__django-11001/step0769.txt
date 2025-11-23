@@ -1,0 +1,16 @@
+### Input
+<empty>
+
+### Output
+        order_by = []
+        for field in ordering:
+            if hasattr(field, 'resolve_expression'):
+                if not isinstance(field, OrderBy):
+                    field = field.asc()
+                if not self.query.standard_ordering:
+                    field.reverse_ordering()
+                order_by.append((field, False))
+                continue
+            if field == '?':  # random
+                order_by.append((OrderBy(Random()), False))
+                continue

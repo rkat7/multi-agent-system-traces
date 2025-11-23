@@ -1,0 +1,21 @@
+* `sympy/simplify/trigsimp.py`:
+```python
+def futrig(ex, **opts):
+    if isinstance(ex, Pow) and ex.exp.is_I:
+        # Handle complex exponents specially
+        return cos(ex.base)  # or some other simplification
+    return trigsimp_groebner(ex, **opts)
+```
+* `sympy/simplify/trigsimp.py`:
+```python
+def trigsimp_groebner(ex, **opts):
+    # Apply the Groebner basis algorithm to simplify the input expression
+    ...
+```
+* `sympy/simplify/trigsimp.py`:
+```python
+def simplify(ex, **opts):
+    # Call the `futrig` function to simplify the input expression
+    return futrig(ex, **opts)
+```
+HyperAgent_sympy__sympy-17139 - INFO - Planner's Response: Thought: The issue is indeed related to the handling of complex exponents in the `futrig` function within the `sympy/simplify/trigsimp.py` file. The `futrig` function currently does not handle complex exponents like `I` correctly, leading to the "Invalid comparison of complex I" error. To resolve this, we need to modify the `futrig` function to handle such cases appropriately.

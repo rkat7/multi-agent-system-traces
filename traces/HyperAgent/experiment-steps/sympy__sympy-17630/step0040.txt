@@ -1,0 +1,18 @@
+### Input
+<empty>
+
+### Output
+ The issue has been resolved by modifying the `_blockmul` method in the `BlockMatrix` class to handle `ZeroMatrix` objects correctly during the block multiplication process. The `Zero` class has been imported from the `sympy.core.numbers` module, and the `_blockmul` method has been updated to ensure that `ZeroMatrix` objects are preserved during the multiplication process.
+HyperAgent_sympy__sympy-17630 - INFO - Planner's Response: ```xml
+<output>
+  <patch>
+    <file>sympy/matrices/expressions/blockmatrix.py</file>
+    <line>91</line>
+    <code>result_blocks[i][j] = sum(self.blocks[i][k] * other.blocks[k][j] for k in range(self.blockshape[1]))</code>
+    <line>92</line>
+    <code>if isinstance(result_blocks[i][j], Zero):</code>
+    <line>93</line>
+    <code>result_blocks[i][j] = ZeroMatrix(result_blocks[i][j].rows, result_blocks[i][j].cols)</code>
+  </patch>
+</output>
+```

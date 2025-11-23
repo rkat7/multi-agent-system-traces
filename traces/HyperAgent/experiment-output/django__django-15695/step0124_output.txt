@@ -1,0 +1,9 @@
+    def rename_index(self, model, old_index, new_index):
+        """Renames the given index."""
+        if old_index.name == new_index.name:
+            return
+        self.execute(self.rename_index_sql(old_index.name, new_index.name))
+        if hasattr(old_index, 'included_columns'):
+            self.execute(self.create_index_sql(model, [field.column for field in new_index.fields], name=new_index.name, include=new_index.included_columns))
+        else:
+            self.execute(self.create_index_sql(model, [field.column for field in new_index.fields], name=new_index.name))

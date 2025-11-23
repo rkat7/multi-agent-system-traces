@@ -1,0 +1,15 @@
+### Input
+<empty>
+
+### Output
+    responses = []
+    for receiver in self._live_receivers(sender):
+        try:
+            response = receiver(signal=self, sender=sender, **named)
+        except Exception as err:
+            logger.exception("Exception raised in Signal.send_robust() receiver: %s", receiver)
+            responses.append((receiver, err))
+        else:
+            responses.append((receiver, response))
+    return responses
+```

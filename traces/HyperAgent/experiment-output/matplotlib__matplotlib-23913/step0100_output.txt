@@ -1,0 +1,18 @@
+    Parameters
+    ----------
+    state : bool
+        If True, the legend can be dragged with the mouse.
+    use_blit : bool, optional
+        Use blitting for faster image updates. Default is False.
+    update : {'loc', 'bbox'}, optional
+        If 'loc', update the *loc* parameter of the legend upon finalizing.
+        If 'bbox', update the *bbox_to_anchor* parameter.
+    """
+    if state:
+        from matplotlib.offsetbox import DraggableOffsetBox
+        if self._draggable is None:
+            self._draggable = DraggableOffsetBox(self, use_blit, update=update)
+        self._draggable.connect()
+    else:
+        if self._draggable is not None:
+            self._draggable.disconnect()

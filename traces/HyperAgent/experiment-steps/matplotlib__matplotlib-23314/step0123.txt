@@ -1,0 +1,23 @@
+### Input
+<empty>
+
+### Output
+patch2 = '''
+        ret = super().get_tightbbox(renderer,
+                                    call_axes_locator=call_axes_locator,
+                                    bbox_extra_artists=bbox_extra_artists,
+                                    for_layout_only=for_layout_only)
+        batch = [ret]
+        if self.get_visible():
+            for axis in self._axis_map.values():
+                if axis.get_visible():
+                    axis_bb = martist._get_tightbbox_for_layout_only(
+                        axis, renderer)
+                    if axis_bb:
+                        batch.append(axis_bb)
+        return mtransforms.Bbox.union(batch)
+'''
+result2 = editor._run(relative_file_path="lib/mpl_toolkits/mplot3d/axes3d.py", start_line=3109, end_line=3123, patch=patch2)
+print(result2)
+```
+HyperAgent_matplotlib__matplotlib-23314 - INFO - Inner-Editor-Assistant's Response: Thought: I apologize for the oversight. The error occurred because we tried to modify a method that uses variables defined in its parameter list. Let's fix this by keeping the original method signature and only changing the body of the `get_tightbbox` method.

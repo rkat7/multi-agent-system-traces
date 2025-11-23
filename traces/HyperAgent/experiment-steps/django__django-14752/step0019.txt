@@ -1,0 +1,11 @@
+### Input
+<empty>
+
+### Output
+class MyModelAdmin(admin.ModelAdmin):
+    def get_urls(self):
+        return [
+            path('autocomplete/', CustomAutocompleteJsonView.as_view(admin_site=self.admin_site))
+            if url.pattern.match('autocomplete/')
+            else url for url in super().get_urls()
+        ]

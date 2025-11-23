@@ -1,0 +1,44 @@
+### Input
+<empty>
+
+### Output
+```python
+2522     def set_layout_engine(self, layout=None, **kwargs):
+2523         """
+2524         Set the layout engine for this figure.
+2525 
+2526         Parameters
+2527         ----------
+2528         layout: {'constrained', 'compressed', 'tight', 'none'} or \
+2529 `LayoutEngine` or None
+2530 
+2531             - 'constrained' will use `~.ConstrainedLayoutEngine`
+2532             - 'compressed' will also use `~.ConstrainedLayoutEngine`, but with
+2533               a correction that attempts to make a good layout for fixed-aspect
+2534               ratio Axes.
+2535             - 'tight' uses `~.TightLayoutEngine`
+2536             - 'none' removes layout engine.
+2537 
+2538             If `None`, the behavior is controlled by :rc:`figure.autolayout`
+2539             (which if `True` behaves as if 'tight' were passed) and
+2540             :rc:`figure.constrained_layout.use` (which if `True` behaves as if
+2541             'constrained' were passed).  If both are `True`,
+2542             :rc:`figure.autolayout` takes priority.
+2543 
+2544             Users and libraries can define their own layout engines and pass
+2545             the instance directly as well.
+2546 
+2547         kwargs: dict
+2548             The keyword arguments are passed to the layout engine to set things
+2549             like padding and margin sizes.  Only used if *layout* is a string.
+2550 
+2551         """
+2552         if layout is None:
+2553             if mpl.rcParams['figure.autolayout']:
+2554                 layout = 'tight'
+2555             elif mpl.rcParams['figure.constrained_layout.use']:
+2556                 layout = 'constrained'
+2557             else:
+2558                 self._layout_engine = None
+2559                 return
+```

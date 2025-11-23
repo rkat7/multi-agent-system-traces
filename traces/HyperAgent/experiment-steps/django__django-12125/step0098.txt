@@ -1,0 +1,18 @@
+### Input
+<empty>
+
+### Output
+```python
+# django/db/migrations/serializer.py
+class DeconstructableSerializer(BaseSerializer):
+    @staticmethod
+    def _serialize_path(path):
+        imports = set()
+        bits = path.split('.')
+        module_bits = bits[:-1]
+        if module_bits:
+            module_path = '.'.join(module_bits)
+            imports.add(module_path)
+        name = bits[-1]
+        return name, imports
+```

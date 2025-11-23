@@ -1,0 +1,10 @@
+def pytest_assertion_pass(message, actual, expected):
+    if isinstance(actual, bytes) and isinstance(expected, bytes):
+        if len(actual) != len(expected):
+            raise AssertionError(f"Byte strings have different lengths. Expected {len(expected)} bytes, but got {len(actual)} bytes.")
+        for i in range(len(actual)):
+            if actual[i] != expected[i]:
+                raise AssertionError(f"Byte strings differ at index {i}. Expected {expected[i]} but got {actual[i]}")
+    else:
+        pytest_assertion_pass(message, actual, expected)
+```

@@ -1,0 +1,28 @@
+### Input
+<empty>
+
+### Output
+```python
+# watch_glob() method
+428     def _watch_glob(self, directory, patterns):
+429         """
+430         Watch a directory with a specific glob. If the directory doesn't yet
+431         exist, attempt to watch the parent directory and amend the patterns to
+432         include this. It's important this method isn't called more than one per
+433         directory when updating all subscriptions. Subsequent calls will
+434         overwrite the named subscription, so it must include all possible glob
+435         expressions.
+436         """
+437         prefix = 'glob'
+438         if not directory.exists():
+439             if not directory.parent.exists():
+440                 logger.warning('Unable to watch directory %s as neither it or its parent exist.', directory)
+441                 return
+442             prefix = 'glob-parent-%s' % directory.name
+443             patterns = ['%s/%s' % (directory.name, pattern) for pattern in patterns]
+444             directory = directory.parent
+445 
+446         expression = ['anyof']
+447         for pattern in patterns:
+448             expression.append(['match', pattern, 'wholename'])
+449         self._subscribe(directory, '%s:%s' % (prefix, directory), expression)

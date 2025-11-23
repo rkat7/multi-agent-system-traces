@@ -1,0 +1,12 @@
+patch = '''
+    def __getstate__(self):
+        state = super().__getstate__()
+        state.pop("canvas")
+        state["_cachedRenderer"] = None
+        state['__mpl_version__'] = mpl.__version__
+        if self.canvas.manager in _pylab_helpers.Gcf.figs.values():
+            state['_restore_to_pylab'] = True
+        # Add device_pixel_ratio to the state
+        if hasattr(self.canvas, 'device_pixel_ratio'):
+            state['_device_pixel_ratio'] = self.canvas.device_pixel_ratio
+        return state

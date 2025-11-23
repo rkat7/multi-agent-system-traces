@@ -1,0 +1,15 @@
+### Input
+<empty>
+
+### Output
+patch_integerfield = '''
+    def to_python(self, value):
+        if value is None:
+            return value
+        if isinstance(value, int):
+            return value
+        if self.choices and hasattr(self.choices, '__members__'):
+            # This is an IntegerChoices enum
+            return self.choices(int(value))
+        return int(value)
+'''

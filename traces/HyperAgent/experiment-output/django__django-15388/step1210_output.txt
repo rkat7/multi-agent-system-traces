@@ -1,0 +1,32 @@
+   - `common_roots` function (django/utils/autoreload.py):
+     ```python
+161         results.add(resolved_path)
+162     return frozenset(results)
+163 
+164 
+165 @functools.lru_cache(maxsize=1)
+166 def common_roots(paths):
+167     """
+168     Return a tuple of common roots that are shared between the given paths.
+169     File system watchers operate on directories and aren't cheap to create.
+170     Try to find the minimum set of directories to watch that encompass all of
+171     the files that need to be watched.
+172     """
+173     # Inspired from Werkzeug:
+174     # https://github.com/pallets/werkzeug/blob/7477be2853df70a022d9613e765581b9411c3c39/werkzeug/_reloader.py
+175     # Create a sorted list of the path components, longest first.
+176     path_parts = sorted([x.parts for x in paths], key=len, reverse=True)
+177 
+178     # Find the common prefix of all paths.
+179     common_prefix = []
+180     for i in range(len(path_parts[0])):
+181         if all(path_parts[j][i] == path_parts[0][i] for j in range(len(path_parts))):
+182             common_prefix.append(path_parts[0][i])
+183         else:
+184             break
+185 
+186     # Convert the common prefix back to a path.
+187     common_root = Path(*common_prefix)
+188 
+189     return common_root
+```

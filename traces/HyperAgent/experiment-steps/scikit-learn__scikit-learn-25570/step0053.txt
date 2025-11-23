@@ -1,0 +1,15 @@
+### Input
+<empty>
+
+### Output
+                transformer_names = [
+                    t[0] for t in self._iter(fitted=True, replace_strings=True)
+                ]
+                feature_names_outs = [X.columns for X in Xs]
+                names_out = self._add_prefix_for_feature_names_out(
+                    list(zip(transformer_names, feature_names_outs))
+                )
+                # Remove feature names for empty transformers
+                names_out = [name for name in names_out if name.split("__")[0] not in self._empty_transformers]
+                output.columns = names_out
+                return output

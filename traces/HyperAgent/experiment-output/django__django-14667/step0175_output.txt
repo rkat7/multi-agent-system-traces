@@ -1,0 +1,21 @@
+```python
+def _clone(self, **kwargs):
+    """
+    Return a copy of the current QuerySet. A lightweight alternative
+    to deepcopy().
+    """
+    c = self.__class__(model=self.model, query=self.query.clone())
+    c.__dict__.update(self.__dict__)
+    c._sticky_filter = self._sticky_filter
+    c._prefetch_related_lookups = self._prefetch_related_lookups[:]
+    c._prefetch_obj_cache = self._prefetch_obj_cache.copy()
+    c._known_related_objects = self._known_related_objects.copy()
+    c._iterable_class = self._iterable_class
+    c._db = self._db
+    c._hints = self._hints.copy()
+    c._result_cache = None
+    c._sticky_filter = False
+    for key, value in kwargs.items():
+        setattr(c, key, value)
+    return c
+```

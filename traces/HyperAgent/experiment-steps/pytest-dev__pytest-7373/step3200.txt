@@ -1,0 +1,49 @@
+### Input
+Action:
+```python
+
+### Output
+patch = '''
+    def _istrue(self) -> bool:
+        if hasattr(self, "result"):
+            result = getattr(self, "result")  # type: bool
+            return result
+        self._marks = self._get_marks()
+        if self._marks:
+            self.result = False
+            for mark in self._marks:
+                self._mark = mark
+                if "condition" not in mark.kwargs:
+                    args = mark.args
+                else:
+                    args = (mark.kwargs["condition"],)
+                for expr in args:
+                    self.expr = expr
+                    if isinstance(expr, str):
+                        d = self._getglobals()
+                        import _pytest._code
+                        exprcode = _pytest._code.compile(expr, mode="eval")
+                        result = eval(exprcode, d)
+                    else:
+                        if "reason" not in mark.kwargs:
+                            # XXX better be checked at collection time
+                            msg = (
+                                "you need to specify reason=STRING "
+                                "when using booleans as conditions."
+                            )
+                            fail(msg)
+                        result = bool(expr)
+                    if result:
+                        self.result = True
+                        self.reason = mark.kwargs.get("reason", None)
+                        self.expr = expr
+                        return self.result
+                if not args:
+                    self.result = True
+                    self.reason = mark.kwargs.get("reason", None)
+                    return self.result
+        return False
+'''
+result = editor._run(relative_file_path="_pytest/mark/evaluate.py", start_line=82, end_line=121, patch=patch)
+print(result)
+```

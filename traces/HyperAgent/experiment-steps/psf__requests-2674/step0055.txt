@@ -1,0 +1,23 @@
+### Input
+<empty>
+
+### Output
+# ... (in the send() method)
+try:
+    # ... (existing code)
+except (urllib3.exceptions.Timeout, urllib3.exceptions.SSLError, urllib3.exceptions.ConnectionError, 
+        urllib3.exceptions.DecodeError, urllib3.exceptions.ConnectionResetError, urllib3.exceptions.ReadTimeoutError, 
+        urllib3.exceptions.ProxyError, urllib3.exceptions.ChunkedEncodingError, urllib3.exceptions.ContentDecodingError) as e:
+    if isinstance(e, urllib3.exceptions.DecodeError):
+        raise DecodeError(e, request=request)
+    elif isinstance(e, (urllib3.exceptions.Timeout, urllib3.exceptions.ReadTimeoutError)):
+        raise Timeout(e, request=request)
+    elif isinstance(e, urllib3.exceptions.SSLError):
+        raise SSLError(e, request=request)
+    elif isinstance(e, urllib3.exceptions.ConnectionError):
+        raise ConnectionError(e, request=request)
+    elif isinstance(e, urllib3.exceptions.ProxyError):
+        raise ProxyError(e, request=request)
+    else:
+        raise RequestException(e, request=request)
+```

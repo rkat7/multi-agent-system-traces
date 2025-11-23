@@ -1,0 +1,15 @@
+def main():
+    results = {}
+    with cd(os.path.dirname(os.path.abspath(__file__))):
+        for version in DJANGO_VERSIONS:
+            print(f"Testing Django {version}")
+            venv_path = create_venv(version)
+            try:
+                success = run_tests(venv_path, version)
+                results[version] = "Passed" if success else "Failed"
+            except Exception as e:
+                print(f"An error occurred: {str(e)}")
+                results[version] = "Error"
+            finally:
+                cleanup(venv_path)
+            print("\\n")

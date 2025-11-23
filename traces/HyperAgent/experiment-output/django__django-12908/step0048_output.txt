@@ -1,0 +1,17 @@
+    if self.query.distinct:
+        if self.query.combinator:
+            # For union queries, wrap the entire query in a subquery and apply DISTINCT
+            from django.db.models.sql.subqueries import AggregateQuery
+            outer_query = AggregateQuery(self.query.model)
+            inner_query = self.query.clone()
+            inner_query.select_for_update = False
+            inner_query.select_related = False
+            inner_query.clear_ordering(True)
+            outer_query.add_subquery(inner_query, self.query.alias_prefix)
+            self.query = outer_query
+            self.query.distinct_fields = self.query.distinct_fields
+            return []
+        elif self.query.distinct_fields:
+            # ... (existing code for handling distinct fields)
+        else:
+            return [x.target.column for x in select]

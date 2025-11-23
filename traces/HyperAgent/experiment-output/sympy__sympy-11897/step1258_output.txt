@@ -1,0 +1,39 @@
+```python
+394             snumer = convert(numer)
+395             sdenom = convert(denom)
+396             ldenom = len(sdenom.split())
+397             ratio = self._settings['long_frac_ratio']
+398             if self._settings['fold_short_frac'] \
+399                     and ldenom <= 2 and not "^" in sdenom:
+400                 # handle short fractions
+401                 if self._needs_mul_brackets(numer, last=False):
+402                     tex += r"\left(%s\right) / %s" % (snumer, sdenom)
+403                 else:
+404                     tex += r"%s / %s" % (snumer, sdenom)
+405             elif len(snumer.split()) > ratio*ldenom:
+406                 # handle long fractions
+407                 if self._needs_mul_brackets(numer, last=True):
+408                     tex += r"\frac{1}{%s}%s\left(%s\right)" \
+409                         % (sdenom, separator, snumer)
+410                 elif numer.is_Mul:
+411                     # split a long numerator
+412                     a = S.One
+413                     b = S.One
+414                     for x in numer.args:
+415                         if self._needs_mul_brackets(x, last=False) or \
+416                                 len(convert(a*x).split()) > ratio*ldenom or \
+417                                 (b.is_commutative is x.is_commutative is False):
+418                             b *= x
+419                         else:
+420                             a *= x
+421                     if self._needs_mul_brackets(b, last=True):
+422                         tex += r"\frac{%s}{%s}%s\left(%s\right)" \
+423                             % (convert(a), sdenom, separator, convert(b))
+424                     else:
+425                         tex += r"\frac{%s}{%s}%s%s" \
+426                             % (convert(a), sdenom, separator, convert(b))
+427                 else:
+428                     tex += r"\frac{1}{%s}%s%s" % (sdenom, separator, snumer)
+429             else:
+430                 tex += r"\frac{%s}{%s}" % (snumer, sdenom)
+```

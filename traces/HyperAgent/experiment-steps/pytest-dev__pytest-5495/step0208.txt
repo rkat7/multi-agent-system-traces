@@ -1,0 +1,18 @@
+### Input
+<empty>
+
+### Output
+```python
+def format_explanation(explanation):
+    """This formats an explanation"""
+    if isinstance(explanation, str) and explanation.startswith("assert"):
+        # Check if we're dealing with a byte string comparison
+        if "b'" in explanation or 'b"' in explanation:
+            # Extract the byte strings
+            left, right = re.findall(r"b['\"](.*?)['\"]", explanation)
+            # Create a more readable representation
+            left_repr = _format_bytes(left.encode('ascii'))
+            right_repr = _format_bytes(right.encode('ascii'))
+            # Replace the original representations in the explanation
+            explanation = explanation.replace(f"b'{left}'", left_repr)
+            explanation = explanation.replace(f"b'{right}'", right_repr)

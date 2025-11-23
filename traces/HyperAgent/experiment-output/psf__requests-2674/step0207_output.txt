@@ -1,0 +1,19 @@
+    try:
+        response = self._send_request(request, **kwargs)
+    except DecodeError as e:
+        raise RequestException(f"DecodeError: {e}", request=request)
+    except TimeoutError as e:
+        raise Timeout(f"TimeoutError: {e}", request=request)
+    except requests.ConnectionError as e:
+        raise ConnectionError(e, request=request)
+    except requests.Timeout as e:
+        raise Timeout(e, request=request)
+    except requests.RequestException as e:
+        raise RequestException(e, request=request)
+    except Exception as e:
+        raise RequestException(f"An unexpected error occurred: {e}", request=request)
+    else:
+        return response
+    finally:
+        self._handle_connections(request, response)
+```

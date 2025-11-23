@@ -1,0 +1,4 @@
+    def as_sql(self, compiler, connection):
+        if connection.vendor in ['sqlite', 'oracle']:
+            return getattr(self, f'as_{connection.vendor}')(compiler, connection)
+        return super().as_sql(compiler, connection)

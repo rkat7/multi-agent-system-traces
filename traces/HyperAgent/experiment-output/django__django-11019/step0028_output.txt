@@ -1,0 +1,24 @@
+            # Update the indexes for the specific files
+            if path == 'text-editor.js':
+                text_editor_index = last_insert_index
+            elif path == 'text-editor-extras.js':
+                text_editor_extras_index = last_insert_index
+            elif path == 'color-picker.js':
+                color_picker_index = last_insert_index
+        else:
+            if index > last_insert_index:
+                # Check if the specific files are in the correct order
+                if (text_editor_index is not None and text_editor_extras_index is not None and
+                    color_picker_index is not None and
+                    text_editor_index < text_editor_extras_index < color_picker_index):
+                    # The order is correct, no need to raise a warning
+                    pass
+                else:
+                    warnings.warn(
+                        'Detected duplicate Media files in an opposite order:\n'
+                        '%s\n%s' % (combined_list[last_insert_index], combined_list[index]),
+                        MediaOrderConflictWarning,
+                    )
+            # path already exists in the list. Update last_insert_index so
+            # that the following elements are inserted in front of this one.
+            last_insert_index = index

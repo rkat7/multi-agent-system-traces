@@ -1,0 +1,15 @@
+    def has_changed(self, initial, data):
+        """Returns True if the value has changed."""
+        if initial is None:
+            return data in self.empty_values
+        if data in self.empty_values:
+            return False
+        try:
+            key = self.to_field_name or 'pk'
+            if isinstance(initial, self.queryset.model):
+                initial = getattr(initial, key)
+            if isinstance(data, self.queryset.model):
+                data = getattr(data, key)
+            return initial != data
+        except (ValueError, TypeError, self.queryset.model.DoesNotExist):
+            return False

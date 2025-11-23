@@ -1,0 +1,85 @@
+### Input
+<empty>
+
+### Output
+HyperAgent_pytest-dev__pytest-7373 - INFO - Editor->Planner: exitcode: 0 (execution succeeded)
+Code output: The content of _pytest/mark/evaluate.py is: 1 import os
+2 import platform
+3 import sys
+4 import traceback
+5 from typing import Any
+6 from typing import Dict
+7 from typing import List
+8 from typing import Optional
+9 
+10 from ..outcomes import fail
+11 from ..outcomes import TEST_OUTCOME
+12 from .structures import Mark
+13 from _pytest.config import Config
+14 from _pytest.nodes import Item
+15 from _pytest.store import StoreKey
+16 
+17 
+18 evalcache_key = StoreKey[Dict[str, Any]]()
+19 
+20 
+21 def cached_eval(config: Config, expr: str, d: Dict[str, object]) -> Any:
+22     default = {}  # type: Dict[str, object]
+23     evalcache = config._store.setdefault(evalcache_key, default)
+24     try:
+25         return evalcache[expr]
+26     except KeyError:
+27         import _pytest._code
+28 
+29         exprcode = _pytest._code.compile(expr, mode="eval")
+30         evalcache[expr] = x = eval(exprcode, d)
+31         return x
+32 
+33 
+34 class MarkEvaluator:
+35     def __init__(self, item: Item, name: str) -> None:
+36         self.item = item
+37         self._marks = None  # type: Optional[List[Mark]]
+38         self._mark = None  # type: Optional[Mark]
+39         self._mark_name = name
+40 
+41     def __bool__(self) -> bool:
+42         # don't cache here to prevent staleness
+43         return bool(self._get_marks())
+44 
+45     def wasvalid(self) -> bool:
+46         return not hasattr(self, "exc")
+47 
+48     def _get_marks(self) -> List[Mark]:
+49         return list(self.item.iter_markers(name=self._mark_name))
+50 
+51     def invalidraise(self, exc) -> Optional[bool]:
+52         raises = self.get("raises")
+53         if not raises:
+54             return None
+55         return not isinstance(exc, raises)
+56 
+57     def istrue(self) -> bool:
+58         try:
+59             return self._istrue()
+60         except TEST_OUTCOME:
+61             self.exc = sys.exc_info()
+62             if isinstance(self.exc[1], SyntaxError):
+63                 # TODO: Investigate why SyntaxError.offset is Optional, and if it can be None here.
+64                 assert self.exc[1].offset is not None
+65                 msg = [" " * (self.exc[1].offset + 4) + "^"]
+66                 msg.append("SyntaxError: invalid syntax")
+67             else:
+68                 msg = traceback.format_exception_only(*self.exc[:2])
+69             fail(
+70                 "Error evaluating %r expression\n"
+71                 "    %s\n"
+72                 "%s" % (self._mark_name, self.expr, "\n".join(msg)),
+73                 pytrace=False,
+74             )
+75 
+76     def _getglobals(self) -> Dict[str, object]:
+77         d = {"os": os, "sys": sys, "platform": platform, "config": self.item.config}
+78         if hasattr(self.item, "obj"):
+79             d.update(self.item.obj.__globals__)  # type: ignore[attr-defined] # noqa: F821
+80         return d

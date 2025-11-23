@@ -1,0 +1,15 @@
+```python
+159     def test_logentry_get_admin_url(self):
+160         """
+161         LogEntry.get_admin_url returns a URL to edit the entry's object or
+162         None for nonexistent (possibly deleted) models.
+163         """
+164         logentry = LogEntry.objects.get(content_type__model__iexact='article')
+165         expected_url = reverse('admin:admin_utils_article_change', args=(quote(self.a1.pk),))
+166         self.assertEqual(logentry.get_admin_url(), expected_url)
+167         self.assertIn('article/%d/change/' % self.a1.pk, logentry.get_admin_url())
+168 
+169         logentry.content_type.model = "nonexistent"
+170         self.assertIsNone(logentry.get_admin_url())
+```
+HyperAgent_django__django-14855 - INFO - Planner's Response: Thought: Now that we have the relevant code, we can see that the issue is indeed in the `get_admin_url` function. The function doesn't take into account custom admin sites, which is why it's generating URLs with "/admin/" instead of "/custom-admin/". To verify this issue and test the proposed solution, we need to create a reproduction script and then modify the code to fix the problem.

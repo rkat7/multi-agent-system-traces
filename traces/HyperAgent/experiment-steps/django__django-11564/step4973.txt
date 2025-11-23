@@ -1,0 +1,12 @@
+### Input
+<empty>
+
+### Output
+class StaticFilesStorage(FileSystemStorage):
+    def url(self, name):
+        url = super().url(name)
+        if settings.STATIC_URL.startswith(('http:', 'https:', '//')):
+            return url
+        script_prefix = get_script_prefix()
+        return f"{script_prefix.rstrip('/')}{url}"
+```

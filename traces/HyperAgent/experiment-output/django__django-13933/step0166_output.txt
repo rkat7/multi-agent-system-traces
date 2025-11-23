@@ -1,0 +1,11 @@
+    def prepare_value(self, value):
+        """Returns the value for display."""
+        if value in self.empty_values:
+            return ''
+        try:
+            key = self.to_field_name or 'pk'
+            if isinstance(value, self.queryset.model):
+                value = getattr(value, key)
+            return self.queryset.get(**{key: value})
+        except (ValueError, TypeError, self.queryset.model.DoesNotExist):
+            return ''

@@ -1,0 +1,46 @@
+### Input
+<empty>
+
+### Output
+1. **assertrepr_compare function in util.py**:
+   ```python
+138 def assertrepr_compare(config, op: str, left: Any, right: Any) -> Optional[List[str]]:
+139     """Return specialised explanations for some operators/operands."""
+140     verbose = config.getoption("verbose")
+141     if verbose > 1:
+142         left_repr = safeformat(left)
+143         right_repr = safeformat(right)
+144     else:
+145         # XXX: "15 chars indentation" is wrong
+146         #      ("E       AssertionError: assert "); should use term width.
+147         maxsize = (
+148             80 - 15 - len(op) - 2
+149         ) // 2  # 15 chars indentation, 1 space around op
+150         left_repr = saferepr(left, maxsize=maxsize)
+151         right_repr = saferepr(right, maxsize=maxsize)
+152 
+153     summary = f"{left_repr} {op} {right_repr}"
+154 
+155     explanation = None
+156     try:
+157         if op == "==":
+158             explanation = _compare_eq_any(left, right, verbose)
+159         elif op == "not in":
+160             if istext(left) and istext(right):
+161                 explanation = _notin_text(left, right, verbose)
+162     except outcomes.Exit:
+163         raise
+164     except Exception:
+165         explanation = [
+166             "(pytest_assertion plugin: representation of details failed: {}.".format(
+167                 _pytest._code.ExceptionInfo.from_current()._getreprcrash()
+168             ),
+169             " Probably an object has a faulty __repr__.)",
+170         ]
+171 
+172     if not explanation:
+173         return None
+174 
+175     return [summary] + explanation
+```
+   This function is in `src/_pytest/assertion/util.py` and is used to display assertion errors.

@@ -1,0 +1,20 @@
+### Input
+<empty>
+
+### Output
+2. In the `HTTPAdapter` class, modify the exception handling block to include these exceptions. Find the try-except block that handles exceptions (it should be in the `send` method) and update it as follows:
+   ```python
+   try:
+       # Existing code...
+   except (_SSLError, _HTTPError, DecodeError, URLLib3TimeoutError) as e:
+       if isinstance(e, _SSLError):
+           raise SSLError(e, request=request)
+       elif isinstance(e, ReadTimeoutError):
+           raise ReadTimeout(e, request=request)
+       elif isinstance(e, URLLib3TimeoutError):
+           raise Timeout(e, request=request)
+       elif isinstance(e, DecodeError):
+           raise RequestException(e, request=request)
+       else:
+           raise
+   ```

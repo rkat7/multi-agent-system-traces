@@ -1,0 +1,26 @@
+Results for keyword: class sign
+245 class sign(Function):
+246     """
+247     Returns the complex sign of an expression:
+248     
+249     If the expression is real the sign will be:
+250     
+251         * 1 if expression is positive
+252         * 0 if expression is equal to zero
+253         * -1 if expression is negative
+254     
+255     If the expression is imaginary the sign will be:
+256     
+257         * I if im(expression) is positive
+258         * -I if im(expression) is negative
+259     
+260     Otherwise an unevaluated expression will be returned. When evaluated, the
+261     result (in general) will be ``cos(arg(expr)) + I*sin(arg(expr))``.
+262     """
+263     is_complex = True
+264     _singularities = True
+265 
+266     def doit(self, **hints):
+267         if self.args[0].is_zero is False:
+268             return self.args[0] / Abs(self.args[0])
+269         return self

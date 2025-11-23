@@ -1,0 +1,25 @@
+    :param force_insert: A boolean, which if `True`, tells Django to force an
+        insert (i.e. set `self._state.adding = True`).
+    :param force_update: A boolean, which if `True`, tells Django to force an
+        update (i.e. set `self._state.modifying = True`).
+    :param using: The name of the database to save to. If `None`, the default
+        database will be used.
+    :param update_fields: A list of field names to save. If `None`, all fields
+        will be saved.
+    """
+    if not self._get_pk_val() is None:
+        # existing instance
+        if force_update or (update_fields is not None and any(f in update_fields for f in self._meta.fields if f.attname in update_fields)):
+            # update
+            self._save_update(using, update_fields)
+        else:
+            # no update
+            return
+    else:
+        # new instance
+        if force_insert or self._get_pk_val() is None:
+            # insert
+            self._save(using)
+        else:
+            # no insert
+            return

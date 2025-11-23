@@ -1,0 +1,9 @@
+def unroll_all_any(node):
+    if isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
+        if node.func.id in ('all', 'any'):
+            if len(node.args) == 1 and isinstance(node.args[0], (ast.GeneratorExp, ast.ListComp)):
+                # Unroll the generator expression or list comprehension
+                comp = node.args[0]
+                loop_var = comp.generators[0].target.id
+                iterable = comp.generators[0].iter
+                condition = comp.elt

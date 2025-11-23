@@ -1,0 +1,23 @@
+### Input
+<empty>
+
+### Output
+            # If it's an inner class (more than one part), reconstruct the path
+            if len(parts) > 1:
+                return f"{module}.{'.'.join(parts)}", {f"from {module} import {'.'.join(parts[:-1])} as {parts[-1]}"}
+            else:
+                return f"{module}.{qualname}", {f"import {module}"}
+        elif isinstance(path, str):
+            # If it's a string, serialize it as is
+            module, name = path.rsplit(".", 1)
+            if module == "django.db.models":
+                imports = {"from django.db import models"}
+                name = "models.%s" % name
+            else:
+                imports = {"import %s" % module}
+                name = path
+            return name, imports
+        else:
+            # If it's neither a class nor a string, raise an error
+            raise ValueError("Path must be a class or a string")
+'''

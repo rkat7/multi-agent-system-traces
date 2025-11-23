@@ -1,0 +1,11 @@
+ab_query = AB.objects.filter(a=OuterRef('pk'), b=1)
+filter_conditions = Q(pk=1) | Q(ab_a__b=1)
+query = A.objects.filter(filter_conditions).annotate(
+    status_alias=Subquery(ab_query.values('status')),
+    c_count=Count('c'),
+)
+answer = query.values('status_alias').annotate(total_count=Count('status_alias'))
+print(answer.query)
+print(answer)
+```
+HyperAgent_django__django-12589 - INFO - Planner's Response: Thank you for providing the setup instructions. Let's analyze the error and the SQL query.

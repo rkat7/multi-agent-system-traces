@@ -1,0 +1,12 @@
+class FooBarTestCase(TestCase):
+    def test_get_foo_bar_display(self):
+        obj = FooBar.objects.create(foo_bar='1')
+        self.assertEqual(str(obj), "overridden")
+        self.assertEqual(obj.get_foo_bar_display(), "overridden")
+        # Test if we can access the original method
+        original_method = getattr(FooBar, 'get_foo_bar_display', None)
+        if original_method:
+            self.assertEqual(original_method(obj), "foo")
+        else:
+            self.fail("Original get_foo_bar_display method not found")
+```

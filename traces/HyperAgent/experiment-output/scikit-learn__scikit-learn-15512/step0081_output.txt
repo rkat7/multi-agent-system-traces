@@ -1,0 +1,29 @@
+```python
+397     def predict(self, X):
+398         """Predict the closest cluster each sample in X belongs to.
+399 
+400         Parameters
+401         ----------
+402         X : array-like or sparse matrix, shape (n_samples, n_features)
+403             New data to predict. If a sparse matrix is provided, it will be
+404             converted into a sparse ``csr_matrix``.
+405 
+406         Returns
+407         -------
+408         labels : ndarray, shape (n_samples,)
+409             Cluster labels.
+410         """
+411         check_is_fitted(self)
+412         if not hasattr(self, "cluster_centers_"):
+413             raise ValueError("Predict method is not supported when "
+414                              "affinity='precomputed'.")
+415 
+416         if self.cluster_centers_.shape[0] > 0:
+417             return pairwise_distances_argmin(X, self.cluster_centers_)
+418         else:
+419             warnings.warn("This model does not have any cluster centers "
+420                           "because affinity propagation did not converge. "
+421                           "Labeling every sample as '-1'.", ConvergenceWarning)
+422             return np.array([-1] * X.shape[0])
+```
+HyperAgent_scikit-learn__scikit-learn-15512 - INFO - Planner's Response: Thought: Thank you for providing the current implementation of the `predict` method. The existing implementation already handles the case where the algorithm didn't converge (when `self.cluster_centers_` is empty) by returning an array of -1s for all samples. However, we can make a few improvements to make it more consistent with our recent changes to the `fit` method and to provide better feedback to the user.

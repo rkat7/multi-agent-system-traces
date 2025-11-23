@@ -1,0 +1,17 @@
+4. `_get_related_selections_from_parent()` method:
+   ```python
+297         def _get_related_selections_from_parent(self, model, field, select, select_mask, cur_depth):
+298             related_klass_infos = []
+299             if field.name in select_mask:
+300                 related_klass_infos.append(self._get_related_selections_from_field(field))
+301             else:
+302                 related_klass_infos.append(self._get_related_selections_from_parent(
+303                     model._meta.get_field(field.name).remote_field.model,
+304                     field,
+305                     select,
+306                     select_mask,
+307                     cur_depth + 1
+308                 ))
+309             return related_klass_infos
+```
+   This method is used to get the related selections for a given model.

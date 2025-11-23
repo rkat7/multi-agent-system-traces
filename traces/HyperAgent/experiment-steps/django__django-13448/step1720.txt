@@ -1,0 +1,26 @@
+### Input
+<empty>
+
+### Output
+def setup_databases():
+    # This function will create the 'django_admin_log' table
+    cursor = connections['default'].cursor()
+    cursor.execute('''
+        DROP TABLE IF EXISTS django_admin_log;
+    ''')
+    cursor.execute('''
+        CREATE TABLE django_admin_log (
+            id serial PRIMARY KEY,
+            action_time timestamp NOT NULL,
+            model_id integer NOT NULL,
+            object_id integer NOT NULL,
+            object_repr varchar(200) NOT NULL,
+            action_flag smallint NOT NULL,
+            change_message text NOT NULL,
+            content_type_id integer,
+            user_id integer NOT NULL,
+            FOREIGN KEY (content_type_id) REFERENCES django_content_type(id),
+            FOREIGN KEY (user_id) REFERENCES auth_user(id)
+        );
+    ''')
+```

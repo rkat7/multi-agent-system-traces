@@ -1,0 +1,8 @@
+        if select:
+            self.cols = [self.db.quote_name(c) for c in select]
+        else:
+            select_list = []
+            for field in self.model_cls._meta.concrete_fields:
+                if select_list or field is not concrete_pk:
+                    select_list.append(field.attname)
+            self.cols = [self.db.quote_name(c) for c in select_list]

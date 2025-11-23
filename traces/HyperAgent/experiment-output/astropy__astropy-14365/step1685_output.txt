@@ -1,0 +1,22 @@
+```python
+def _interpret_err_lines(err_specs, ncols, names=None):
+    ...
+    if err_specs is None:
+        serr_cols = terr_cols = []
+    else:
+        # I don't want to empty the original one when using `pop` below
+        err_specs = copy.deepcopy(err_specs)
+        serr_cols = err_specs.pop("serr", [])
+        terr_cols = err_specs.pop("terr", [])
+    ...
+    if col_num in serr_cols:
+        colnames[i + 1] = f"{colname_root}_err"
+        shift += 1
+        continue
+    if col_num in terr_cols:
+        colnames[i + 1] = f"{colname_root}_perr"
+        colnames[i + 2] = f"{colname_root}_nerr"
+        shift += 2
+        continue
+    ...
+```

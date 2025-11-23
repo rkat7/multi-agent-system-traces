@@ -1,0 +1,22 @@
+### Input
+<empty>
+
+### Output
+```python
+580             else:
+581                 _a = Dummy('lo')
+582                 _b = Dummy('hi')
+583                 a = lo if lo.is_comparable else _a
+584                 b = hi if hi.is_comparable else _b
+585                 pos = self._eval_interval(x, a, b, _first=False)
+586                 if a == _a and b == _b:
+587                     # it's purely symbolic so just swap lo and hi and
+588                     # change the sign to get the value for when lo > hi
+589                     neg, pos = (-pos.xreplace({_a: hi, _b: lo}),
+590                         pos.xreplace({_a: lo, _b: hi}))
+591                 else:
+592                     # at least one of the bounds was comparable, so allow
+593                     # _eval_interval to use that information when computing
+594                     # the interval with lo and hi reversed
+595                     neg, pos = (-self._eval_interval(x, hi, lo, _first=False),
+```

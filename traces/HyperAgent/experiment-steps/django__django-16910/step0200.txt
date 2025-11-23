@@ -1,0 +1,30 @@
+### Input
+<empty>
+
+### Output
+* `add_immediate_loading()` method in the `Query` class (django/db/models/sql/query.py):
+```python
+2330     def add_immediate_loading(self, field_names):
+2331         """
+2332         Add the given list of model field names to the set of fields to
+2333         retrieve when the SQL is executed ("immediate loading" fields). The
+2334         field names replace any existing immediate loading field names. If
+2335         there are field names already specified for deferred loading, remove
+2336         those names from the new field_names before storing the new names
+2337         for immediate loading. (That is, immediate loading overrides any
+2338         existing immediate values, but respects existing deferrals.)
+2339         """
+2340         existing, defer = self.deferred_loading
+2341         field_names = set(field_names)
+2342         if "pk" in field_names:
+2343             field_names.remove("pk")
+2344             field_names.add(self.get_meta().pk.name)
+2345 
+2346         if defer:
+2347             # Remove any existing deferred names from the current set before
+2348             # setting the new names.
+2349             self.deferred_loading = field_names.difference(existing), False
+2350         else:
+2351             # Replace any existing "immediate load" field names.
+2352             self.deferred_loading = frozenset(field_names), False
+```

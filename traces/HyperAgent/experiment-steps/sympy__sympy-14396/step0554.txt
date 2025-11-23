@@ -1,0 +1,19 @@
+### Input
+<empty>
+
+### Output
+    @classmethod
+    def preprocess_domain(cls, domain):
+        if isinstance(domain, str):
+            # Check for 'RR[var1,var2,...]' format
+            match = re.match(r'RR\[([\w,\s]+)\]', domain)
+            if match:
+                variables = [var.strip() for var in match.group(1).split(',')]
+                return sympy.polys.domains.RR.poly_ring(*variables)
+        # If it's not a string or doesn't match our new format, 
+        # fall back to existing processing
+        return cls.__options__['domain'].preprocess(domain)
+'''
+result = editor._run(relative_file_path="sympy/polys/polyoptions.py", start_line=127, end_line=182, patch=patch)
+print(result)
+```

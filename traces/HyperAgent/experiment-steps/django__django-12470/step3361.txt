@@ -1,0 +1,21 @@
+### Input
+<empty>
+
+### Output
+```python
+def get_ordering(self, query, order_by):
+    if order_by:
+        if not isinstance(order_by, (list, tuple)):
+            order_by = (order_by,)
+        if not all(isinstance(expr, Field) for expr in order_by):
+            raise ValueError("Ordering must be a field or a tuple of fields")
+        order_by = [expr.name for expr in order_by]
+        if query.model._meta.abstract:
+            raise ValueError("Cannot order by fields on an abstract model")
+        if query.model._meta.proxy:
+            raise ValueError("Cannot order by fields on a proxy model")
+        if query.model._meta.concrete_model is not query.model:
+            raise ValueError("Cannot order by fields on a multi-table inherited model")
+        order_by = self._get_ordering(query, order_by)
+    return order_by
+```

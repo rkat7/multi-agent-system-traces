@@ -1,0 +1,15 @@
+### Input
+<empty>
+
+### Output
+```python
+# django/db/migrations/writer.py
+def write_field(self, field):
+    # ...
+    if isinstance(field.default, Enum):
+        # Handle Enum objects as default values
+        self.write_sql('DEFAULT ' + field.get_db_prep_save(field.default.value))
+    else:
+        # Handle other default values
+        self.write_sql('DEFAULT ' + field.get_db_prep_save(field.default))
+```

@@ -1,0 +1,13 @@
+### Input
+<empty>
+
+### Output
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        # Remove non-picklable components
+        for ax in state['axes']:
+            if ax.get_legend() and ax.get_legend().get_draggable():
+                legend = ax.get_legend()
+                legend._draggable = None
+                legend._loc_in_canvas = None
+        return state

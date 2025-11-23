@@ -1,0 +1,16 @@
+```python
+def emit_post_migrate_signal(verbosity, interactive, db, **kwargs):
+    # Emit the post_migrate signal for every application.
+    for app_config in apps.get_app_configs():
+        if app_config.models_module is not None:
+            if verbosity >= 2:
+                stdout.write(f"Sending post_migrate signal for {app_config.label}")
+            post_migrate.send(
+                sender=app_config.models_module,
+                app_config=app_config,
+                verbosity=verbosity,
+                interactive=interactive,
+                database=db,
+                **kwargs
+            )
+```

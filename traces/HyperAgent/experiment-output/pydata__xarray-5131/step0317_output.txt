@@ -1,0 +1,10 @@
+patch_repr_datetime = '''
+@pytest.mark.parametrize("obj", [repr_da, repr_da.to_dataset(name="a")])
+def test_groupby_repr_datetime(obj):
+    actual = repr(obj.groupby("t.month"))
+    expected = f"{obj.__class__.__name__}GroupBy"
+    expected += ", grouped over 'month'"  # Removed trailing space
+    expected += f"\n{len(np.unique(obj.t.dt.month))} groups with labels "
+    expected += "1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12."
+    assert actual == expected
+'''

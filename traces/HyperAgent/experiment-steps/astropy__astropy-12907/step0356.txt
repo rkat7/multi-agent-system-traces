@@ -1,0 +1,38 @@
+### Input
+<empty>
+
+### Output
+    Returns
+    -------
+    separable_matrix : ndarray
+        A matrix of 0s and 1s where 1 indicates that the output
+        is independent of the input.
+    """
+    if isinstance(transform, CompoundModel):
+        # Recursive case: combine the separability matrices of the components
+        sub_matrices = [_separable(sub_model) for sub_model in transform.sub_models]
+        if transform.join_func == np.multiply:
+            # Combine the matrices using the AND operation
+            separable_matrix = np.stack(sub_matrices, axis=2)
+            separable_matrix = np.all(separable_matrix, axis=2)
+        else:
+            # Combine the matrices using the OR operation
+            separable_matrix = np.stack(sub_matrices, axis=2)
+            separable_matrix = np.any(separable_matrix, axis=2)
+    elif isinstance(transform, Mapping):
+        # Special case: Mapping model
+        separable_matrix = np.eye(transform.n_inputs, transform.n_outputs, dtype=int)
+    else:
+        # Base case: Single model
+        separable_matrix = np.eye(transform.n_inputs, transform.n_outputs, dtype=int)
+        for i in range(transform.n_outputs):
+            for j in range(transform.n_inputs):
+                try:
+                    if transform.separable[i, j]:
+                        separable_matrix[i, j] = 1
+                    else:
+                        separable_matrix[i, j] = 0
+                except (ModelDefinitionError, IndexError):
+                    separable_matrix[i, j] = 0
+    return separable_matrix
+```

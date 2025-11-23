@@ -1,0 +1,46 @@
+    for something in files_or_modules:
+        if os.path.isdir(something):
+            filepath = os.path.join(something, "__init__.py")
+            try:
+                spec = importlib.util.spec_from_file_location("", filepath)
+                module = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(module)
+                is_namespace = modutils.is_namespace(spec)
+                is_directory = modutils.is_directory(spec)
+                if is_namespace or is_directory:
+                    expanded_modules.extend(
+                        _expand_module(
+                            module.__name__,
+                            filepath,
+                            ignore_list,
+                            ignore_list_re,
+                            ignore_list_paths_re,
+                        )
+                    )
+            except (ImportError, SyntaxError) as exc:
+                errors.append(
+                    {
+                        "module": os.path.basename(something),
+                        "path": something,
+                        "error": str(exc),
+                    }
+                )
+        else:
+            try:
+                spec = importlib.util.spec_from_file_location("", something)
+                module = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(module)
+                expanded_modules.append(
+                    {
+                        "name": module.__name__,
+                        "path": something,
+                    }
+                )
+            except (ImportError, SyntaxError) as exc:
+                errors.append(
+                    {
+                        "module": os.path.basename(something),
+                        "path": something,
+                        "error": str(exc),
+                    }
+                )

@@ -1,0 +1,32 @@
+### Input
+<empty>
+
+### Output
+```python
+def _futrig(rv, cos=cos, sin=sin, tan=tan, cot=cot, cosh=cosh, sinh=sinh, tanh=tanh, coth=coth, sech=sech, csch=csch, pow=pow, max=max, **kwargs):
+    """Helper for futrig."""
+    hyper = kwargs.get('hyper', True)
+    if isinstance(rv, Mul):
+        args = list(rv.args)
+        changed = False
+        for i, a in enumerate(args):
+            if isinstance(a, Pow) and a.base in (cos, sin, tan, cot, cosh, sinh, tanh, coth, sech, csch):
+                if a.exp.is_real:
+                    if (a.exp < 0) == True:
+                        args[i] = 1/a.base**(-a.exp)
+                        changed = True
+                else:
+                    # Handle complex exponents
+                    args[i] = a.base**a.exp
+                    changed = True
+        if changed:
+            rv = Mul(*args)
+    elif isinstance(rv, Pow) and rv.base in (cos, sin, tan, cot, cosh, sinh, tanh, coth, sech, csch):
+        if rv.exp.is_real:
+            if (rv.exp < 0) == True:
+                rv = 1/rv.base**(-rv.exp)
+        else:
+            # Handle complex exponents
+            rv = rv.base**rv.exp
+    return rv
+```

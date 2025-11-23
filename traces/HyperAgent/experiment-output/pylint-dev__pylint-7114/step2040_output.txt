@@ -1,0 +1,13 @@
+patch = '''
+    def _record_import(
+        self,
+        node: ImportNode,
+        importedmodnode: nodes.Module | None,
+    ) -> None:
+        """Record the package `node` imports from."""
+        if isinstance(node, nodes.ImportFrom):
+            importedname = node.modname
+        else:
+            importedname = importedmodnode.name if importedmodnode else None
+        if not importedname:
+            importedname = node.names[0][0].split(".")[0]

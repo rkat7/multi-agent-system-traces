@@ -1,0 +1,36 @@
+```python
+285     def __getitem__(self, key):
+286         if not isinstance(key, tuple) and isinstance(key, slice):
+287             from sympy.matrices.expressions.slice import MatrixSlice
+288             return MatrixSlice(self, key, (0, None, 1))
+289         if isinstance(key, tuple) and len(key) == 2:
+290             i, j = key
+291             if isinstance(i, slice) or isinstance(j, slice):
+292                 from sympy.matrices.expressions.slice import MatrixSlice
+293                 return MatrixSlice(self, i, j)
+294             i, j = _sympify(i), _sympify(j)
+295             if self.valid_index(i, j) != False:
+296                 return self._entry(i, j)
+297             else:
+298                 raise IndexError("Invalid indices (%s, %s)" % (i, j))
+299         elif isinstance(key, (SYMPY_INTS, Integer)):
+300             # row-wise decomposition of matrix
+301             rows, cols = self.shape
+302             # allow single indexing if number of columns is known
+303             if not isinstance(cols, Integer):
+304                 raise IndexError(filldedent('''
+305                     Single indexing is only supported when the number
+306                     of columns is known.'''))
+307             key = _sympify(key)
+308             i = key // cols
+309             j = key % cols
+310             if self.valid_index(i, j) != False:
+311                 return self._entry(i, j)
+312             else:
+313                 raise IndexError("Invalid index %s" % key)
+314         elif isinstance(key, (Symbol, Expr)):
+315                 raise IndexError(filldedent('''
+316                     Only integers may be used when addressing the matrix
+317                     with a single index.'''))
+318         raise IndexError("Invalid index, wanted %s[i,j]" % self)
+```

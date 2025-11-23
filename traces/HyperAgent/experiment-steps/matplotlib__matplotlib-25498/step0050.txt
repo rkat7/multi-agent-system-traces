@@ -1,0 +1,63 @@
+### Input
+<empty>
+
+### Output
+Results for keyword: LogNorm
+998 class LogNorm(Normalize):
+999     """
+1000     Normalize a given value to the 0-1 range on a log scale.
+1001 
+1002     This class transforms the input value x to the output y using the equation
+1003     ``y = log10(x)``.
+1004 
+1005     Attributes
+1006     ----------
+1007     clip : bool
+1008         If True values less than 0 are set to 0 and values greater than 1 are
+1009         set to 1. If False, invalid values (less than 0) raise a `ValueError`.
+1010     """
+1011 
+1012     def __call__(self, value, clip=None):
+1013         """
+1014         Normalize *value* data in the 0-1 range.
+1015 
+1016         Parameters
+1017         ----------
+1018         value : array-like
+1019             Value(s) to normalize.
+1020         clip : bool, optional
+1021             If *True* values less than 0 are set to 0 and values greater
+1022             than 1 are set to 1. If *False* and the input contains negative
+1023             values or inf, an error will be raised instead.
+1024 
+1025         Returns
+1026         -------
+1027         float or ndarray
+1028             Normalized value(s).
+1029         """
+1030         if clip is None:
+1031             clip = self.clip
+1032 
+1033         result = np.ma.log10(value)
+1034         result[~np.isfinite(result)] = 0  # NaNs and Infs
+1035 
+1036         if clip:
+1037             result[result < 0] = 0.
+1038             result[result > 1] = 1.
+1039         return result
+1040 
+1041     def inverse(self, value):
+1042         """
+1043         Inverse of `__call__`.
+1044 
+1045         Parameters
+1046         ----------
+1047         value : array-like
+1048             Normalized value(s) to translate back to original values.
+1049 
+1050         Returns
+1051         -------
+1052         float or ndarray
+1053             Denormalized value(s).
+1054         """
+1055         return 10 ** value

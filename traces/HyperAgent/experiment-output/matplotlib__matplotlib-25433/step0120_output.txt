@@ -1,0 +1,30 @@
+```python
+948     def set_val(self, val):
+949         """
+950         Set slider value to *val*.
+951 
+952         Parameters
+953         ----------
+954         val : tuple or array-like of float
+955         """
+956         val = np.sort(val)
+957         _api.check_shape((2,), val=val)
+958         # Reset value to allow _value_in_bounds() to work.
+959         self.val = (self.valmin, self.valmax)
+960         vmin, vmax = self._value_in_bounds(val)
+961         self._update_selection_poly(vmin, vmax)
+962         if self.orientation == "vertical":
+963             self._handles[0].set_ydata([vmin])
+964             self._handles[1].set_ydata([vmax])
+965         else:
+966             self._handles[0].set_xdata([vmin])
+967             self._handles[1].set_xdata([vmax])
+968 
+969         self.valtext.set_text(self._format((vmin, vmax)))
+970 
+971         if self.drawon:
+972             self.ax.figure.canvas.draw_idle()
+973         self.val = (vmin, vmax)
+974         if self.eventson:
+975             self._observers.process("changed", (vmin, vmax))
+```

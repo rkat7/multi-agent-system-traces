@@ -1,0 +1,34 @@
+### Input
+<empty>
+
+### Output
+```python
+def trigsimp_groebner(expr, **opts):
+    # ...
+    num, denom = cancel(expr).as_numer_denom()
+    try:
+        (pnum, pdenom), opt = parallel_poly_from_expr([num, denom])
+    except PolificationFailed:
+        return expr
+    # ...
+    ideal, freegens, gens = analyse_gens(opt.gens, hints)
+    # ...
+    G = groebner(ideal, order=order, gens=gens, domain=ZZ)
+    # ...
+    if freegens and pdenom.has_only_gens(*set(gens).intersection(pdenom.gens)):
+        num = Poly(num, gens=gens+freegens).eject(*gens)
+        res = []
+        for monom, coeff in num.terms():
+            ourgens = set(parallel_poly_from_expr([coeff, denom])[1].gens)
+            # ...
+            realgens = [x for x in gens if x in ourgens]
+            # ...
+            ourG = [g.as_expr() for g in G.polys if
+                    g.has_only_gens(*ourgens.intersection(g.gens))]
+            res.append(Mul(*[a**b for a, b in zip(freegens, monom)]) * \
+                       ratsimpmodprime(coeff/denom, ourG, order=order,
+                                       gens=realgens, quick=quick, domain=ZZ,
+                                       polynomial=polynomial).subs(subs))
+        return Add(*res)
+    # ...
+```

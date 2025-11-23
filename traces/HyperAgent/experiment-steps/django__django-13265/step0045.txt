@@ -1,0 +1,14 @@
+### Input
+<empty>
+
+### Output
+        # Defer creating accessors on the foreign class until it has been
+        # created and registered. If remote_field is None, we're ordering
+        # with respect to a GenericForeignKey and don't know what the
+        # foreign class is - we'll add those accessors later in
+        # contribute_to_class().
+        if opts.order_with_respect_to.remote_field:
+            wrt = opts.order_with_respect_to
+            remote = wrt.remote_field.model
+            lazy_related_operation(make_foreign_order_accessors, cls, remote)
+```

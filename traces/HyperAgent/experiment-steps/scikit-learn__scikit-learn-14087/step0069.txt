@@ -1,0 +1,20 @@
+### Input
+<empty>
+
+### Output
+```python
+if self.refit:
+    # ... (keep existing code for refit=True)
+else:
+    # Take the best scores across every fold and the average of
+    # all coefficients corresponding to the best scores.
+    best_indices = np.argmax(scores, axis=1)
+    if multi_class == 'ovr':
+        w = np.array([
+            np.mean([coefs_paths[cls][i, best_indices[i], :]
+                     for i in range(len(folds))], axis=0)
+            for cls in range(n_classes)
+        ])
+    else:
+        w = np.mean([coefs_paths[:, i, best_indices[i], :]
+                     for i in range(len(folds))], axis=0)

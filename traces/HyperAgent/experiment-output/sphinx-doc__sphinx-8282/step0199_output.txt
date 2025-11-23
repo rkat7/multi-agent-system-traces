@@ -1,0 +1,16 @@
+4. **Handling overloaded functions**:
+   The code snippet does not explicitly handle overloaded functions. However, Sphinx's autodoc extension uses the `inspect` module to inspect the Python code and extract the function signatures, which can handle overloaded functions. The relevant code is in the `sphinx.ext.autodoc` module:
+   ```python
+# sphinx/ext/autodoc/__init__.py
+def get_signature(app, obj, name, objtype, signode):
+    ...
+    try:
+        # Get the function signature from the inspect module
+        signature = inspect.signature(obj)
+    except TypeError:
+        # Handle the case where the object is not a function
+        pass
+    ...
+```
+   This code snippet uses the `inspect.signature` function to get the function signature from the `inspect` module, which can handle overloaded functions.
+HyperAgent_sphinx-doc__sphinx-8282 - INFO - Planner's Response: Thought: Based on the code snippets provided, it appears that the issue with `autodoc_typehints` not affecting overloaded callables is likely due to how Sphinx processes function signatures and applies the `autodoc_typehints` setting. The current implementation doesn't seem to have special handling for overloaded functions when it comes to type hints.

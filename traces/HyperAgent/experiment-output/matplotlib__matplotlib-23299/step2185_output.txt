@@ -1,0 +1,21 @@
+         with mpl.rc_context(fname='print.rc'):
+             plt.plot(x, y)  # uses 'print.rc'
+    """
+    orig = rcParams.copy()
+    changed_params = set()
+    try:
+        if fname:
+            rc_file(fname)
+            changed_params.update(set(rcParams.keys()) - set(orig.keys()))
+        if rc:
+            rcParams.update(rc)
+            changed_params.update(rc.keys())
+        yield
+    finally:
+        # Only update the parameters that were actually changed
+        for param in changed_params:
+            if param in orig:
+                rcParams[param] = orig[param]
+            else:
+                rcParams.pop(param, None)
+```

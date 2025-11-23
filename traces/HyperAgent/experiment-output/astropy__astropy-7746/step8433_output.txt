@@ -1,0 +1,14 @@
+        if len(args) == 2:
+            try:
+                xy, origin = args
+                xy = np.asarray(xy)
+                origin = int(origin)
+            except Exception:
+                raise TypeError(
+                    "When providing two arguments, they must be "
+                    "(coords[N][{0}], origin)".format(self.naxis))
+            if xy.size == 0:
+                return np.empty((0, self.naxis))
+            if self.naxis == 1 and len(xy.shape) == 1:
+                return _return_list_of_arrays([xy], origin)
+            return _return_single_array(xy, origin)

@@ -1,0 +1,30 @@
+patch = '''
+                    if is_relation:
+                        ref_db_column, ref_db_table = relations[column_name]
+                        if extra_params.pop("unique", False) or extra_params.get(
+                            "primary_key"
+                        ):
+                            rel_type = "OneToOneField"
+                        else:
+                            rel_type = "ForeignKey"
+                            ref_pk_column = (
+                                connection.introspection.get_primary_key_column(
+                                    cursor, ref_db_table
+                                )
+                            )
+                            if ref_pk_column and ref_pk_column != ref_db_column:
+                                extra_params["to_field"] = ref_db_column
+                        rel_to = (
+                            "self"
+                            if table_name == ref_db_table
+                            else table2model(ref_db_table)
+                        )
+                        if rel_to in known_models:
+                            # Generate a unique related_name
+                            related_name = f"{table_name}_{column_name}"
+                            extra_params["related_name"] = related_name
+'''
+result = editor._run(relative_file_path="django/core/management/commands/inspectdb.py", start_line=166, end_line=180, patch=patch)
+print(result)
+```
+HyperAgent_django__django-15819 - INFO - Editor->Planner: Thought: It appears that the `create_foreign_key` method doesn't exist in this file. However, we can see that the foreign key creation is handled within the `handle_inspection` method. The relevant code for creating foreign keys is around line 166-180. Let's modify this part to include a unique `related_name` for each foreign key field.

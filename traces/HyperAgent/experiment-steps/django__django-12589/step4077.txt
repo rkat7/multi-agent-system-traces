@@ -1,0 +1,26 @@
+### Input
+<empty>
+
+### Output
+# Now, let's add the corrected get_group_by_cols method
+patch = '''
+    def get_group_by_cols(self):
+        group_by_cols = []
+        for alias, annotation in self.annotations.items():
+            if isinstance(annotation, Subquery):
+                # For subquery annotations, use the entire subquery in the GROUP BY
+                group_by_cols.append(annotation)
+            elif hasattr(annotation, 'resolve_expression'):
+                resolved = annotation.resolve_expression(self)
+                if hasattr(resolved, 'get_group_by_cols'):
+                    group_by_cols.extend(resolved.get_group_by_cols())
+                else:
+                    group_by_cols.append(resolved)
+            else:
+                group_by_cols.append(annotation)
+        return group_by_cols
+'''
+result = editor._run(relative_file_path="django/db/models/sql/query.py", start_line=1949, end_line=1949, patch=patch)
+print(result)
+```
+HyperAgent_django__django-12589 - INFO - Editor->Planner: Thought: I apologize for the error. It seems that the `fields` variable is not defined in the new method. Let's modify the `get_group_by_cols` method to use `self.annotations` instead of `fields`. We'll also reopen the file to check the surrounding context and ensure proper indentation.

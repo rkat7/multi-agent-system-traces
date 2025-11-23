@@ -1,0 +1,22 @@
+### Input
+<empty>
+
+### Output
+```python
+458                     if not features.supports_parentheses_in_compound:
+459                         part_sql = 'SELECT * FROM ({})'.format(part_sql)
+460                     # Add parentheses when combining with compound query if not
+461                     # already added for all compound queries.
+462                     elif not features.supports_slicing_ordering_in_compound:
+463                         part_sql = '({})'.format(part_sql)
+464                 parts += ((part_sql, part_args),)
+465             except EmptyResultSet:
+466                 # Omit the empty queryset with UNION and with DIFFERENCE if the
+467                 # first queryset is nonempty.
+468                 if combinator == 'union' or (combinator == 'difference' and parts):
+469                     continue
+470                 raise
+471         if not parts:
+472             raise EmptyResultSet
+473         combinator_sql = self.connection.ops.set_operators[combinator]
+```

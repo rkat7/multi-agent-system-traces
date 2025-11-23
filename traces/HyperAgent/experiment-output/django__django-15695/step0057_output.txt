@@ -1,0 +1,9 @@
+    def database_backwards(self, app_label, schema_editor, from_state, to_state):
+        from_model = from_state.models[app_label, self.model_name_lower]
+        to_model = to_state.models[app_label, self.model_name_lower]
+        schema_editor.alter_index(
+            to_model,
+            [field.attname for field in to_model._meta.local_fields],
+            self.new_name,
+            from_model.indexes[-1],
+        )

@@ -1,0 +1,41 @@
+### Input
+<empty>
+
+### Output
+```python
+158 def parse_http_date(date):
+159     """
+160     Parse a date format as specified by HTTP RFC7231 section 7.1.1.1.
+161 
+162     The three formats allowed by the RFC are accepted, even if only the first
+163     one is still in widespread use.
+164 
+165     Return an integer expressed in seconds since the epoch, in UTC.
+166     """
+167     # email.utils.parsedate() does the job for RFC1123 dates; unfortunately
+168     # RFC7231 makes it mandatory to support RFC850 dates too. So we roll
+169     # our own RFC-compliant parsing.
+170     for regex in RFC1123_DATE, RFC850_DATE, ASCTIME_DATE:
+171         m = regex.match(date)
+172         if m is not None:
+173             break
+174     else:
+175         raise ValueError("%r is not in a valid HTTP date format" % date)
+176     try:
+177         year = int(m.group('year'))
+178         if year < 100:
+179             if year < 70:
+180                 year += 2000
+181             else:
+182                 year += 1900
+183         month = MONTHS.index(m.group('mon').lower()) + 1
+184         day = int(m.group('day'))
+185         hour = int(m.group('hour'))
+186         min = int(m.group('min'))
+187         sec = int(m.group('sec'))
+188         result = datetime.datetime(year, month, day, hour, min, sec)
+189         return calendar.timegm(result.utctimetuple())
+190     except Exception as exc:
+191         raise ValueError("%r is not a valid date" % date) from exc
+```
+HyperAgent_django__django-11848 - INFO - Planner's Response: Thought: Thank you for providing the code. Now that we can see the implementation, it's clear that the issue is in the handling of two-digit years. The current logic uses a fixed cutoff of 70, which doesn't comply with the RFC 7231 recommendation. We need to modify this part to compare the two-digit year with the current year and interpret it as per the RFC guidelines. Let's create a plan to fix this issue.

@@ -1,0 +1,15 @@
+        # Add this new section to update ForeignKey to_field
+        for (model_app_label, model_name), model_state in state.models.items():
+            for index, (name, field) in enumerate(model_state.fields):
+                if isinstance(field, models.ForeignKey):
+                    remote_model_tuple = self._get_model_tuple(
+                        field.remote_field.model, model_app_label, model_name
+                    )
+                    if remote_model_tuple == (app_label, self.model_name_lower):
+                        if field.to_fields and self.old_name in field.to_fields:
+                            new_to_fields = tuple(
+                                self.new_name if f == self.old_name else f
+                                for f in field.to_fields
+                            )
+                            field.to_fields = new_to_fields
+                            model_state.fields[index] = (name, field)

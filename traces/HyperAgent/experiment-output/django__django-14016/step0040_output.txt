@@ -1,0 +1,11 @@
+    def resolve_expression(self, query=None, allow_joins=True, reuse=None, summarize=False, for_save=False):
+        # We must promote any new joins to left outer joins so that when Q is
+        # used as an expression, rows aren't filtered due to joins.
+        clause, joins = query._add_q(
+            self, reuse, allow_joins=allow_joins, split_subq=False,
+            check_filterable=False,
+        )
+        query.promote_joins(joins)
+        return clause
+```
+HyperAgent_django__django-14016 - INFO - Planner's Response: Thought: Thank you for providing the Q class implementation. After examining the code, I can see that the issue is not directly in the Q class itself, but likely in how it's being processed when combined with other Q objects. The `__or__` method is calling `self._combine`, which in turn uses `copy.deepcopy`. This deepcopy operation is likely where the pickling attempt is happening.

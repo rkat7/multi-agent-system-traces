@@ -1,0 +1,37 @@
+### Input
+<empty>
+
+### Output
+Results for keyword: def _entry
+126     def _entry(self, i, j, **kwargs):
+127         from sympy import symbols, Piecewise
+128 
+129         if i.is_number and j.is_number:
+130             # If both indices are numbers, we can determine the exact block
+131             row_accum = 0
+132             for row_block, numrows in enumerate(self.rowblocksizes):
+133                 if i < row_accum + numrows:
+134                     break
+135                 row_accum += numrows
+136 
+137             col_accum = 0
+138             for col_block, numcols in enumerate(self.colblocksizes):
+139                 if j < col_accum + numcols:
+140                     break
+141                 col_accum += numcols
+142 
+143             return self.blocks[row_block, col_block][i - row_accum, j - col_accum]
+144         else:
+145             # If either index is symbolic, we need to return a Piecewise expression
+146             result = []
+147             row_accum = 0
+148             for row_block, numrows in enumerate(self.rowblocksizes):
+149                 col_accum = 0
+150                 for col_block, numcols in enumerate(self.colblocksizes):
+151                     condition = ((row_accum <= i) & (i < row_accum + numrows) &
+152                                  (col_accum <= j) & (j < col_accum + numcols))
+153                     result.append((self.blocks[row_block, col_block][i - row_accum, j - col_accum], condition))
+154                     col_accum += numcols
+155                 row_accum += numrows
+156             return Piecewise(*result)
+157 

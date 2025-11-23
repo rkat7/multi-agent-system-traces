@@ -1,0 +1,29 @@
+Observation: The content of django/contrib/admin/options.py is: 1 import copy
+2 import json
+3 import re
+...
+550 class ModelAdmin(BaseModelAdmin):
+551     """Encapsulate all admin options and functionality for a given model."""
+...
+617     def get_urls(self):
+618         from django.urls import path
+619 
+620         def wrap(view):
+621             def wrapper(*args, **kwargs):
+622                 return self.admin_site.admin_view(view)(*args, **kwargs)
+623             wrapper.model_admin = self
+624             return update_wrapper(wrapper, view)
+625 
+626         info = self.model._meta.app_label, self.model._meta.model_name
+627 
+628         return [
+629             path('', wrap(self.changelist_view), name='%s_%s_changelist' % info),
+630             path('add/', wrap(self.add_view), name='%s_%s_add' % info),
+631             path('<path:object_id>/history/', wrap(self.history_view), name='%s_%s_history' % info),
+632             path('<path:object_id>/delete/', wrap(self.delete_view), name='%s_%s_delete' % info),
+633             path('<path:object_id>/change/', wrap(self.change_view), name='%s_%s_change' % info),
+634             # For backwards compatibility (was the change url before 1.9)
+635             path('<path:object_id>/', wrap(RedirectView.as_view(
+636                 pattern_name='%s:%s_%s_change' % ((self.admin_site.name,) + info)
+637             ))),
+638         ]

@@ -1,0 +1,22 @@
+class Loader(Loader):
+    def load_template_source(self, template_name, template_dirs=None):
+        ...
+        if settings.DEBUG and settings.TEMPLATES[0]['OPTIONS'].get('auto_reload'):
+            # If auto_reload is enabled, we need to check if the template has changed
+            # since the last time it was loaded.
+            try:
+                template = self.get_template(template_name, template_dirs)
+                template_source = template.source
+                template_mtime = template.mtime
+                # Check if the template has changed
+                if os.path.getmtime(template.template_file) != template_mtime:
+                    # If the template has changed, invalidate the cache
+                    cache.delete(template_name)
+                    # And reload the template
+                    template = self.get_template(template_name, template_dirs)
+                    template_source = template.source
+            except Exception:
+                # If an exception occurs, just return the original template source
+                pass
+        return template_source, template_name
+```

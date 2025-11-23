@@ -1,0 +1,29 @@
+   - `get_child_arguments` function (django/utils/autoreload.py):
+     ```python
+211 
+212 
+213 def get_child_arguments():
+214     """
+215     Return the executable. This contains a workaround for Windows if the
+216     executable is reported to not have the .exe extension which can cause bugs
+217     on reloading.
+218     """
+219     import __main__
+220     py_script = Path(sys.argv[0])
+221 
+222     args = [sys.executable] + ['-W%s' % o for o in sys.warnoptions]
+223     if sys.implementation.name == 'cpython':
+224         args.extend(
+225             f'-X{key}' if value is True else f'-X{key}={value}'
+226             for key, value in sys._xoptions.items()
+227         )
+228     # __spec__ is set when the server was started with the `-m` option,
+229     # see https://docs.python.org/3/reference/import.html#main-spec
+230     # __spec__ may not exist, e.g. when running in a Conda env.
+231     if getattr(__main__, '__spec__', None) is not None:
+232         spec = __main__.__spec__
+233         if (spec.name == '__main__' or spec.name.endswith('.__main__')) and spec.parent:
+234             name = spec.parent
+235         else:
+236             name = spec.name
+```

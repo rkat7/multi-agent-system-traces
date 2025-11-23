@@ -1,0 +1,18 @@
+### Input
+<empty>
+
+### Output
+    _check_frame(frame)
+    if frame in self._vel_dict:
+        return self._vel_dict[frame]
+    elif self._pos_dict:
+        # Try to calculate velocity from position
+        for ref_frame, position in self._pos_dict.items():
+            try:
+                return position.dt(frame)
+            except:
+                continue
+    # If velocity can't be calculated, raise the original error
+    raise ValueError('Velocity of point ' + self.name + ' has not been'
+                     ' defined in ReferenceFrame ' + frame.name)
+'''

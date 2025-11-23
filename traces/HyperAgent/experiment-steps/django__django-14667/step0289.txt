@@ -1,0 +1,16 @@
+### Input
+<empty>
+
+### Output
+Results for keyword: def only
+1421     def only(self, *fields):
+1422         """
+1423         Essentially, the opposite of defer. Only the fields passed into this
+1424         method and that are not already specified as deferred are loaded
+1425         immediately when the queryset is evaluated.
+1426         """
+1427         clone = self._clone()
+1428         clone._fields = set(fields)
+1429         clone.query.clear_deferred_loading()
+1430         clone.query.add_immediate_loading(fields)
+1431         return clone

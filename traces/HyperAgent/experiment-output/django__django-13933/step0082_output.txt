@@ -1,0 +1,26 @@
+1. The `default_error_messages` attribute has been updated to include a placeholder for the invalid value:
+```python
+default_error_messages = {
+    'invalid_choice': _('Select a valid choice. %(value)s is not one of the available choices.'),
+}
+```
+2. The `to_python` method has been modified to include the invalid value when raising the `ValidationError`:
+```python
+def to_python(self, value):
+    if value in self.empty_values:
+        return None
+    try:
+        key = self.to_field_name or 'pk'
+        if isinstance(value, self.queryset.model):
+            value = getattr(value, key)
+        value = self.queryset.get(**{key: value})
+    except (ValueError, TypeError, self.queryset.model.DoesNotExist):
+        raise ValidationError(
+            self.error_messages['invalid_choice'],
+            code='invalid_choice',
+            params={'value': value},
+        )
+    return value
+```
+These changes should resolve the issue where `ModelChoiceField` does not include the invalid choice value in the error message, making it more consistent with the behavior of `ChoiceField`.
+HyperAgent_django__django-13933 - INFO - Navigator->Planner: The `ModelChoiceField` class in Django's `forms/models.py` file has undergone changes over time. However, I'll provide the final version of the class as of my cut-off knowledge date (December 2023), focusing on the `default_error_messages` and `to_python` method.

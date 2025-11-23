@@ -1,0 +1,42 @@
+### Input
+<empty>
+
+### Output
+```python
+def _print_Pow(self, expr):
+    base, exp = expr.as_base_exp()
+    if base is S.Exp1:
+        return r"e^{%s}" % self._print(exp)
+    if exp.is_Rational and exp.p < 0:
+        # Rational powers should be printed with the p/q exp
+        # NB: This is just a temporary fix, a more general solution should be found
+        return r"\frac{%s}{%s}" % \
+            (self._print(base),
+             self._print(Pow(base, -exp, evaluate=False)))
+    elif (exp.is_Rational and exp.is_integer) or \
+            (exp.has(Symbol) and not base.has(Symbol)):
+        # Exponents that are simple fractions (e.g. 1/2, 3/2, etc.)
+        # or expressions that don't depend on the base symbol can safely
+        # be printed as superscripts.
+        if exp == 2:
+            return r"%s^2" % self._print(base)
+        elif exp == -1:
+            return r"\frac{1}{%s}" % self._print(base)
+        elif exp.p != 1:
+            return r"%s^{\frac{%s}{%s}}" % \
+                (self._print(base), self._print(exp.p), self._print(exp.q))
+        else:
+            return r"%s^{%s}" % (self._print(base), self._print(exp.q))
+    elif exp.is_Mul and any(x.is_Function for x in exp.args):
+        # exp is a Mul with at least one function argument
+        # _, exp = expr.as_base_exp()
+        if self._settings['fold_func_brackets'] and exp.could_extract_minus_sign():
+            return r"(%s)^{%s}" % (self._print(base), self._print(exp))
+        else:
+            return r"%s^{%s}" % (self._print(base), self._print(exp))
+    else:
+        if self._settings['itex']:
+            return r"\root{%d}{%s}" % (exp, base)
+        else:
+            return r"%s^{%s}" % (self._print(base), self._print(exp))
+```

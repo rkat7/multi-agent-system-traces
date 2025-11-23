@@ -1,0 +1,8 @@
+    def __hash__(self):
+        if hasattr(self, 'error_dict'):
+            return hash(frozenset((key, frozenset(errors)) for key, errors in self.error_dict.items()))
+        elif hasattr(self, 'error_list'):
+            return hash(frozenset(self.error_list))
+        else:
+            return hash((self.message, self.code, frozenset(self.params.items()) if self.params else None))
+```

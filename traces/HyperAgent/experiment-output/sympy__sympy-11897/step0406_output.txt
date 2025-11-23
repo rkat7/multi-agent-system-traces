@@ -1,0 +1,27 @@
+            if expr.exp.is_negative:
+                return r"\frac{1}{%s}" % tex
+            else:
+                return tex
+        elif expr.exp.is_Rational and expr.exp.is_negative and expr.base.is_commutative:
+            # Things like 1/x
+            return self._print_Mul(expr)
+        else:
+            if expr.base == S.Exp1:
+                return r"e^{%s}" % self._print(expr.exp)
+            elif expr.base.is_Function and expr.base.func.__name__ == 'exp':
+                return r"e^{%s}" % self._print(expr.base.args[0] * expr.exp)
+            else:
+                if expr.is_commutative and expr.exp == -1:
+                    #solves issue 4129
+                    #As Mul always simplify 1/x to x**-1
+                    #The objective is achieved with this hack
+                    #first we get the latex for -1 * expr,
+                    #which is a Mul expression
+                    tex = self._print(S.NegativeOne * expr).strip()
+                    #the result comes with a minus and a space, so we remove
+                    if tex[:1] == "-":
+                        return tex[1:].strip()
+                if self._needs_brackets(expr.base):
+                    tex = r"\left(%s\right)^{%s}"
+                else:
+                    tex = r"%s^{%s}"

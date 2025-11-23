@@ -1,0 +1,20 @@
+patch = '''
+    def _print_Pow(self, power):
+        from sympy.simplify.simplify import fraction
+        from sympy import E
+        b, e = power.as_base_exp()
+        if power.is_commutative:
+            if e is S.NegativeOne:
+                return prettyForm("1")/self._print(b)
+            n, d = fraction(e)
+            if n is S.One and d.is_Atom and not e.is_Integer and self._settings['root_notation']:
+                if d == E:
+                    # Special case for 1/E
+                    return self._print_nth_root(b, e)
+                return self._print_nth_root(b, d)
+            if e.is_Rational and e < 0:
+                return prettyForm("1")/self._print(Pow(b, -e, evaluate=False))
+        if b.is_Relational:
+            return prettyForm(*self._print(b).parens()).__pow__(self._print(e))
+        return self._print(b)**self._print(e)
+'''

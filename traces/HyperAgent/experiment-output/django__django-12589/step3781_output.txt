@@ -1,0 +1,16 @@
+    This will usually be the set of all non-aggregate fields in the
+    return data. If the database backend supports grouping by the
+    primary key, and the query would be equivalent, the optimization
+    will be made automatically.
+    """
+    group_by = []
+    for select_item in self.select:
+        if isinstance(select_item, (Subquery, RawSQL)):
+            # For Subquery and RawSQL, use the full expression in GROUP BY
+            group_by.append(select_item)
+        elif hasattr(select_item, 'alias') and allow_aliases:
+            # For other items with aliases, use the alias
+            group_by.append(select_item.alias)
+        else:
+            # For everything else, use the item as is
+            group_by.append(select_item)

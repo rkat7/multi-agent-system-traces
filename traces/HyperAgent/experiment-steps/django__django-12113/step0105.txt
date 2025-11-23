@@ -1,0 +1,22 @@
+### Input
+<empty>
+
+### Output
+@classmethod
+def setUpTestData(cls):
+    cls.superusers = {}
+    cls.test_book_ids = {}
+    for db in connections:
+        Router.target_db = db
+        with transaction.atomic(using=db):
+            with connection.cursor():
+                cls.superusers[db] = User.objects.using(db).create_superuser(
+                    username='admin', password='something', email='test@test.org',
+                )
+                b = Book(name='Test Book')
+                b.save(using=db)
+                cls.test_book_ids[db] = b.id
+'''
+result = editor._run(relative_file_path="tests/admin_views/test_multidb.py", start_line=34, end_line=44, patch=patch)
+print(result)
+```

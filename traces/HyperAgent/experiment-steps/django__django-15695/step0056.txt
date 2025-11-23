@@ -1,0 +1,13 @@
+### Input
+<empty>
+
+### Output
+    def database_forwards(self, app_label, schema_editor, from_state, to_state):
+        from_model = from_state.models[app_label, self.model_name_lower]
+        to_model = to_state.models[app_label, self.model_name_lower]
+        schema_editor.alter_index(
+            from_model,
+            [field.attname for field in from_model._meta.local_fields],
+            self.old_name or [field.name for field in self.old_fields],
+            to_model.indexes[-1],
+        )

@@ -1,0 +1,12 @@
+### Input
+<empty>
+
+### Output
+class IsNull(Exact):
+    def process_rhs(self, compiler, connection):
+        if not isinstance(self.rhs, bool):
+            raise ValidationError(
+                "The __isnull lookup expects a boolean value. "
+                "Use True for IS NULL and False for IS NOT NULL comparisons."
+            )
+        return super().process_rhs(compiler, connection)

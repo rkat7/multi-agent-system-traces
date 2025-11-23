@@ -1,0 +1,18 @@
+```python
+879     def _consume_field(self, parse_type: bool = True, prefer_type: bool = False
+880                        ) -> Tuple[str, str, List[str]]:
+881         line = next(self._line_iter)
+882         if parse_type:
+883             _name, _, _type = self._partition_field_on_colon(line)
+884         else:
+885             _name, _type = line, ''
+886         _name, _type = _name.strip(), _type.strip()
+887         _name = self._escape_args_and_kwargs(_name)
+888 
+889         if prefer_type and not _type:
+890             _type, _name = _name, _type
+891         indent = self._get_indent(line) + 1
+892         _desc = self._dedent(self._consume_indented_block(indent))
+893         _desc = self.__class__(_desc, self._config).lines()
+894         return _name, _type, _desc
+```

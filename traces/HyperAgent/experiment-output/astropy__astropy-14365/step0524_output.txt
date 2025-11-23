@@ -1,0 +1,25 @@
+def _get_tables_from_qdp_file(qdp_file, input_colnames=None, delimiter=None):
+    ...
+    for line, datatype in zip(lines, contents):
+        ...
+        if datatype == "command":
+            ...
+            if err_specs != {}:
+                warnings.warn(
+                    "This file contains multiple command blocks. Please verify",
+                    AstropyUserWarning,
+                )
+            command_lines += line + "\n"
+            continue
+        ...
+        if datatype == "data":
+            ...
+            if err_specs == {} and command_lines != "":
+                for cline in command_lines.strip().split("\n"):
+                    command = cline.strip().split()
+                    ...
+                    if len(command) < 3:
+                        continue
+                    err_specs[command[1].lower()] = [int(c) for c in command[2:]]
+            ...
+```

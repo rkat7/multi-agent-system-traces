@@ -1,0 +1,14 @@
+### Input
+<empty>
+
+### Output
+@hookimpl(tryfirst=True)
+def pytest_runtest_setup(item: Node) -> None:
+    for mark in item.iter_markers(name="skipif"):
+        if "condition" in mark.kwargs:
+            assert "reason" in mark.kwargs, (
+                'Conditional skip mark must contain a reason: {!r}'.format(mark)
+            )
+            eval_skipif = MarkEvaluator(item, "skipif")
+            if eval_skipif.istrue():
+                pytest.skip(mark.kwargs["reason"])

@@ -1,0 +1,10 @@
+    # If saving to the same database, and this model is deferred, then
+    # automatically do an "update_fields" save on the loaded fields.
+    elif not force_insert and deferred_fields and using == self._state.db:
+        field_names = set()
+        for field in self._meta.concrete_fields:
+            if not field.primary_key and not hasattr(field, 'through'):
+                field_names.add(field.attname)
+        loaded_fields = field_names.difference(deferred_fields)
+        if loaded_fields:
+            update_fields = frozenset(loaded_fields)

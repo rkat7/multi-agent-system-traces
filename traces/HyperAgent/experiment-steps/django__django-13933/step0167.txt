@@ -1,0 +1,15 @@
+### Input
+<empty>
+
+### Output
+    def value_to_string(self, value):
+        """Returns a string representation of the value."""
+        if value in self.empty_values:
+            return ''
+        try:
+            key = self.to_field_name or 'pk'
+            if isinstance(value, self.queryset.model):
+                value = getattr(value, key)
+            return str(self.queryset.get(**{key: value}))
+        except (ValueError, TypeError, self.queryset.model.DoesNotExist):
+            return ''

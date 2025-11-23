@@ -1,0 +1,56 @@
+    if self.remote_field.through:
+        through_model = self.remote_field.through
+        if isinstance(through_model, str):
+            try:
+                through_model = apps.get_model(through_model)
+            except LookupError as lookup_error:
+                errors.append(
+                    checks.Error(
+                        "Field specifies a many-to-many relation through model "
+                        "'%s', which has not been installed." % self.remote_field.through,
+                        obj=self,
+                        id='fields.E331',
+                    )
+                )
+                return errors
+        if through_model._meta.abstract:
+            errors.append(
+                checks.Error(
+                    "The intermediary model '%s' cannot be abstract." % through_model._meta.label,
+                    obj=self,
+                    id='fields.E332',
+                )
+            )
+        if not (self.remote_field.through_fields or self.remote_field.symmetrical and self.name == self.remote_field.name):
+            foreign_keys = [
+                f for f in through_model._meta.fields
+                if isinstance(f, ForeignKey) and f.target_field.model == self.model
+            ]
+            if len(foreign_keys) != 2:
+                errors.append(
+                    checks.Error(
+                        "The model '%s' which defines the relation '%s' doesn't have "
+                        "exactly two foreign keys to the models '%s' and '%s', which are the "
+                        "related field and the model on the other end of the relation "
+                        "respectively, or didn't provide the required"
+                        "through_fields."
+                        % (
+                            through_model._meta.label,
+                            self.name,
+                            self.model._meta.label,
+                            self.remote_field.model._meta.label,
+                        ),
+                        obj=self,
+                        id='fields.E330',
+                    )
+                )
+    elif self.remote_field.model == RECURSIVE_RELATIONSHIP_CONSTANT:
+        if self.remote_field.symmetrical and (self.remote_field.through or self.remote_field.through_fields):
+            errors.append(
+                checks.Error(
+                    "Symmetric many-to-many relations with intermediate tables "
+                    "are not supported.",
+                    obj=self,
+                    id='fields.E333',
+                )
+            )

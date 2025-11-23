@@ -1,0 +1,30 @@
+```python
+2250             if not obj_list:
+2251                 break
+2252 
+2253             prefetch_to = lookup.get_current_prefetch_to(level)
+2254             if prefetch_to in done_queries:
+2255                 # Skip any prefetching, and any object preparation
+2256                 obj_list = done_queries[prefetch_to]
+2257                 continue
+2258 
+2259             # Prepare objects:
+2260             good_objects = True
+2261             for obj in obj_list:
+2262                 # Since prefetching can re-use instances, it is possible to have
+2263                 # the same instance multiple times in obj_list, so obj might
+2264                 # already be prepared.
+2265                 if not hasattr(obj, "_prefetched_objects_cache"):
+2266                     try:
+2267                         obj._prefetched_objects_cache = {}
+2268                     except (AttributeError, TypeError):
+2269                         # Must be an immutable object from
+2270                         # values_list(flat=True), for example (TypeError) or
+2271                         # a QuerySet subclass that isn't returning Model
+2272                         # instances (AttributeError), either in Django or a 3rd
+2273                         # party. prefetch_related() doesn't make sense, so quit.
+2274                         good_objects = False
+2275                         break
+2276             if not good_objects:
+2277                 break
+```

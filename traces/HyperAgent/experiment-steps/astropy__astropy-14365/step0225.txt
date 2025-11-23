@@ -1,0 +1,76 @@
+### Input
+<empty>
+
+### Output
+HyperAgent_astropy__astropy-14365 - INFO - Editor->Planner: exitcode: 0 (execution succeeded)
+Code output: The content of astropy/io/ascii/qdp.py is: 
+230             colnames[i + 1] = f"{colname_root}_perr"
+231             colnames[i + 2] = f"{colname_root}_nerr"
+232             shift += 2
+233             continue
+234 
+235     assert not np.any([c == "" for c in colnames])
+236 
+237     return colnames
+238 
+239 
+240 def _get_tables_from_qdp_file(qdp_file, input_colnames=None, delimiter=None):
+241     """Get all tables from a QDP file.
+242 
+243     Parameters
+244     ----------
+245     qdp_file : str
+246         Input QDP file name
+247 
+248     Other Parameters
+249     ----------------
+250     input_colnames : list of str
+251         Name of data columns (defaults to ['col1', 'col2', ...]), _not_
+252         including error columns.
+253     delimiter : str
+254         Delimiter for the values in the table.
+255 
+256     Returns
+257     -------
+258     list of `~astropy.table.Table`
+259         List containing all the tables present inside the QDP file
+260     """
+261     lines = _get_lines_from_file(qdp_file)
+262     contents, ncol = _get_type_from_list_of_lines(lines, delimiter=delimiter)
+263 
+264     table_list = []
+265     err_specs = {}
+266     colnames = None
+267 
+268     comment_text = ""
+269     initial_comments = ""
+270     command_lines = ""
+271     current_rows = None
+272 
+273     for line, datatype in zip(lines, contents):
+274         line = line.strip().lstrip("!")
+275         # Is this a comment?
+276         if datatype == "comment":
+277             comment_text += line + "\n"
+278             continue
+279 
+280         if datatype == "command":
+281             # The first time I find commands, I save whatever comments into
+282             # The initial comments.
+283             if command_lines == "":
+284                 initial_comments = comment_text
+285                 comment_text = ""
+286 
+287             if err_specs != {}:
+288                 warnings.warn(
+289                     "This file contains multiple command blocks. Please verify",
+290                     AstropyUserWarning,
+291                 )
+292             command_lines += line + "\n"
+293             continue
+294 
+295         if datatype.startswith("data"):
+296             # The first time I find data, I define err_specs
+297             if err_specs == {} and command_lines != "":
+298                 for cline in command_lines.strip().split("\n"):
+299                     command = cline.strip().split()

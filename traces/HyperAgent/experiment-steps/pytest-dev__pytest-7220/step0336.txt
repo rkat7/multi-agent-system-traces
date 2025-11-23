@@ -1,0 +1,29 @@
+### Input
+Action:
+```python
+
+### Output
+patch = '''
+    def get_location(self, config):
+        """
+        Returns the more user-friendly information about the location
+        of a warning, or None.
+        """
+        if self.nodeid:
+            return self.nodeid
+        if self.fslocation:
+            if isinstance(self.fslocation, tuple) and len(self.fslocation) >= 2:
+                filename, linenum = self.fslocation[:2]
+                # Use os.path.abspath to get the absolute path of the file
+                abs_filename = os.path.abspath(filename)
+                # Use os.path.relpath to get the path relative to the invocation directory
+                relpath = os.path.relpath(abs_filename, config.invocation_dir)
+                return "{}:{}".format(relpath, linenum)
+            else:
+                return str(self.fslocation)
+        return None
+'''
+result = editor._run(relative_file_path="src/_pytest/terminal.py", start_line=243, end_line=259, patch=patch)
+print(result)
+```
+HyperAgent_pytest-dev__pytest-7220 - INFO - Editor->Planner: Thought: Great, we have successfully added the 'os' import statement. Now we can proceed with modifying the `get_location` method in the `WarningReport` class.

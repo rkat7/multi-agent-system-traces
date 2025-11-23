@@ -1,0 +1,62 @@
+### Input
+<empty>
+
+### Output
+Results for keyword: def _arithmetic_mask
+486     def _arithmetic_mask(self, operation, operand, handle_mask, axis=None, **kwargs):
+487         """
+488         Apply arithmetic to two masks.
+489 
+490         Parameters
+491         ----------
+492         operation : str
+493             The operation to perform.
+494         operand : `~ndarray`
+495             The operand to perform the operation on.
+496         handle_mask : callable or str
+497             How to handle the mask. If a callable, it must return the
+498             mask. If a string, it must be one of the following:
+499             - ``'ff'`` or ``'first_found'``: the mask of the first operand
+500               that has a mask will be used.
+501             - ``None``: no mask will be used.
+502         axis : int or None, optional
+503             If specified, this is the axis over which to perform the
+504             operation.
+505         **kwargs : dict
+506             Additional keyword arguments.
+507 
+508         Returns
+509         -------
+510         mask : `~ndarray`
+511             The mask for the result.
+512         """
+513         if handle_mask is None:
+514             return None
+515 
+516         if handle_mask in ["ff", "first_found"]:
+517             if self.mask is None:
+518                 return deepcopy(operand.mask)
+519             else:
+520                 return deepcopy(self.mask)
+521 
+522         if handle_mask == np.logical_or:
+523             # Handle cases where one or both operands don't have a mask
+524             if self.mask is None and operand.mask is None:
+525                 result = None
+526             elif self.mask is None:
+527                 result = operand.mask.copy()
+528             elif operand.mask is None:
+529                 result = self.mask.copy()
+530             else:
+531                 if axis is None:
+532                     result = np.logical_or(self.mask, operand.mask)
+533                 else:
+534                     result = np.logical_or(self.mask, np.swapaxes(operand.mask, 0, axis))
+535                     result = np.swapaxes(result, 0, axis)
+536         else:
+537             if axis is None:
+538                 result = handle_mask(self.mask, operand.mask)
+539             else:
+540                 result = handle_mask(self.mask, np.swapaxes(operand.mask, 0, axis))
+541                 result = np.swapaxes(result, 0, axis)
+542         return result

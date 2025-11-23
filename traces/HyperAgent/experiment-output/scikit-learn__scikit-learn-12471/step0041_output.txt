@@ -1,0 +1,27 @@
+patch = '''
+    def _transform(self, X, handle_unknown='error'):
+        X = self._check_X(X)
+        _, n_features = X.shape
+        X_int = np.zeros_like(X, dtype=np.int)
+        X_mask = np.ones_like(X, dtype=np.bool)
+        for i in range(n_features):
+            Xi = X[:, i]
+            diff, valid_mask = _encode_check_unknown(Xi, self.categories_[i], return_mask=True)
+            if not np.all(valid_mask):
+                if handle_unknown == 'error':
+                    msg = ("Found unknown categories {0} in column {1} during transform".format(diff, i))
+                    raise ValueError(msg)
+                else:
+                    # Set the problematic rows to an acceptable value and continue
+                    # The rows are marked `X_mask` and will be removed later.
+                    X_mask[:, i] = valid_mask
+                    Xi = Xi.astype(object)  # Convert to object dtype to handle variable-length strings
+                    Xi[~valid_mask] = self.categories_[i][0]
+            _, encoded = _encode(Xi, self.categories_[i], encode=True)
+            X_int[:, i] = encoded
+        return X_int, X_mask
+'''
+result = editor._run(relative_file_path="sklearn/preprocessing/_encoders.py", start_line=91, end_line=107, patch=patch)
+print(result)
+```
+HyperAgent_scikit-learn__scikit-learn-12471 - INFO - Inner-Editor-Assistant's Response: Thought: I apologize for the indentation error. I'll reopen the file to check the current indentation and then modify the patch to match the existing indentation style.

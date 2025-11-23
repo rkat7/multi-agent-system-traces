@@ -1,0 +1,14 @@
+    if ignore_missing_vars:
+        # Implement logic to handle missing variables
+        all_vars = set().union(*[set(dataset.variables) for dataset in datasets])
+        for var in all_vars:
+            if var not in variables:
+                # Create a new variable filled with NaNs
+                first_dataset = next(ds for ds in datasets if var in ds.variables)
+                template = first_dataset[var]
+                shape = list(template.shape)
+                shape[concat_dim] = n_objs
+                dtype = template.dtype if template.dtype != object else float
+                fill_value = np.nan if np.issubdtype(dtype, np.floating) else None
+                data = np.full(shape, fill_value, dtype=dtype)
+                variables[var] = Variable(template.dims, data)

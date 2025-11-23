@@ -1,0 +1,14 @@
+### Input
+<empty>
+
+### Output
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        if '_align_label_groups' in state:
+            # Convert weak references to strong references
+            for group_name, group in state['_align_label_groups'].items():
+                state['_align_label_groups'][group_name] = [
+                    (item() if isinstance(item, weakref.ReferenceType) else item)
+                    for item in group
+                ]
+        return state

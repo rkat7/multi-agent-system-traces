@@ -1,0 +1,12 @@
+# Create a custom plugin to override skipif behavior
+class SkipifPlugin:
+    @pytest.hookimpl(tryfirst=True)
+    def pytest_runtest_setup(self, item):
+        for mark in item.iter_markers(name="skipif"):
+            condition = mark.args[0]
+            if isinstance(condition, str):
+                result = eval(condition, item.module.__dict__)
+            else:
+                result = bool(condition)
+            if result:
+                pytest.skip(mark.kwargs.get('reason', ''))

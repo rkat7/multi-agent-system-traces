@@ -1,0 +1,16 @@
+```python
+# django/db/models/base.py
+def _prepare(cls):
+    ...
+    if meta.order_with_respect_to:
+        # If this is a model with an order_with_respect_to
+        # autopopulate the _order field
+        field = meta.order_with_respect_to
+        filter_args = field.get_filter_kwargs_for_object(self)
+        self._order = cls._base_manager.using(using).filter(**filter_args).aggregate(
+            _order__max=Coalesce(
+                ExpressionWrapper(Max('_order') + Value(1), output_field=IntegerField()),
+                Value(0),
+            ),
+        )['_order__max']
+```

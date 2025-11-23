@@ -1,0 +1,20 @@
+### Input
+<empty>
+
+### Output
+    def show_skipped(lines: List[str]) -> None:
+        skipped = self.stats.get("skipped", [])
+        fskips = _folded_skips(self.startdir, skipped) if skipped else []
+        if not fskips:
+            return
+        verbose_word = skipped[0]._get_verbose_word(self.config)
+        for num, fspath, lineno, reason in fskips:
+            if reason.startswith("Skipped: "):
+                reason = reason[9:]
+            if lineno is not None:
+                lines.append(
+                    "%s [%d] %s:%d: %s"
+                    % (verbose_word, num, fspath, lineno, reason)
+                )
+            else:
+                lines.append("%s [%d] %s: %s" % (verbose_word, num, fspath, reason))

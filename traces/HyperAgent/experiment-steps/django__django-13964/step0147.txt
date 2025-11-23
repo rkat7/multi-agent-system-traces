@@ -1,0 +1,14 @@
+### Input
+<empty>
+
+### Output
+# Test case 1: Previously problematic case
+with transaction.atomic():
+    order = Order()
+    order.product = Product()
+    order.product.sku = "foo"
+    order.product.save()
+    order.save()
+    print("Test case 1:")
+    print(f"Order with empty product_id exists: {Order.objects.filter(product_id='').exists()}")
+    print(f"Order with correct product exists: {Order.objects.filter(product=order.product).exists()}")

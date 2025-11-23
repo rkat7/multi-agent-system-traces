@@ -1,0 +1,19 @@
+    if dtype_numeric:
+        if dtype_orig is not None and dtype_orig.kind == "O":
+            if allow_string_labels and array.dtype.kind in "OSU":
+                # If allow_string_labels is True and the array contains strings,
+                # don't attempt to convert to float
+                pass
+            else:
+                warnings.warn(
+                    "Array has object dtype and elements are not all strings. "
+                    "Attempting to convert to a numeric dtype.",
+                    DataConversionWarning, stacklevel=2)
+                try:
+                    array = array.astype(np.float64)
+                except ValueError as e:
+                    raise ValueError(
+                        "Unable to convert array of string labels to numeric dtype. "
+                        "Try setting allow_string_labels=True."
+                    ) from e
+        dtype = None

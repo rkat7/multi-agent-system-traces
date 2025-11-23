@@ -1,0 +1,106 @@
+### Input
+<empty>
+
+### Output
+Results for keyword: def get_order_by
+638     def get_order_by(self):
+639         """
+640         Return a list of 2-tuples of form (expr, (sql, params, is_ref)) for the
+641         ORDER BY clause.
+642 
+643         The order_by clause can alter the select list (for example it
+644         can add aliases to clauses that do not yet have one, or it can
+645         add totally new select clauses).
+646         """
+647         if self.query.extra_order_by:
+648             ordering = self.query.extra_order_by
+649         elif not self.query.default_ordering:
+650             ordering = self.query.order_by
+651         else:
+652             ordering = (self.query.order_by or self.query.get_meta().ordering or [])
+653         if self.query.standard_ordering:
+654             direction = ORDER_DIR['ASC']
+655         else:
+656             direction = ORDER_DIR['DESC']
+657         order_by = []
+658         for field in ordering:
+659             if hasattr(field, 'resolve_expression'):
+660                 if isinstance(field, Value):
+661                     # output_field must be resolved for constants.
+662                     field = Cast(field, field.output_field)
+663                 order_by.append((field, False))
+664                 continue
+665             if field == '?':  # random
+666                 order_by.append((OrderBy(Random()), False))
+667                 continue
+668             if isinstance(field, int):
+669                 order_by.append((
+670                     OrderBy(Ref('expressions', field), descending=True),
+671                     True,
+672                 ))
+673                 continue
+674             if field.startswith('-'):
+675                 field = field[1:]
+676                 descending = True
+677             else:
+678                 descending = False
+679             # If the field starts with -, we need to flip direction.
+680             direction = -direction if descending else direction
+681             if field == 'pk':
+682                 expression = self.query.get_meta().pk.get_col(
+683                     self.query.get_meta().db_table,
+684                     alias=self.query.get_initial_alias(),
+685                 )
+686                 order_by.append((OrderBy(expression, descending=descending), False))
+687                 continue
+688             if '.' in field:
+689                 # This came in through an extra(order_by=...) addition. Pass it
+690                 # on verbatim.
+691                 table, col = field.split('.', 1)
+692                 order_by.append((
+693                     OrderBy(
+694                         RawSQL('%s.%s' % (self.quote_name_unless_alias(table), col), []),
+695                         descending=descending
+696                     ), False))
+697                 continue
+698             if not self.query._extra or field not in self.query._extra:
+699                 # 'col' is of the form 'field' or 'field1__field2' or
+700                 # '-field1__field2__field', etc.
+701                 order_by.extend(self.find_ordering_name(
+702                     field, self.query.get_meta(), default_order=direction))
+703             else:
+704                 if col in self.query.extra_select:
+705                     order_by.append((OrderBy(Col(self.query.extra_select_mask, col), descending=descending), False))
+706                 elif col in self.query.annotation_select:
+707                     order_by.append((OrderBy(F(col), descending=descending), False))
+708 
+709         result = []
+710         seen = set()
+711 
+712         for expr, is_ref in order_by:
+713             resolved = expr.resolve_expression(self.query, allow_joins=True, reuse=None)
+714             if self.query.combinator:
+715                 src = resolved.get_source_expressions()[0]
+716                 # Relabel order by columns to raw numbers if this is a combined
+717                 # query; necessary since the columns can't be referenced by the
+718                 # fully qualified name and the simple column names may collide.
+719                 for idx, (sel_expr, _, col_alias) in enumerate(self.select):
+720                     if is_ref and col_alias == src.refs:
+721                         src = src.source
+722                     elif col_alias:
+723                         continue
+724                     if src == sel_expr:
+725                         resolved.set_source_expressions([RawSQL('%d' % (idx + 1), ())])
+726                         break
+727                 else:
+728                     raise DatabaseError('ORDER BY term does not match any column in the result set.')
+729             sql, params = self.compile(resolved)
+730             normalized_sql = normalize_sql(sql)
+731             without_ordering = self.ordering_parts.search(normalized_sql).group(1)
+732             params_hash = make_hashable(params)
+733             if (without_ordering, params_hash) in seen:
+734                 continue
+735             seen.add((without_ordering, params_hash))
+736             result.append((resolved, (sql, params, is_ref)))
+737 
+738         return result

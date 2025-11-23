@@ -1,0 +1,24 @@
+         with mpl.rc_context(fname='print.rc'):
+             plt.plot(x, y)  # uses 'print.rc'
+    """
+    orig = rcParams.copy()
+    changed_params = set()
+    try:
+        if fname:
+            rc_file(fname)
+            changed_params.update(set(rcParams.keys()) - set(orig.keys()))
+        if rc:
+            rcParams.update(rc)
+            changed_params.update(rc.keys())
+        yield
+    finally:
+        # Only update the parameters that were actually changed
+        for param in changed_params:
+            if param in orig:
+                rcParams[param] = orig[param]
+            else:
+                rcParams.pop(param, None)
+'''
+result = editor._run(relative_file_path="matplotlib/__init__.py", start_line=1058, end_line=1098, patch=patch)
+print(result)
+```

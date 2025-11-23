@@ -1,0 +1,21 @@
+```python
+# seaborn/relational.py
+...
+if self._hue_map.map_type == "categorical":
+    hue_levels, hue_formatted_levels = self._hue_map.levels
+else:
+    if brief_hue:
+        if isinstance(self._hue_map.norm, mpl.colors.LogNorm):
+            locator = mpl.ticker.LogLocator(numticks=brief_ticks)
+        else:
+            locator = mpl.ticker.MaxNLocator(nbins=brief_ticks)
+        limits = min(self._hue_map.levels), max(self._hue_map.levels)
+        hue_levels, hue_formatted_levels = locator_to_legend_entries(
+            locator, limits, self.plot_data["hue"].infer_objects().dtype
+        )
+    elif self._hue_map.levels is None:
+        hue_levels = hue_formatted_levels = []
+    else:
+        hue_levels = hue_formatted_levels = self._hue_map.levels
+...
+```

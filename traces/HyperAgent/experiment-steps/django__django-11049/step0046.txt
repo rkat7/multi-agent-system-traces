@@ -1,0 +1,26 @@
+### Input
+<empty>
+
+### Output
+    Also supports ISO 8601 representation and PostgreSQL's day-time interval
+    format.
+    """
+    if isinstance(value, datetime.timedelta):
+        return value
+    try:
+        match = re.match(
+            r'^(?:(?P<days>-?\d+) (days?, )?)?(?:(?P<hours>\d+):)?(?P<minutes>\d+):(?P<seconds>\d+)(?:\.(?P<microseconds>\d{1,6}))?$',
+            str(value),
+        )
+        if match:
+            kwargs = {k: int(v) for k, v in match.groupdict().items() if v is not None}
+            return datetime.timedelta(**kwargs)
+        try:
+            # ISO 8601 duration
+            return datetime.timedelta(seconds=parse_isoduration(value))
+        except ValueError:
+            # Postgres interval
+            return datetime.timedelta(seconds=parse_postgres_interval(value))
+    except (TypeError, ValueError):
+        raise ValueError("Unable to parse duration string '%s'" % value)
+```

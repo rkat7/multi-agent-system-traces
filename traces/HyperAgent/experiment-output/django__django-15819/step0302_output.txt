@@ -1,0 +1,31 @@
+patch = '''
+                    if is_relation:
+                        ref_db_column, ref_db_table = relations[column_name]
+                        if extra_params.pop("unique", False) or extra_params.get(
+                            "primary_key"
+                        ):
+                            rel_type = "OneToOneField"
+                        else:
+                            rel_type = "ForeignKey"
+                            ref_pk_column = (
+                                connection.introspection.get_primary_key_column(
+                                    cursor, ref_db_table
+                                )
+                            )
+                            if ref_pk_column and ref_pk_column != ref_db_column:
+                                extra_params["to_field"] = ref_db_column
+                        rel_to = (
+                            "self"
+                            if table_name == ref_db_table
+                            else table2model(ref_db_table)
+                        )
+                        if rel_to in known_models:
+                            # Generate a unique related_name
+                            related_name = f"{table_name}_{column_name}"
+                            extra_params["related_name"] = related_name
+                        field_type = "%s(%s" % (rel_type, rel_to)
+'''
+result = editor._run(relative_file_path="django/core/management/commands/inspectdb.py", start_line=166, end_line=185, patch=patch)
+print(result)
+```
+HyperAgent_django__django-15819 - INFO - Inner-Editor-Assistant's Response: Thought: I apologize for the persistent indentation error. It seems that the indentation in the patch is still not correct. Let's try to fix this by adjusting the indentation of our patch to match the existing code. We'll use the `open_file_gen` tool again to check the current indentation and then apply a corrected patch.

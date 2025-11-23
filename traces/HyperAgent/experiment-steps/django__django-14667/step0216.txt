@@ -1,0 +1,19 @@
+### Input
+<empty>
+
+### Output
+    def _apply_deferred_fields(self):
+        """
+        Applies deferred fields to the query.
+        """
+        if self._deferred_filter:
+            negate, fields, _ = self._deferred_filter
+            if negate:
+                # If only() was called, remove the deferred fields from the query
+                self.query.select_related = []
+                self.query.deferred_loading[0] = set(fields)
+            else:
+                # If defer() was called, add the deferred fields to the query
+                self.query.deferred_loading = (self.query.deferred_loading[0] | set(fields), self.query.deferred_loading[1])
+            self._deferred_filter = None
+```

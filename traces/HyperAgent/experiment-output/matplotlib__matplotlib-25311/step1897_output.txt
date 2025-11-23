@@ -1,0 +1,10 @@
+patch = '''
+    def __getstate__(self):
+        state = super().__getstate__()
+        # Remove non-picklable components
+        for ax in state.get('axes', []):
+            if ax.get_legend() and ax.get_legend().get_draggable():
+                legend = ax.get_legend()
+                legend._draggable = None
+                legend._loc_in_canvas = None
+        return state

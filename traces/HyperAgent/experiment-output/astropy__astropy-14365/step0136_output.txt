@@ -1,0 +1,230 @@
+```python
+230         if col_num in terr_cols:
+231             colnames[i + 1] = f"{colname_root}_perr"
+232             colnames[i + 2] = f"{colname_root}_nerr"
+233             shift += 2
+234             continue
+235 
+236     return colnames
+237 
+238 def _parse_read_serr_terr(lines, ncols, names=None):
+239     """Parse the READ SERR and READ TERR commands.
+240 
+241     Parameters
+242     ----------
+243     lines : list
+244         List of lines from the QDP file
+245     ncols : int
+246         Number of data columns
+247 
+248     Other Parameters
+249     ----------------
+250     names : list of str
+251         Name of data columns (defaults to ['col1', 'col2', ...]), _not_
+252         including error columns.
+253 
+254     Returns
+255     -------
+256     err_specs : dict
+257         ``{'serr': [n0, n1, ...], 'terr': [n2, n3, ...]}``
+258         Error specifications for symmetric and two-sided errors
+259 
+260     Examples
+261     --------
+262     >>> lines = ["READ SERR 1 2", "READ TERR 3"]
+263     >>> err_specs = _parse_read_serr_terr(lines, 5)
+264     >>> err_specs
+265     {'serr': [1, 2], 'terr': [3]}
+266     """
+267     err_specs = {'serr': [], 'terr': []}
+268     for line in lines:
+269         if line.startswith("READ SERR"):
+270             parts = line.split()
+271             for i in range(1, len(parts)):
+272                 err_specs['serr'].append(int(parts[i]))
+273         elif line.startswith("READ TERR"):
+274             parts = line.split()
+275             for i in range(1, len(parts)):
+276                 err_specs['terr'].append(int(parts[i]))
+277     return err_specs
+278 
+279 def _parse_read_command(line):
+280     """Parse the READ command.
+281 
+282     Parameters
+283     ----------
+284     line : str
+285         The READ command line
+286 
+287     Returns
+288     -------
+289     data : list
+290         List of column numbers
+291 
+292     Examples
+293     --------
+294     >>> line = "READ 1 2 3"
+295     >>> data = _parse_read_command(line)
+296     >>> data
+297     [1, 2, 3]
+298     """
+299     parts = line.split()
+300     return [int(i) for i in parts[1:]]
+301 
+302 def _parse_read_command_with_err(line):
+303     """Parse the READ command with error specification.
+304 
+305     Parameters
+306     ----------
+307     line : str
+308         The READ command line
+309 
+310     Returns
+311     -------
+312     data : list
+313         List of column numbers
+314     err_specs : dict
+315         ``{'serr': [n0, n1, ...], 'terr': [n2, n3, ...]}``
+316         Error specifications for symmetric and two-sided errors
+317 
+318     Examples
+319     --------
+320     >>> line = "READ 1 2 3 READ SERR 1 2 READ TERR 3"
+321     >>> data, err_specs = _parse_read_command_with_err(line)
+322     >>> data
+323     [1, 2, 3]
+324     >>> err_specs
+325     {'serr': [1, 2], 'terr': [3]}
+326     """
+327     parts = line.split()
+328     data = [int(i) for i in parts[:1]]
+329     err_specs = {'serr': [], 'terr': []}
+330     for i in range(1, len(parts)):
+331         if parts[i].startswith("READ SERR"):
+332             for j in range(i + 1, len(parts)):
+333                 err_specs['serr'].append(int(parts[j]))
+334         elif parts[i].startswith("READ TERR"):
+335             for j in range(i + 1, len(parts)):
+336                 err_specs['terr'].append(int(parts[j]))
+337     return data, err_specs
+338 
+339 def _parse_read_command_with_errs(lines):
+340     """Parse the READ command with error specifications.
+341 
+342     Parameters
+343     ----------
+344     lines : list
+345         List of lines from the QDP file
+346 
+347     Returns
+348     -------
+349     data : list
+350         List of column numbers
+351     err_specs : dict
+352         ``{'serr': [n0, n1, ...], 'terr': [n2, n3, ...]}``
+353         Error specifications for symmetric and two-sided errors
+354 
+355     Examples
+356     --------
+357     >>> lines = ["READ 1 2 3", "READ SERR 1 2", "READ TERR 3"]
+358     >>> data, err_specs = _parse_read_command_with_errs(lines)
+359     >>> data
+360     [1, 2, 3]
+361     >>> err_specs
+362     {'serr': [1, 2], 'terr': [3]}
+363     """
+364     data = []
+365     err_specs = {'serr': [], 'terr': []}
+366     for line in lines:
+367         if line.startswith("READ"):
+368             if line.startswith("READ SERR") or line.startswith("READ TERR"):
+369                 data, err_specs = _parse_read_command_with_err(line)
+370             else:
+371                 data = _parse_read_command(line)
+372     return data, err_specs
+373 
+374 def _parse_read_command_with_errs_and_names(lines, names=None):
+375     """Parse the READ command with error specifications and names.
+376 
+377     Parameters
+378     ----------
+379     lines : list
+380         List of lines from the QDP file
+381 
+382     Other Parameters
+383     ----------------
+384     names : list of str
+385         Name of data columns (defaults to ['col1', 'col2', ...]), _not_
+386         including error columns.
+387 
+388     Returns
+389     -------
+390     data : list
+391         List of column numbers
+392     err_specs : dict
+393         ``{'serr': [n0, n1, ...], 'terr': [n2, n3, ...]}``
+394         Error specifications for symmetric and two-sided errors
+395     colnames : list
+396         List of column names
+397 
+398     Examples
+399     --------
+400     >>> lines = ["READ 1 2 3", "READ SERR 1 2", "READ TERR 3"]
+401     >>> data, err_specs, colnames = _parse_read_command_with_errs_and_names(lines, names=['MJD', 'Rate'])
+402     >>> data
+403     [1, 2, 3]
+404     >>> err_specs
+405     {'serr': [1, 2], 'terr': [3]}
+406     >>> colnames
+407     ['MJD', 'Rate', 'MJD_err', 'Rate_err']
+408     """
+409     data, err_specs = _parse_read_command_with_errs(lines)
+410     colnames = _interpret_err_lines(err_specs, len(data), names)
+411     return data, err_specs, colnames
+412 
+413 def _parse_read_command_with_errs_and_names(lines, names=None):
+414     """Parse the READ command with error specifications and names.
+415 
+416     Parameters
+417     ----------
+418     lines : list
+419         List of lines from the QDP file
+420 
+421     Other Parameters
+422     ----------------
+423     names : list of str
+424         Name of data columns (defaults to ['col1', 'col2', ...]), _not_
+425         including error columns.
+426 
+427     Returns
+428     -------
+429     data : list
+430         List of column numbers
+431     err_specs : dict
+432         ``{'serr': [n0, n1, ...], 'terr': [n2, n3, ...]}``
+433         Error specifications for symmetric and two-sided errors
+434     colnames : list
+435         List of column names
+436 
+437     Examples
+438     --------
+439     >>> lines = ["READ 1 2 3", "READ SERR 1 2", "READ TERR 3"]
+440     >>> data, err_specs, colnames = _parse_read_command_with_errs_and_names(lines, names=['MJD', 'Rate'])
+441     >>> data
+442     [1, 2, 3]
+443     >>> err_specs
+444     {'serr': [1, 2], 'terr': [3]}
+445     >>> colnames
+446     ['MJD', 'Rate', 'MJD_err', 'Rate_err']
+447     """
+448     data, err_specs, colnames = _parse_read_command_with_errs_and_names(lines, names)
+449     return data, err_specs, colnames
+450 
+451 def _parse_read_command_with_errs_and_names_from_file(qdp_file, names=None):
+452     """Parse the READ command with error specifications and names from a file.
+453 
+454     Parameters
+455     ----------
+456     qdp_file : str
+457
+HyperAgent_astropy__astropy-14365 - INFO - Planner's Response: Thought: After reviewing the remaining content of the `qdp.py` file, I can see that the issue lies in the `_parse_read_serr_terr` function. This function is responsible for parsing the "READ SERR" and "READ TERR" commands, but it's currently using case-sensitive string comparisons. To fix the issue, we need to modify this function to perform case-insensitive comparisons.

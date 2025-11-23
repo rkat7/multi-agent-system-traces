@@ -1,0 +1,19 @@
+### Input
+<empty>
+
+### Output
+1. The `HTTPAdapter` class imports the `ReadTimeoutError` exception from `urllib3.exceptions`:
+```python
+from .packages.urllib3.exceptions import ReadTimeoutError
+```
+2. In the `send()` method of the `HTTPAdapter` class, there is a try-except block that catches `ReadTimeoutError` exceptions:
+```python
+except (_SSLError, _HTTPError) as e:
+    if isinstance(e, _SSLError):
+        raise SSLError(e, request=request)
+    elif isinstance(e, ReadTimeoutError):
+        raise ReadTimeout(e, request=request)
+    else:
+        raise
+```
+3. If a `ReadTimeoutError` is caught, it is wrapped and raised as a `ReadTimeout` exception from the `requests.exceptions` module.

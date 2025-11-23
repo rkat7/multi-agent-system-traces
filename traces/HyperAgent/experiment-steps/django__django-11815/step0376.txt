@@ -1,0 +1,16 @@
+### Input
+<empty>
+
+### Output
+    def deconstruct(self):
+        name, path, args, kwargs = super().deconstruct()
+        if self.has_default():
+            if callable(self.default):
+                default = self.default()
+            else:
+                default = self.default
+            if isinstance(default, Enum):
+                # Serialize Enum objects to their name
+                kwargs['default'] = default.name
+        return name, path, args, kwargs
+```

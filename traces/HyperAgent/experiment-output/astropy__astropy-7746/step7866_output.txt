@@ -1,0 +1,24 @@
+    if isinstance(args[0], (six.integer_types, float)):
+        # Handle scalar inputs
+        return func(args, 0)
+    elif isinstance(args[0], (list, tuple)) and len(args) == 2:
+        # Handle coordinate pair inputs
+        origin = kwargs.pop('origin', 0)
+        if len(args[0]) != len(args[1]):
+            raise ValueError("Coordinate arrays have different lengths")
+        if len(args[0]) == 0:  # Handle empty input arrays
+            return [], []
+        # ... (rest of the existing implementation)
+    elif isinstance(args[0], np.ndarray) and len(args) == 1:
+        # Handle array inputs
+        origin = kwargs.pop('origin', 0)
+        if args[0].shape == ():
+            return func([args[0].item()], origin)
+        elif args[0].ndim != 2:
+            raise ValueError("Array must be 2-dimensional")
+        if args[0].shape[0] == 0:  # Handle empty input arrays
+            return np.array([], dtype=float), np.array([], dtype=float)
+        # ... (rest of the existing implementation)
+    else:
+        # ... (rest of the existing implementation)
+```

@@ -1,0 +1,22 @@
+patch = '''
+def get_module_attrs(members: Any, module: Any, imported_members: bool) -> Tuple[List[str], List[str]]:
+    """Find module attributes with docstrings."""
+    attrs, public = [], []
+    try:
+        analyzer = ModuleAnalyzer.for_module(module.__name__)
+        attr_docs = analyzer.find_attr_docs()
+        for namespace, attr_name in attr_docs:
+            if namespace == '' and attr_name in members:
+                if imported_members or (hasattr(getattr(module, attr_name), '__module__') and 
+                                        getattr(module, attr_name).__module__ == module.__name__):
+                    attrs.append(attr_name)
+                    if not attr_name.startswith('_'):
+                        public.append(attr_name)
+    except PycodeError:
+        pass    # give up if ModuleAnalyzer fails to parse code
+    return public, attrs
+'''
+result = editor._run(relative_file_path="sphinx/ext/autosummary/generate.py", start_line=222, end_line=235, patch=patch)
+print(result)
+```
+HyperAgent_sphinx-doc__sphinx-7686 - INFO - Editor->Planner: Thought: Now that we can see the current state of the code, we need to modify the `get_module_attrs` function to incorporate the `imported_members` parameter and update its logic. We also need to adjust how it's called in the `generate_autosummary_docs` function. Let's make these changes step by step.

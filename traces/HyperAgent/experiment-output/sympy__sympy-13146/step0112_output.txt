@@ -1,0 +1,17 @@
+        # check for base and inverted base pairs
+        be = list(c_powers.items())
+        skip = set()  # skip if we already saw them
+        for b, e in be:
+            if b in skip:
+                continue
+            bpos = b.is_positive or b.is_polar
+            if bpos:
+                binv = 1/b
+                if b != binv and binv in c_powers:
+                    if b.as_numer_denom()[0] is S.One:
+                        c_powers.pop(b)
+                        c_powers[binv] -= e
+                    else:
+                        skip.add(binv)
+                        e = c_powers.pop(binv)
+                        c_powers[b] -= e

@@ -1,0 +1,12 @@
+### Input
+<empty>
+
+### Output
+    def defer(self, *fields):
+        clone = self._clone()
+        if self._fields is not None:
+            # If only() has been called, we need to adjust the deferred set
+            clone._fields = set(self._fields) - set(fields)
+        else:
+            clone.query.add_deferred_loading(fields)
+        return clone

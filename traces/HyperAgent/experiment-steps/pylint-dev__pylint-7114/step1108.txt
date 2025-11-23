@@ -1,0 +1,16 @@
+### Input
+<empty>
+
+### Output
+```python
+def _resolve_module_path(module_name):
+    """Resolve the path of a module."""
+    try:
+        module = importlib.import_module(module_name)
+        return os.path.dirname(os.path.abspath(module.__file__))
+    except (ImportError, AttributeError):
+        # Might be a built-in module or package without __file__
+        dirname = module_name.replace(".", "/")
+        if os.path.isfile(dirname + ".py"):
+            return os.path.dirname(dirname)
+        return dirname

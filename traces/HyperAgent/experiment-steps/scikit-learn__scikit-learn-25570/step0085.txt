@@ -1,0 +1,21 @@
+### Input
+<empty>
+
+### Output
+X = pd.DataFrame(data=[[1.0, 2.0, 3.0, 4.0], [4, 2, 2, 5]],
+                 columns=["a", "b", "c", "d"])
+y = np.array([0, 1])
+categorical_features = []
+numerical_features = ["a", "b", "c"]
+model_preprocessing = ("preprocessing",
+                       ColumnTransformer([
+                           ('categorical', 'passthrough', categorical_features),
+                           ('numerical', Pipeline([("scaler", RobustScaler()),
+                                                   ("imputer", SimpleImputer(strategy="median"))
+                                                   ]), numerical_features),
+                       ], remainder='drop'))
+pipeline = Pipeline([model_preprocessing, ("classifier", LGBMClassifier())]).set_output(transform="pandas")
+pipeline.fit(X, y)
+print("Pipeline fitted successfully.")
+print("Feature names:", pipeline.named_steps['preprocessing'].get_feature_names_out())
+```

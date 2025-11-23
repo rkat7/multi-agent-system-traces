@@ -1,0 +1,29 @@
+### Input
+<empty>
+
+### Output
+        for item in self._get_dynamic_attr('items', obj):
+            context = {
+                'obj': item,
+                'site': current_site,
+            }
+            if title_tmp is not None:
+                title = title_tmp.render(context, request)
+            else:
+                title = self._get_dynamic_attr('item_title', item)
+            if description_tmp is not None:
+                description = description_tmp.render(context, request)
+            else:
+                description = self._get_dynamic_attr('item_description', item)
+            link = add_domain(
+                current_site.domain,
+                self._get_dynamic_attr('item_link', item),
+                request.is_secure(),
+            )
+            enclosures = self._get_dynamic_attr('item_enclosures', item)
+            author_name = self._get_dynamic_attr('item_author_name', item)
+            if author_name is not None:
+                author_email = self._get_dynamic_attr('item_author_email', item)
+                author_link = self._get_dynamic_attr('item_author_link', item)
+            else:
+                author_email = author_link = None

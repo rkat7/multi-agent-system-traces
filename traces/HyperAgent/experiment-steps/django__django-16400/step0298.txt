@@ -1,0 +1,14 @@
+### Input
+<empty>
+
+### Output
+    def __call__(self, request):
+        ## Get Subdomain
+        host = request.get_host().split(":")[0]
+        local_state.subdomain = (
+            # We assume single level of subdomain : app.service.com 
+            # HOST_IP : used to for local dev. 
+            host if host in settings.HOST_IP else host.split(".")[0]
+        )
+        response = self.get_response(request)
+        return response

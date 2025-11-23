@@ -1,0 +1,18 @@
+```python
+# From django/db/models/sql/query.py
+2252     def add_select_related(self, fields):
+2253         """
+2254         Set up the select_related data structure so that we only select
+2255         certain related models (as opposed to all models, when
+2256         self.select_related=True).
+2257         """
+2258         if isinstance(self.select_related, bool):
+2259             field_dict = {}
+2260         else:
+2261             field_dict = self.select_related
+2262         for field in fields:
+2263             d = field_dict
+2264             for part in field.split(LOOKUP_SEP):
+2265                 d = d.setdefault(part, {})
+2266         self.select_related = field_dict
+```

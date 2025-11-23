@@ -1,0 +1,22 @@
+### Input
+<empty>
+
+### Output
+```python
+def _push_group_by(self, subquery):
+    """
+    Push a subquery down to the WHERE clause, preserving GROUP BY information.
+    """
+    if hasattr(subquery, 'group_by') and subquery.group_by:
+        # If the subquery has a GROUP BY clause, wrap it in a special node
+        group_by_subquery = GroupBySubquery(subquery)
+        if self.where:
+            self.where.append(group_by_subquery)
+        else:
+            self.where = [group_by_subquery]
+    else:
+        # Handle regular subqueries as before
+        if self.where:
+            self.where.append(subquery)
+        else:
+            self.where = [subquery]

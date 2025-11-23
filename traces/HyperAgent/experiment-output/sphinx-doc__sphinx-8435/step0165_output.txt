@@ -1,0 +1,12 @@
+    def add_directive_header(self, sig: str) -> None:
+        super().add_directive_header(sig)
+        sourcename = self.get_sourcename()
+        if not self.options.annotation:
+            # obtain annotation for this data
+            try:
+                annotations = get_type_hints(self.parent, globalns=None, localns=None, include_extras=True)
+            except NameError:
+                # Failed to evaluate ForwardRef (maybe TYPE_CHECKING)
+                annotations = safe_getattr(self.parent, '__annotations__', {})
+            except (TypeError, KeyError, AttributeError):
+                annotations = {}

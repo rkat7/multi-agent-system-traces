@@ -1,0 +1,24 @@
+### Input
+<empty>
+
+### Output
+        Notes
+        -----
+        Additional kwargs are passed on to ``self.poly`` which is the
+        `~matplotlib.patches.Polygon` that draws the slider knob.  See the
+        `.Polygon` documentation for valid property names (``facecolor``,
+        ``edgecolor``, ``alpha``, etc.).
+        """
+        super().__init__(ax, orientation, closedmin, closedmax,
+                        valmin, valmax, valfmt, dragging, valstep)
+        # Set a value to allow _value_in_bounds() to work.
+        self.val = [valmin, valmax]
+        if valinit is None:
+            # Place at the 25th and 75th percentiles
+            extent = valmax - valmin
+            valinit = np.array([valmin + extent * 0.25,
+                                valmin + extent * 0.75])
+        else:
+            valinit = self._value_in_bounds(valinit)
+        self.val = valinit
+        self.valinit = valinit

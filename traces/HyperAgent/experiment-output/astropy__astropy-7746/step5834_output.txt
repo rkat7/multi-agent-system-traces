@@ -1,0 +1,66 @@
+```python
+1202     @property
+1203     def naxis(self):
+1204         if self.wcs is None:
+1205             return 0
+1206         else:
+1207             return self.wcs.naxis
+1208 
+1209     def _array_converter(self, func, sky, *args, ra_dec_order=False):
+1210         """
+1211         A helper function to support reading either a pair of arrays
+1212         or a single Nx2 array.
+1213         """
+1214 
+1215         def _return_list_of_arrays(axes, origin):
+1216             try:
+1217                 axes = np.broadcast_arrays(*axes)
+1218             except ValueError:
+1219                 raise ValueError(
+1220                     "Coordinate arrays are not broadcastable to each other")
+1221 
+1222             xy = np.hstack([x.reshape((x.size, 1)) for x in axes])
+1223 
+1224             if ra_dec_order and sky == 'input':
+1225                 xy = self._denormalize_sky(xy)
+1226             output = func(xy, origin)
+1227             if ra_dec_order and sky == 'output':
+1228                 output = self._normalize_sky(output)
+1229                 return (output[:, 0].reshape(axes[0].shape),
+1230                         output[:, 1].reshape(axes[0].shape))
+1231             return [output[:, i].reshape(axes[0].shape)
+1232                     for i in range(output.shape[1])]
+1233 
+1234         def _return_single_array(xy, origin):
+1235             if ra_dec_order and sky == 'input':
+1236                 xy = self._denormalize_sky(xy)
+1237             output = func(xy, origin)
+1238             if ra_dec_order and sky == 'output':
+1239                 output = self._normalize_sky(output)
+1240             return output
+1241 
+1242         if len(args) == 2:
+1243             xy, origin = args
+1244             try:
+1245                 xy = np.asarray(xy)
+1246             except ValueError:
+1247                 raise TypeError(
+1248                     "First argument must be a pair of numbers or a Nx2 array")
+1249 
+1250             if xy.shape[-1] != 2:
+1251                 raise ValueError("When providing a single argument, it must be "
+1252                                  "a 2xN array or a Nx2 array")
+1253             return _return_single_array(xy, origin)
+1254         elif len(args) == 1:
+1255             axes = args[0]
+1256             origin = 0
+1257         elif not args:
+1258             raise TypeError(
+1259                 "This function takes either a pair of arrays or a "
+1260                 "single array as arguments. You provided neither.")
+1261         else:
+1262             axes = list(args[:-1])
+1263             origin = args[-1]
+1264 
+1265         return _return_list_of_arrays(axes, origin)
+```

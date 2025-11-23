@@ -1,0 +1,21 @@
+def _get_qdp_types_and_ncol(lines):
+    types = []
+    current_ncol = None
+    for line in lines:
+        if line.startswith('READ') or line.startswith('read'):
+            ncol = len(line.split()) - 1
+            if current_ncol is None:
+                current_ncol = ncol
+            elif ncol != current_ncol:
+                raise ValueError("Inconsistent number of columns")
+            types.extend(['float64'] * ncol)
+        elif line.startswith('#'):
+            continue
+        else:
+            try:
+                [float(x) for x in line.split()]
+                types.extend(['float64'] * len(line.split()))
+            except ValueError:
+                raise ValueError(f'Unrecognized QDP line: {line}')
+    return types, current_ncol
+```

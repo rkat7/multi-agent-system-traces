@@ -1,0 +1,28 @@
+```python
+51 def check_for_template_tags_with_the_same_name(app_configs, **kwargs):
+52     errors = []
+53     libraries = defaultdict(list)
+54 
+55     for conf in settings.TEMPLATES:
+56         custom_libraries = conf.get("OPTIONS", {}).get("libraries", {})
+57         for module_name, module_path in custom_libraries.items():
+58             libraries[module_name].append(module_path)
+59 
+60     for module_name, module_path in get_template_tag_modules():
+61         libraries[module_name].append(module_path)
+62 
+63     for library_name, items in libraries.items():
+64         if len(items) > 1:
+65             errors.append(
+66                 Error(
+67                     E003.msg.format(
+68                         repr(library_name),
+69                         ", ".join(repr(item) for item in items),
+70                     ),
+71                     id=E003.id,
+72                 )
+73             )
+74 
+75     return errors
+```
+HyperAgent_django__django-15790 - INFO - Planner's Response: Thank you for providing the content of the `check_for_template_tags_with_the_same_name` function. This helps us understand how Django is handling the template tag libraries and where the issue might be occurring.

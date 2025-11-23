@@ -1,0 +1,25 @@
+### Input
+<empty>
+
+### Output
+patch = '''
+    def __str__(self, printer=None):
+        ret_str = ''
+        items = list(self.separate().items())
+        items.sort(key=lambda x: x[0].__str__())
+        for system, vect in items:
+            base_vects = system.base_vectors()
+            for x in base_vects:
+                if x in vect.components:
+                    coeff = self.components[x]
+                    if coeff == 1:
+                        term = str(x)
+                    else:
+                        term = f"({pretty(coeff)})*{x}"
+                    ret_str += term + " + "
+        return ret_str[:-3] if ret_str else "0"
+'''
+result = editor._run(relative_file_path="sympy/vector/vector.py", start_line=391, end_line=401, patch=patch)
+print(result)
+```
+HyperAgent_sympy__sympy-14308 - INFO - Inner-Editor-Assistant's Response: Thought: I apologize for the oversight. It seems that the `pretty` function is not available in the current scope. Let's modify our approach to use a different method for formatting the coefficients. We'll use the `str` function instead of `pretty`.

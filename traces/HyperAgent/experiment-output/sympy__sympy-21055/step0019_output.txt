@@ -1,0 +1,61 @@
+1. The `refine()` function is implemented in the `sympy/assumptions/refine.py` file, specifically in the following code snippet:
+   ```python
+9 def refine(expr, assumptions=True):
+10     """
+11     Simplify an expression using assumptions.
+12 
+13     Explanation
+14     ===========
+15 
+16     Unlike :func:`~.simplify()` which performs structural simplification
+17     without any assumption, this function transforms the expression into
+18     the form which is only valid under certain assumptions. Note that
+19     ``simplify()`` is generally not done in refining process.
+20 
+21     Refining boolean expression involves reducing it to ``True`` or
+22     ``False``. Unlike :func:~.`ask()`, the expression will not be reduced
+23     if the truth value cannot be determined.
+24 
+25     Examples
+26     ========
+27 
+28     >>> from sympy import refine, sqrt, Q
+29     >>> from sympy.abc import x
+30     >>> refine(sqrt(x**2), Q.real(x))
+31     Abs(x)
+32     >>> refine(sqrt(x**2), Q.positive(x))
+33     x
+34 
+35     >>> refine(Q.real(x), Q.positive(x))
+36     True
+37     >>> refine(Q.positive(x), Q.real(x))
+38     Q.positive(x)
+39 
+40     See Also
+41     ========
+42 
+43     sympy.simplify.simplify.simplify : Structural simplification without assumptions.
+44     sympy.assumptions.ask.ask : Query for boolean expressions using assumptions.
+45     """
+46     if not isinstance(expr, Basic):
+47         return expr
+48 
+49     if not expr.is_Atom:
+50         args = [refine(arg, assumptions) for arg in expr.args]
+51         # TODO: this will probably not work with Integral or Polynomial
+52         expr = expr.func(*args)
+53     if hasattr(expr, '_eval_refine'):
+54         ref_expr = expr._eval_refine(assumptions)
+55         if ref_expr is not None:
+56             return ref_expr
+57     name = expr.__class__.__name__
+58     handler = handlers_dict.get(name, None)
+59     if handler is None:
+60         return expr
+61     new_expr = handler(expr, assumptions)
+62     if (new_expr is None) or (expr == new_expr):
+63         return expr
+64     if not isinstance(new_expr, Expr):
+65         return new_expr
+66     return refine(new_expr, assumptions)
+```

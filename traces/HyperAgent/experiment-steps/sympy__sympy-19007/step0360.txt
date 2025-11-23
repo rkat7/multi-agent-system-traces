@@ -1,0 +1,62 @@
+### Input
+<empty>
+
+### Output
+Results for keyword: class BlockMatrix
+108 class BlockMatrix(MatrixExpr):
+109     """A BlockMatrix is a Matrix comprised of other matrices.
+110 
+111     The submatrices are stored in a SymPy Matrix object but accessed as part of
+112     a Matrix Expression
+113 
+114     >>> from sympy import (MatrixSymbol, BlockMatrix, symbols,
+115     ...     Identity, ZeroMatrix, block_collapse)
+116     >>> n,m,l = symbols('n m l')
+117     >>> X = MatrixSymbol('X', n, n)
+118     >>> Y = MatrixSymbol('Y', m ,m)
+119     >>> Z = MatrixSymbol('Z', n, m)
+120     >>> B = BlockMatrix([[X, Z], [ZeroMatrix(m,n), Y]])
+121     >>> print(B)
+122     Matrix([
+123     [X, Z],
+124     [0, Y]])
+125 
+126     >>> C = BlockMatrix([[Identity(n), Z]])
+127     >>> print(C)
+128     Matrix([[I, Z]])
+129 
+130     >>> print(block_collapse(C*B))
+131     Matrix([[X, Z*Y + Z]])
+132 
+133     The block structure can be nested:
+134 
+135     >>> nn = 2*n
+136     >>> mm = 2*m
+137     >>> Z = MatrixSymbol('Z', nn, mm)
+138     >>> M = MatrixSymbol('M', mm, mm)
+139     >>> L = MatrixSymbol('L', nn, nn)
+140     >>> l = ZeroMatrix(mm, nn)
+141     >>> R = BlockMatrix([[MatrixSymbol('A', n, n), MatrixSymbol('B', n, n)],
+142     ...                  [MatrixSymbol('C', n, n), MatrixSymbol('D', n, n)]])
+143     >>> h = BlockMatrix([[Identity(mm), l],
+144     ...                  [l.T, R]])
+145     >>> V = BlockMatrix([[M, l.T],
+146     ...                  [l, L]])
+147     >>> k = BlockMatrix([[Z, h],
+148     ...                  [V, l]])
+149     >>> print(k)
+150     Matrix([
+151     [Z, Matrix([
+152         [I, 0],
+153         [0, Matrix([
+154             [A, B],
+155             [C, D]])]
+156     ])],
+157     [Matrix([
+158         [M, 0],
+159         [0, L]
+160     ]), 0]])
+161 
+162     """
+163     def __new__(cls, *args, **kwargs):
+164         from sympy import MatrixBase

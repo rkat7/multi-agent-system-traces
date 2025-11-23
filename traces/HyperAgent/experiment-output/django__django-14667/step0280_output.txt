@@ -1,0 +1,23 @@
+Results for keyword: def only
+1426     def only(self, *fields):
+1427         """
+1428         Essentially, the opposite of defer. Only the fields passed into this
+1429         method and that are not already specified as deferred are loaded
+1430         immediately when the queryset is evaluated.
+1431         """
+1432         if self._fields is not None:
+1433             raise TypeError("Cannot call only() after .values() or .values_list()")
+1434         if fields == (None,):
+1435             # Can only pass None to defer(), not only(), as the rest option.
+1436             raise TypeError("Cannot pass None as an argument to only().")
+1437         for field in fields:
+1438             field = field.split(LOOKUP_SEP)[0]
+1439             if not self.model._meta.get_field(field).concrete:
+1440                 raise FieldDoesNotExist(
+1441                     "'%s' is not a concrete field of model %s."
+1442                     % (field, self.model._meta.object_name)
+1443                 )
+1444         clone = self._clone()
+1445         clone.query.clear_deferred_loading()
+1446         clone.query.add_immediate_loading(fields)
+1447         return clone

@@ -1,0 +1,23 @@
+```python
+def _prepare_then_do_arithmetic(
+    self_or_cls, operation, operand=None, operand2=None, **kwargs
+):
+    # ...
+    if operand is not None:
+        mask1 = getattr(operand, 'mask', None)
+        if operand2 is not None:
+            mask2 = getattr(operand2, 'mask', None)
+            if mask1 is not None and mask2 is not None:
+                mask = np.bitwise_or(mask1, mask2)
+            elif mask1 is not None:
+                mask = mask1
+            elif mask2 is not None:
+                mask = mask2
+            else:
+                mask = None
+        else:
+            mask = mask1
+    else:
+        mask = None
+    # ...
+```

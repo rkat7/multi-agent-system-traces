@@ -1,0 +1,89 @@
+### Input
+Action:
+```python
+
+### Output
+result = open_file_gen._run(relative_file_path="sympy/polys/polyoptions.py", keywords=["import"])
+print(result)
+```
+HyperAgent_sympy__sympy-14396 - INFO - Editor->Planner: exitcode: 0 (execution succeeded)
+Code output: The content of sympy/polys/polyoptions.py is: 1 """Options manager for :class:`Poly` and public API functions. """
+2 
+3 from __future__ import print_function, division
+4 
+5 __all__ = ["Options"]
+6 
+7 from sympy.core import S, Basic, sympify
+8 from sympy.core.compatibility import string_types, with_metaclass
+9 from sympy.utilities import numbered_symbols, topological_sort, public
+10 from sympy.utilities.iterables import has_dups
+11 from sympy.polys.polyerrors import GeneratorsError, OptionError, FlagError
+12 
+13 import sympy.polys
+14 
+15 import re
+16 
+17 class Option(object):
+18     """Base class for all kinds of options. """
+19 
+20     option = None
+21 
+22     is_Flag = False
+23 
+24     requires = []
+25     excludes = []
+26 
+27     after = []
+28     before = []
+29 
+30     @classmethod
+31     def default(cls):
+32         return None
+33 
+34     @classmethod
+35     def preprocess(cls, option):
+36         return None
+37 
+38     @classmethod
+39     def postprocess(cls, options):
+40         pass
+41 
+42 
+43 class Flag(Option):
+44     """Base class for all kinds of flags. """
+45 
+46     is_Flag = True
+47 
+48 
+49 class BooleanOption(Option):
+50     """An option that must have a boolean value or equivalent assigned. """
+51 
+52     @classmethod
+53     def preprocess(cls, value):
+54         if value in [True, False]:
+55             return bool(value)
+56         else:
+57             raise OptionError("'%s' must have a boolean value assigned, got %s" % (cls.option, value))
+58 
+59 
+60 class OptionType(type):
+61     """Base type for all options that does registers options. """
+62 
+63     def __init__(cls, *args, **kwargs):
+64         @property
+65         def getter(self):
+66             try:
+67                 return self[cls.option]
+68             except KeyError:
+69                 return cls.default()
+70 
+71         setattr(Options, cls.option, getter)
+72         Options.__options__[cls.option] = cls
+73 
+74 
+75 @public
+76 class Options(dict):
+77     """
+78     Options manager for polynomial manipulation module.
+79 
+80     Examples

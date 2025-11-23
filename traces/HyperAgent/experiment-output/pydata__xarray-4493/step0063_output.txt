@@ -1,0 +1,19 @@
+```python
+def deep_align(
+    objects: Iterable[Mapping[Hashable, Variable]],
+    join: str,
+    copy: bool = False,
+    indexes: Optional[Mapping[Hashable, pd.Index]] = None,
+    fill_value: object = dtypes.NA,
+) -> Mapping[Hashable, Variable]:
+    # ...
+    for obj in objects:
+        if dask.is_dask_collection(obj):
+            obj = obj.compute()
+    # ...
+    for name, var in final_vars.items():
+        if dask.is_dask_collection(var.data):
+            final_vars[name] = var.chunk()
+    # ...
+    return final_vars
+```

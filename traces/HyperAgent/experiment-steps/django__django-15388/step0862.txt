@@ -1,0 +1,12 @@
+### Input
+<empty>
+
+### Output
+    def _update_watched_files(self):
+        self._watched_files = set()
+        for template_config in settings.TEMPLATES:
+            for directory in template_config.get('DIRS', []):
+                if isinstance(directory, str) and os.path.isdir(directory):
+                    for root, _, files in os.walk(directory):
+                        for file in files:
+                            self._watched_files.add(os.path.join(root, file))

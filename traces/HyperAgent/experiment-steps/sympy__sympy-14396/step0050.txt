@@ -1,0 +1,25 @@
+### Input
+<empty>
+
+### Output
+```python
+110     def __new__(cls, rep, *gens, **args):
+111         """Create a new polynomial instance out of something useful. """
+112         opt = options.build_options(gens, args)
+113 
+114         if 'order' in opt:
+115             raise NotImplementedError("'order' keyword is not implemented yet")
+116 
+117         if iterable(rep, exclude=str):
+118             if isinstance(rep, dict):
+119                 return cls._from_dict(rep, opt)
+120             else:
+121                 return cls._from_list(list(rep), opt)
+122         else:
+123             rep = sympify(rep)
+124 
+125             if rep.is_Poly:
+126                 return cls._from_poly(rep, opt)
+127             else:
+128                 return cls._from_expr(rep, opt)
+```

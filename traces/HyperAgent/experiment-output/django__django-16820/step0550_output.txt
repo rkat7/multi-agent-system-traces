@@ -1,0 +1,14 @@
+patch = '''
+    def test_alter_index_together_to_add_index(self):
+        """
+        Tests that AlterIndexTogether is optimized into AddIndex and RemoveIndex operations.
+        """
+        self.assertOptimizesTo(
+            [
+                migrations.AlterIndexTogether("Foo", [("field1", "field2")]),
+            ],
+            [
+                migrations.RemoveIndex("Foo", name="idx_field1_field2"),
+                migrations.AddIndex("Foo", models.Index(fields=["field1", "field2"], name="idx_field1_field2")),
+            ],
+        )

@@ -1,0 +1,27 @@
+    Examples
+    ========
+    >>> from sympy.matrices import Matrix
+    >>> A = Matrix([[1, 2, 3], [4, 5, 6]])
+    >>> 2*A == A*2 == Matrix([[2, 4, 6], [8, 10, 12]])
+    True
+    >>> B = Matrix([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+    >>> A*B
+    Matrix([
+    [30, 36, 42],
+    [66, 81, 96]])
+    >>> B*A
+    Traceback (most recent call last):
+    ...
+    ShapeError: Matrices size mismatch.
+    >>>
+    See Also
+    ========
+    matrix_multiply_elementwise
+    """
+    other = _matrixify(other)
+    # matrix-like objects can have shapes.  This is
+    # our first sanity check.
+    if hasattr(other, 'shape') and len(other.shape) == 2:
+        if self.shape[1] != other.shape[0]:
+            raise ShapeError("Matrix size mismatch: %s * %s." % (
+                self.shape, other.shape))

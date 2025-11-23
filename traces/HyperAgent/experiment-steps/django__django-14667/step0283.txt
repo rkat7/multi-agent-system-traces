@@ -1,0 +1,19 @@
+### Input
+<empty>
+
+### Output
+    def only(self, *fields):
+        """
+        Essentially, the opposite of defer. Only the fields passed into this
+        method and that are not already specified as deferred are loaded
+        immediately when the queryset is evaluated.
+        """
+        clone = self._clone()
+        clone._fields = set(fields)
+        clone.query.clear_deferred_loading()
+        clone.query.add_immediate_loading(fields)
+        return clone
+'''
+result = editor._run(relative_file_path="django/db/models/query.py", start_line=1405, end_line=1447, patch=patch)
+print(result)
+```

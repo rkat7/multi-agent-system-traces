@@ -1,0 +1,16 @@
+### Input
+<empty>
+
+### Output
+```python
+def __getitem__(self, ind):
+    if isinstance(ind, slice):
+        if ind.step not in (1, None):
+            raise ValueError('Pipeline slicing only supports a step of 1')
+        return self.__class__(self.steps[ind])
+    try:
+        name, est = self.steps[ind]
+    except TypeError:
+        return self.named_steps[ind]
+    return est
+```

@@ -1,0 +1,18 @@
+### Input
+<empty>
+
+### Output
+    def watch_templates_dirs(self):
+        for template_setting in settings.TEMPLATES:
+            dirs = template_setting.get('DIRS', [])
+            for directory in dirs:
+                if isinstance(directory, str):
+                    self.extra_files.add(directory)
+                elif callable(directory):
+                    try:
+                        resolved_dir = directory()
+                        if isinstance(resolved_dir, str):
+                            self.extra_files.add(resolved_dir)
+                    except Exception:
+                        # If the callable raises an exception, skip it
+                        pass

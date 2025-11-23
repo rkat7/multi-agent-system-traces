@@ -1,0 +1,12 @@
+    for factor in df.factor_list()[1]:
+        if factor.degree() == 1:
+            roots.append(Poly(factor, domain=P.domain).as_expr())
+        else:
+            for i in range(1, factor.degree() // 2 + 1):
+                _, terms = factor.sqf_list()
+                for term in terms:
+                    if term.degree() == 2:
+                        disc = -4 * term.LC()
+                        if disc >= 0:
+                            roots.append((-term.TC() + sqrt(disc)) / (2 * term.LC()))
+                            roots.append((-term.TC() - sqrt(disc)) / (2 * term.LC()))

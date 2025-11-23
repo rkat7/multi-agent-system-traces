@@ -1,0 +1,8 @@
+def test_script_name_with_special_characters(self):
+    special_script_name = '/app/!@#$%^&*()'
+    os.environ['SCRIPT_NAME'] = special_script_name
+    client = Client(SCRIPT_NAME=special_script_name)
+    response = client.get('/static/admin/css/base.css')
+    self.assertEqual(response.status_code, 200)
+    self.assertIn(f'{special_script_name}/static/admin/css/base.css', response.content.decode())
+```

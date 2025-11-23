@@ -1,0 +1,12 @@
+        for expr, is_ref in order_by:
+            resolved = expr.resolve_expression(self.query, allow_joins=True, reuse=None)
+            if self.query.combinator:
+                # ... (existing code) ...
+            sql, params = self.compile(resolved)
+            normalized_sql = normalize_sql(sql)
+            without_ordering = self.ordering_parts.search(normalized_sql).group(1)
+            params_hash = make_hashable(params)
+            if (without_ordering, params_hash) in seen:
+                continue
+            seen.add((without_ordering, params_hash))
+            result.append((resolved, (sql, params, is_ref)))

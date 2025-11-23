@@ -1,0 +1,14 @@
+    def _impute(self, x, y):
+        if self.impute_method == 'drop':
+            x = x.dropna()
+            y = y.dropna()
+            valid_indices = x.index.intersection(y.index)
+            return x.loc[valid_indices], y.loc[valid_indices]
+        elif self.impute_method == 'mean':
+            return x.fillna(x.mean()), y.fillna(y.mean())
+        elif self.impute_method == 'median':
+            return x.fillna(x.median()), y.fillna(y.median())
+        elif self.impute_method == 'interpolate':
+            return x.interpolate(), y.interpolate()
+        else:
+            raise ValueError(f"Unsupported imputation method: {self.impute_method}")

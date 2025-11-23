@@ -1,0 +1,20 @@
+        Examples:
+        >>> Permutation([0, 2, 1])
+        Permutation([0, 2, 1])
+        >>> Permutation([[0, 1], [0, 1]])
+        Permutation([0, 1, 2])
+        """
+        if len(args) == 1 and isinstance(args[0], list):
+            self.array_form = args[0]
+        elif all(isinstance(arg, (list, tuple)) for arg in args):
+            cycles = args
+            if any(len(set(cycle)) != len(cycle) for cycle in cycles):
+                # Handle non-disjoint cycles by constructing the identity permutation
+                self.array_form = list(range(max(max(cycle) for cycle in cycles) + 1))
+            else:
+                self.array_form = [0] * max(max(cycle) for cycle in cycles + 1)
+                for cycle in cycles:
+                    for i in range(len(cycle)):
+                        self.array_form[cycle[i]] = cycle[(i + 1) % len(cycle)]
+        else:
+            raise ValueError("Invalid arguments for Permutation constructor")

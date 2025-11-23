@@ -1,0 +1,11 @@
+### Input
+<empty>
+
+### Output
+def migrate_authors_data(apps, schema_editor):
+    Authors = apps.get_model('your_app_name', 'Authors')
+    for author in Authors.objects.all():
+        old_project_data_set = author.project_data_set
+        author.project_data_set.clear()  # Clear the M2M relationship
+        author.project_data_set.add(old_project_data_set)  # Add the old relationship to the M2M field
+        author.save()

@@ -1,0 +1,14 @@
+    perms = [
+        Permission(codename=codename, name=name, content_type=ct)
+        for ct, (codename, name) in searched_perms
+        if (ct.pk, codename) not in all_perms
+    ]
+    Permission.objects.using(using).bulk_create(perms)
+    if verbosity >= 2:
+        for perm in perms:
+            print("Adding permission '%s'" % perm)
+'''
+result = editor._run(relative_file_path="django/contrib/auth/management/__init__.py", start_line=37, end_line=106, patch=patch)
+print(result)
+```
+HyperAgent_django__django-16400 - INFO - Inner-Editor-Assistant's Response: Thought: The modification we made to the `create_permissions` function did not actually change anything significant. The `using` parameter was already being used correctly throughout the function. The issue described in the GitHub ticket might not be related to this function directly, but rather to how it's being called or how the database router is configured.

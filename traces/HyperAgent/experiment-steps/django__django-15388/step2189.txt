@@ -1,0 +1,15 @@
+### Input
+<empty>
+
+### Output
+    def watch_settings_file(self):
+        settings_module = os.environ.get('DJANGO_SETTINGS_MODULE')
+        if settings_module:
+            try:
+                module = __import__(settings_module, fromlist=[''])
+                settings_file = module.__file__
+                if settings_file.endswith('.pyc'):
+                    settings_file = settings_file[:-1]
+                self.extra_files.add(settings_file)
+            except ImportError:
+                pass

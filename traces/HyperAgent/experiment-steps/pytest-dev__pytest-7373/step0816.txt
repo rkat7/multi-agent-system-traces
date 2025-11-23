@@ -1,0 +1,30 @@
+### Input
+<empty>
+
+### Output
+                for expr in args:
+                    self.expr = expr
+                    if isinstance(expr, str):
+                        d = self._getglobals()
+                        import ast
+                        try:
+                            tree = ast.parse(expr)
+                            code = compile(tree, filename="<ast>", mode="eval")
+                            result = eval(code, d)
+                        except Exception as e:
+                            print(f"Error compiling expression: {e}")
+                            result = False
+                    else:
+                        if "reason" not in mark.kwargs:
+                            # XXX better be checked at collection time
+                            msg = (
+                                "you need to specify reason=STRING "
+                                "when using booleans as conditions."
+                            )
+                            print(msg)
+                        result = bool(expr)
+                    if result:
+                        self.result = True
+                        self.reason = mark.kwargs.get("reason", None)
+                        self.expr = expr
+                        return self.result

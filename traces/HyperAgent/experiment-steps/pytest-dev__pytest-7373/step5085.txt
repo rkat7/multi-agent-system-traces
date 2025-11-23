@@ -1,0 +1,22 @@
+### Input
+<empty>
+
+### Output
+57     def istrue(self) -> bool:
+58         try:
+59             return self._istrue()
+60         except TEST_OUTCOME:
+61             self.exc = sys.exc_info()
+62             if isinstance(self.exc[1], SyntaxError):
+63                 # TODO: Investigate why SyntaxError.offset is Optional, and if it can be None here.
+64                 assert self.exc[1].offset is not None
+65                 msg = [" " * (self.exc[1].offset + 4) + "^"]
+66                 msg.append("SyntaxError: invalid syntax")
+67             else:
+68                 msg = traceback.format_exception_only(*self.exc[:2])
+69             fail(
+70                 "Error evaluating %r expression\n"
+71                 "    %s\n"
+72                 "%s" % (self._mark_name, self.expr, "\n".join(msg)),
+73                 pytrace=False,
+74             )

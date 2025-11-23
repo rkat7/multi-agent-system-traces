@@ -1,0 +1,27 @@
+Results for keyword: def set_pos
+237     def set_pos(self, otherpoint, value):
+238         """Used to set the position of this point w.r.t. another point.
+239 
+240         Parameters
+241         ==========
+242         otherpoint : Point
+243             The other point which this point's location is defined relative to
+244         value : Vector
+245             The vector which defines the location of this point
+246 
+247         Examples
+248         ========
+249         >>> from sympy.physics.vector import Point, ReferenceFrame
+250         >>> N = ReferenceFrame('N')
+251         >>> p1 = Point('p1')
+252         >>> p2 = Point('p2')
+253         >>> p1.set_pos(p2, 10 * N.x)
+254         >>> p1.pos_from(p2)
+255         10*N.x
+256         """
+257         if value == 0:
+258             value = Vector(0)
+259         value = _check_vector(value)
+260         self._check_point(otherpoint)
+261         self._pos_dict.update({otherpoint: value})
+262         otherpoint._pos_dict.update({self: -value})

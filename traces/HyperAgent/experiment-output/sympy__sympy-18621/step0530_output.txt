@@ -1,0 +1,17 @@
+```python
+290     def __new__(cls, *mats):
+291         return Basic.__new__(BlockDiagMatrix, *mats)
+292 
+293     @property
+294     def diag(self):
+295         return self.args
+296 
+297     @property
+298     def blocks(self):
+299         from sympy.matrices.immutable import ImmutableDenseMatrix
+300         mats = self.args
+301         data = [[mats[i] if i == j else ZeroMatrix(mats[i].rows, mats[j].cols)
+302                         for j in range(len(mats))]
+303                         for i in range(len(mats))]
+304         return ImmutableDenseMatrix(data)
+```

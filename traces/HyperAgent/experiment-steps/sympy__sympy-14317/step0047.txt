@@ -1,0 +1,41 @@
+### Input
+<empty>
+
+### Output
+**str method (sympy/polys/poly.py)**
+```python
+def str(self, printer=None):
+    if self.is_zero:
+        return '0'
+    elif self.is_Mul:
+        args = []
+        for arg in self.args:
+            if arg.is_Poly:
+                args.append(printer._print_Poly(arg))
+            else:
+                args.append(printer._print(arg))
+        return '*'.join(args)
+    elif self.is_Add:
+        args = []
+        for arg in self.args:
+            if arg.is_Poly:
+                args.append(printer._print_Poly(arg))
+            else:
+                args.append(printer._print(arg))
+        return '+'.join(args)
+    elif self.is_Pow:
+        return '%s**%s' % (printer._print(self.base), printer._print(self.exp))
+    elif self.is_Mul:
+        args = []
+        for arg in self.args:
+            if arg.is_Poly:
+                args.append(printer._print_Poly(arg))
+            else:
+                args.append(printer._print(arg))
+        return '*'.join(args)
+    elif self.is_Pow:
+        return '%s**%s' % (printer._print(self.base), printer._print(self.exp))
+    else:
+        return printer._print(self.as_expr())
+```
+This method prints the `Poly` object as a string, using the `printer` object to print each argument.

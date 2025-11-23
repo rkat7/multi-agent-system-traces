@@ -1,0 +1,26 @@
+```python
+1856     def _print_Poly(self, poly):
+1857         cls = poly.__class__.__name__
+1858         terms = []
+1859         for monom, coeff in poly.terms():
+1860             if coeff == 1 and sum(monom) != 0:
+1861                 coeff = ""
+1862             else:
+1863                 coeff = self._print(coeff)
+1864                 
+1865             if sum(monom) == 0:
+1866                 terms.append(coeff)
+1867             else:
+1868                 terms.append(coeff + ''.join(f'{self._print(g)}^{{{e}}}' if e > 1 else self._print(g) for g, e in zip(poly.gens, monom) if e))
+1869         
+1870         expr = ' + '.join(reversed(terms))  # Reverse to get highest degree first
+1871         gens = list(map(self._print, poly.gens))
+1872         domain = f"domain={self._print(poly.get_domain())}"
+1873         args = ", ".join([expr] + gens + [domain])
+1874         
+1875         if cls in accepted_latex_functions:
+1876             tex = r"\%s {\left (%s \right )}" % (cls, args)
+1877         else:
+1878             tex = r"\operatorname{%s}{\left( %s \right)}" % (cls, args)
+1879         return tex
+```

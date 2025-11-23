@@ -1,0 +1,25 @@
+Results for keyword: def get_order_by
+252     def get_order_by(self):
+253         """
+254         Return a list of 2-tuples of form (expr, (sql, params, is_ref)) for the
+255         ORDER BY clause.
+256 
+257         The order_by clause can alter the select clause (for example it
+258         can add aliases to clauses that do not yet have one, or it can
+259         add totally new select clauses).
+260         """
+261         if self.query.extra_order_by:
+262             ordering = self.query.extra_order_by
+263         elif not self.query.default_ordering:
+264             ordering = self.query.order_by
+265         elif self.query.order_by:
+266             ordering = self.query.order_by
+267         elif self.query.get_meta().ordering:
+268             ordering = self.query.get_meta().ordering
+269             self._meta_ordering = ordering
+270         else:
+271             ordering = []
+272         if self.query.standard_ordering:
+273             asc, desc = ORDER_DIR['ASC']
+274         else:
+275             asc, desc = ORDER_DIR['DESC']

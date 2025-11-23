@@ -1,0 +1,60 @@
+```python
+350 def read_qdp(table_id=None, **kwargs):
+351     """
+352     Read a table from a QDP file.
+353 
+354     Parameters
+355     ----------
+356     table_id : int or str, optional
+357         The table identifier to read from the QDP file. If not provided,
+358         the first table in the file will be read.
+359     kwargs : dict
+360         Keyword arguments passed to `~astropy.table.Table.read`
+361 
+362     Returns
+363     -------
+364     table : `~astropy.table.Table`
+365         The table read from the QDP file.
+366 
+367     Examples
+368     --------
+369     >>> from astropy.table import Table
+370     >>> table = Table.read('test.qdp', format='ascii.qdp')
+371     """
+372     table = Table.read(kwargs.pop('files', []), format='ascii.qdp', **kwargs)
+373     if table_id is not None:
+374         table = table[table_id]
+375     return table
+376 
+377 
+378 Registry.register_reader('ascii.qdp', Table, read_qdp)
+379 
+380 
+381 class QDPWriter(BaseAsciiWriter):
+382     """
+383     Class to write a Table to a QDP file.
+384 
+385     This class is designed to handle the basic QDP file format. More
+386     advanced features may not be supported.
+387 
+388     Parameters
+389     ----------
+390     table : `~astropy.table.Table`
+391         The table to output to a QDP file
+392     """
+393 
+394     _default_extention = '.qdp'
+395 
+396     def write(self, table, output_name=None, **kwargs):
+397         """Write out the table to a QDP file.
+398 
+399         Parameters
+400         ----------
+401         table : `~astropy.table.Table`
+402             The table to output to a QDP file
+403         output_name : str, optional
+404             The name of the output file. If not provided, the table will be
+405             written to stdout.
+406         """
+407         ...
+```

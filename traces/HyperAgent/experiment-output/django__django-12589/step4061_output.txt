@@ -1,0 +1,22 @@
+# Now, let's add the new get_group_by_cols method to the Query class
+patch = '''
+    def get_group_by_cols(self):
+        group_by_cols = []
+        for alias, annotation in self.annotations.items():
+            if isinstance(annotation, Subquery):
+                # For subquery annotations, use the entire subquery in the GROUP BY
+                group_by_cols.append(annotation)
+            elif hasattr(annotation, 'resolve_expression'):
+                resolved = annotation.resolve_expression(self)
+                if hasattr(resolved, 'get_group_by_cols'):
+                    group_by_cols.extend(resolved.get_group_by_cols())
+                else:
+                    group_by_cols.append(resolved)
+            else:
+                group_by_cols.append(annotation)
+        return group_by_cols
+'''
+result = editor._run(relative_file_path="django/db/models/sql/query.py", start_line=474, end_line=474, patch=patch)
+print(result)
+```
+HyperAgent_django__django-12589 - INFO - Editor->Planner: Thought: It seems that the `get_group_by_cols` method wasn't successfully added to the file in our previous attempt. We need to add this method to the `Query` class. Let's locate the `Query` class and add the new method there with correct indentation.

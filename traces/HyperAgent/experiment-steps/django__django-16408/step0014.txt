@@ -1,0 +1,20 @@
+### Input
+<empty>
+
+### Output
+# The relevant part of the test case is:
+160     def test_wrong_select_related(self):
+161         with self.assertNumQueries(3):
+162             p = list(PoolStyle.objects.annotate(
+163                 tournament_pool=FilteredRelation('pool__tournament__pool'),
+164                 ).select_related('tournament_pool'))
+165             self.assertEqual(p[0].pool.tournament, p[0].tournament_pool.tournament)
+166 
+167 # The issue seems to be that the `tournament_pool` annotated field is not being set correctly when using `select_related()`.
+168 
+169 # To fix this, we could try using `prefetch_related()` instead of `select_related()`:
+170 
+171         p = list(PoolStyle.objects.annotate(
+172             tournament_pool=FilteredRelation('pool__tournament__pool')
+173         ).prefetch_related('tournament_pool'))
+```

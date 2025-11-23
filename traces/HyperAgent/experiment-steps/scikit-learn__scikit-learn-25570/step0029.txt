@@ -1,0 +1,20 @@
+### Input
+<empty>
+
+### Output
+    output_config = _get_output_config("transform", self)
+    empty_transformers = []
+    for name, trans, columns in transformers:
+        if replace_strings:
+            # replace 'passthrough' with identity transformer and skip in case of 'drop'
+            if trans == "passthrough":
+                trans = FunctionTransformer(
+                    accept_sparse=True,
+                    check_inverse=False,
+                    feature_names_out="one-to-one",
+                ).set_output(transform=output_config["dense"])
+            elif trans == "drop":
+                continue
+            elif _is_empty_column_selection(columns):
+                empty_transformers.append(name)
+                continue

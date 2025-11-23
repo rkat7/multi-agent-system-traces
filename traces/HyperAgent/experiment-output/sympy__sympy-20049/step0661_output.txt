@@ -1,0 +1,19 @@
+    Examples
+    ========
+    >>> from sympy.physics.vector import Point, ReferenceFrame
+    >>> N = ReferenceFrame('N')
+    >>> p1 = Point('p1')
+    >>> p1.set_vel(N, 10 * N.x)
+    >>> p1.vel(N)
+    10*N.x
+    """
+    _check_frame(frame)
+    if frame in self._vel_dict:
+        return self._vel_dict[frame]
+    elif frame in self._pos_dict:
+        # Try to calculate the velocity based on the position
+        pos = self.pos_from(self._pos_dict[frame])
+        return pos.dt(frame)
+    else:
+        return Vector(0)
+```

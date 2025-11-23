@@ -1,0 +1,21 @@
+### Input
+Action:
+```python
+
+### Output
+# Replace the existing as_explicit method in sympy/matrices/expressions/blockmatrix.py
+def as_explicit(self):
+    from sympy.matrices import MutableDenseMatrix
+    if len(self.blocks) == 1:
+        # If there is only one block, return it directly
+        return MutableDenseMatrix(self.blocks[0])
+    else:
+        # Otherwise, construct the explicit matrix from the blocks
+        rows = sum(block.rows for block in self.blocks)
+        cols = sum(block.cols for block in self.blocks)
+        data = []
+        for block in self.blocks:
+            data.extend(block.tolist())
+            data.extend([[0] * block.cols] * (rows - block.rows))
+        return MutableDenseMatrix(rows, cols, data)
+```

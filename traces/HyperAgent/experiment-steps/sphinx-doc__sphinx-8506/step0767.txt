@@ -1,0 +1,42 @@
+### Input
+<empty>
+
+### Output
+    ```python
+def process_doc(self, env: "BuildEnvironment", docname: str, document: nodes.document) -> None:  # NOQA
+    for name, explicit in document.nametypes.items():
+        if not explicit:
+            continue
+        labelid = document.nameids[name]
+        if labelid is None:
+            continue
+        node = document.ids[labelid]
+        if isinstance(node, nodes.target) and 'refid' in node:
+            # indirect hyperlink targets
+            node = document.ids.get(node['refid'])
+            labelid = node['names'][0]
+        if (node.tagname == 'footnote' or 'refuri' in node or node.tagname.startswith('desc_')):
+            # ignore footnote labels, labels automatically generated from a
+            # link and object descriptions
+            continue
+        if name in self.labels:
+            logger.warning(__('duplicate label %s, other instance in %s'),
+                           name, env.doc2path(self.labels[name][0]),
+                           location=node)
+        self.anonlabels[name] = docname, labelid
+        if node.tagname in ('section', 'rubric'):
+            title = cast(nodes.title, node[0])
+            sectname = clean_astext(title)
+        elif self.is_enumerable_node(node):
+            sectname = self.get_numfig_title(node)
+            if not sectname:
+                continue
+        else:
+            toctree = next(iter(node.traverse(addnodes.toctree)), None)
+            if toctree and toctree.get('caption'):
+                sectname = toctree.get('caption')
+            else:
+                # anonymous-only labels
+                continue
+        self.labels[name] = docname, labelid, sectname
+```

@@ -1,0 +1,16 @@
+### Input
+<empty>
+
+### Output
+# Locate and modify the bell class
+sed -i -e '/def _eval_limit(self, n, limit_type, **kwargs):/,/else:/c\
+    def _eval_limit(self, n, limit_type, **kwargs):
+        from sympy import oo, E, Sum, factorial, Dummy, S
+        if limit_type == 0:  # limit at positive infinity
+            if n == self.args[0]:
+                return oo
+            else:
+                return self._eval_rewrite_as_Sum(n=self.args[0], **kwargs)._eval_limit(n, limit_type, **kwargs)
+        else:
+            return self
+' sympy/functions/combinatorial/numbers.py

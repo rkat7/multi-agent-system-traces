@@ -1,0 +1,17 @@
+### Input
+<empty>
+
+### Output
+def run_with_reloader(main_func, *args, **kwargs):
+    if os.environ.get('RUN_MAIN') == 'true':
+        main_func(*args, **kwargs)
+    else:
+        reloader = get_reloader()
+        try:
+            while True:
+                if reloader.should_reload():
+                    restart_with_reloader()
+                time.sleep(1)
+        except KeyboardInterrupt:
+            pass
+```

@@ -1,0 +1,20 @@
+### Input
+Action:
+```python
+
+### Output
+patch = '''
+def inherited_members_option(arg: Any) -> Union[str, Set[str], List[str]]:
+    """Used to convert the :inherited-members: option to auto directives."""
+    if arg in (None, True):
+        return 'object'
+    elif isinstance(arg, str):
+        if ',' in arg:
+            return [class_name.strip() for class_name in arg.split(',')]
+        return arg
+    else:
+        return arg
+'''
+result = editor._run(relative_file_path="sphinx/ext/autodoc/__init__.py", start_line=112, end_line=124, patch=patch)
+print(result)
+```

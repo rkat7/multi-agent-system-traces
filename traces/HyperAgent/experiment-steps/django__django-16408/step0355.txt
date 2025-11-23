@@ -1,0 +1,14 @@
+### Input
+<empty>
+
+### Output
+        for style in styles:
+            print(f"Style: {style.name}")
+            print(f"Style's tournament: {style.tournament}")
+            print(f"First T1 pool's tournament: {next((p.tournament for p in style.pools.all() if p.name.startswith('T1')), None)}")
+            print(f"Annotated tournament_pool: {style.tournament_pool}")
+            print("---")
+            if style.pools.filter(name__startswith='T1').exists():
+                self.assertEqual(style.tournament, style.tournament_pool)
+            else:
+                self.assertIsNone(style.tournament_pool)

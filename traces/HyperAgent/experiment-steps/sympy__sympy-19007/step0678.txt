@@ -1,0 +1,62 @@
+### Input
+<empty>
+
+### Output
+```python
+22 class BlockMatrix(MatrixExpr):
+23     """A BlockMatrix is a Matrix comprised of other matrices.
+24 
+25     The submatrices are stored in a SymPy Matrix object but accessed as part of
+26     a Matrix Expression
+27 
+28     >>> from sympy import (MatrixSymbol, BlockMatrix, symbols,
+29     ...     Identity, ZeroMatrix, block_collapse)
+30     >>> n,m,l = symbols('n m l')
+31     >>> X = MatrixSymbol('X', n, n)
+32     >>> Y = MatrixSymbol('Y', m ,m)
+33     >>> Z = MatrixSymbol('Z', n, m)
+34     >>> B = BlockMatrix([[X, Z], [ZeroMatrix(m,n), Y]])
+35     >>> print(B)
+36     Matrix([
+37     [X, Z],
+38     [0, Y]])
+39 
+40     >>> C = BlockMatrix([[Identity(n), Z]])
+41     >>> print(C)
+42     Matrix([[I, Z]])
+43 
+44     >>> print(block_collapse(C*B))
+45     Matrix([[X, Z + Z*Y]])
+46 
+47     Some matrices might be comprised of rows of blocks with
+48     the matrices in each row having the same height and the
+49     rows all having the same total number of columns but
+50     not having the same number of columns for each matrix
+51     in each row. In this case, the matrix is not a block
+52     matrix and should be instantiated by Matrix.
+53 
+54     >>> from sympy import ones, Matrix
+55     >>> dat = [
+56     ... [ones(3,2), ones(3,3)*2],
+57     ... [ones(2,3)*3, ones(2,2)*4]]
+58     ...
+59     >>> BlockMatrix(dat)
+60     Traceback (most recent call last):
+61     ...
+62     ValueError:
+63     Although this matrix is comprised of blocks, the blocks do not fill
+64     the matrix in a size-symmetric fashion. To create a full matrix from
+65     these arguments, pass them directly to Matrix.
+66     >>> Matrix(dat)
+67     Matrix([
+68     [1, 1, 2, 2, 2],
+69     [1, 1, 2, 2, 2],
+70     [1, 1, 2, 2, 2],
+71     [3, 3, 3, 4, 4],
+72     [3, 3, 3, 4, 4]])
+73 
+74     See Also
+75     ========
+76     sympy.matrices.matrices.MatrixBase.irregular
+77     """
+```

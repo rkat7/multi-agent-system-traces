@@ -1,0 +1,153 @@
+### Input
+<empty>
+
+### Output
+```python
+2 """
+3 C code printer
+4 
+5 The CCodePrinter converts single sympy expressions into single C expressions,
+6 using the functions defined in math.h where possible.
+7 
+8 A complete code generator, which uses ccode extensively, can be found in
+9 sympy.utilities.codegen. The codegen module can be used to generate complete
+10 source code files that are compilable without further modifications.
+11 
+12 
+13 """
+14 
+15 from __future__ import print_function, division
+--------------
+80                   'void',
+81                   'const',
+82                   'signed',
+83                   'volatile']
+84 
+85 
+86 class CCodePrinter(CodePrinter):
+87     """A printer to convert python expressions to strings of c code"""
+88     printmethod = "_ccode"
+89     language = "C"
+90 
+91     _default_settings = {
+92         'order': None,
+93         'full_prec': 'auto',
+94         'precision': 15,
+95         'user_functions': {},
+--------------
+283 def ccode(expr, assign_to=None, **settings):
+284     """Converts an expr to a string of c code
+285 
+286     Parameters
+287     ==========
+288 
+289     expr : Expr
+290         A sympy expression to be converted.
+291     assign_to : optional
+292         When given, the argument is used as the name of the variable to which
+293         the expression is assigned. Can be a string, ``Symbol``,
+294         ``MatrixSymbol``, or ``Indexed`` type. This is helpful in case of
+295         line-wrapping, or for expressions that generate multi-line statements.
+296     precision : integer, optional
+297         The precision for numbers such as pi [default=15].
+298     user_functions : dict, optional
+299         A dictionary where the keys are string representations of either
+300         ``FunctionClass`` or ``UndefinedFunction`` instances and the values
+301         are their desired C string representations. Alternatively, the
+302         dictionary value can be a list of tuples i.e. [(argument_test,
+303         cfunction_string)].  See below for examples.
+304     dereference : iterable, optional
+305         An iterable of symbols that should be dereferenced in the printed code
+306         expression. These would be values passed by address to the function.
+307         For example, if ``dereference=[a]``, the resulting code would print
+308         ``(*a)`` instead of ``a``.
+309     human : bool, optional
+310         If True, the result is a single string that may contain some constant
+311         declarations for the number symbols. If False, the same information is
+312         returned in a tuple of (symbols_to_declare, not_supported_functions,
+313         code_text). [default=True].
+314     contract: bool, optional
+315         If True, ``Indexed`` instances are assumed to obey tensor contraction
+316         rules and the corresponding nested loops over indices are generated.
+317         Setting contract=False will not generate loops, instead the user is
+318         responsible to provide values for the indices in the code.
+319         [default=True].
+320 
+321     Examples
+322     ========
+323 
+324     >>> from sympy import ccode, symbols, Rational, sin, ceiling, Abs, Function
+325     >>> x, tau = symbols("x, tau")
+326     >>> ccode((2*tau)**Rational(7, 2))
+327     '8*sqrt(2)*pow(tau, 7.0L/2.0L)'
+328     >>> ccode(sin(x), assign_to="s")
+329     's = sin(x);'
+330 
+331     Simple custom printing can be defined for certain types by passing a
+332     dictionary of {"type" : "function"} to the ``user_functions`` kwarg.
+333     Alternatively, the dictionary value can be a list of tuples i.e.
+334     [(argument_test, cfunction_string)].
+335 
+336     >>> custom_functions = {
+337     ...   "ceiling": "CEIL",
+338     ...   "Abs": [(lambda x: not x.is_integer, "fabs"),
+339     ...           (lambda x: x.is_integer, "ABS")],
+340     ...   "func": "f"
+341     ... }
+342     >>> func = Function('func')
+343     >>> ccode(func(Abs(x) + ceiling(x)), user_functions=custom_functions)
+344     'f(fabs(x) + CEIL(x))'
+345 
+346     ``Piecewise`` expressions are converted into conditionals. If an
+347     ``assign_to`` variable is provided an if statement is created, otherwise
+348     the ternary operator is used. Note that if the ``Piecewise`` lacks a
+349     default term, represented by ``(expr, True)`` then an error will be thrown.
+350     This is to prevent generating an expression that may not evaluate to
+351     anything.
+352 
+353     >>> from sympy import Piecewise
+354     >>> expr = Piecewise((x + 1, x > 0), (x, True))
+355     >>> print(ccode(expr, tau))
+356     if (x > 0) {
+357     tau = x + 1;
+358     }
+359     else {
+360     tau = x;
+361     }
+362 
+363     Support for loops is provided through ``Indexed`` types. With
+364     ``contract=True`` these expressions will be turned into loops, whereas
+365     ``contract=False`` will just print the assignment expression that should be
+366     looped over:
+367 
+368     >>> from sympy import Eq, IndexedBase, Idx
+369     >>> len_y = 5
+370     >>> y = IndexedBase('y', shape=(len_y,))
+371     >>> t = IndexedBase('t', shape=(len_y,))
+372     >>> Dy = IndexedBase('Dy', shape=(len_y-1,))
+373     >>> i = Idx('i', len_y-1)
+374     >>> e=Eq(Dy[i], (y[i+1]-y[i])/(t[i+1]-t[i]))
+375     >>> ccode(e.rhs, assign_to=e.lhs, contract=False)
+376     'Dy[i] = (y[i + 1] - y[i])/(t[i + 1] - t[i]);'
+377 
+378     Matrices are also supported, but a ``MatrixSymbol`` of the same dimensions
+379     must be provided to ``assign_to``. Note that any expression that can be
+380     generated normally can also exist inside a Matrix:
+381 
+382     >>> from sympy import Matrix, MatrixSymbol
+383     >>> mat = Matrix([x**2, Piecewise((x + 1, x > 0), (x, True)), sin(x)])
+384     >>> A = MatrixSymbol('A', 3, 1)
+385     >>> print(ccode(mat, A))
+386     A[0] = pow(x, 2);
+387     if (x > 0) {
+388        A[1] = x + 1;
+389     }
+390     else {
+391        A[1] = x;
+392     }
+393     A[2] = sin(x);
+394     """
+395 
+396     return CCodePrinter(settings).doprint(expr, assign_to)
+```
+HyperAgent_sympy__sympy-11400 - INFO - Planner's Response: Thought: After examining the `ccode.py` file, I can see that the `ccode()` function is implemented as a wrapper around the `CCodePrinter` class. The issue with `sinc(x)` not being properly translated to C code is likely due to the function not being explicitly handled in the `CCodePrinter` class. To resolve this, we need to add support for the `sinc` function in the `CCodePrinter` class. Let's investigate the `CCodePrinter` class to see where we can add this support.

@@ -1,0 +1,25 @@
+### Input
+Action:
+```python
+
+### Output
+patch = '''
+    def get_object_members(self, want_all: bool) -> Tuple[bool, ObjectMembers]:
+        members = self.get_module_members()
+        if want_all:
+            if self.__all__ is None:
+                # for implicit module members, check __module__ to avoid
+                # documenting imported objects
+                return True, list(members.values())
+            else:
+                # When __all__ is defined (even if empty), only return members in __all__
+                return True, [member for member in members.values() if member.__name__ in self.__all__]
+        else:
+            if not self.options.members:
+                return False, []
+            # specific members given
+            return False, [(x, members[x]) for x in self.options.members if x in members]
+'''
+result = editor._run(relative_file_path="sphinx/ext/autodoc/__init__.py", start_line=1074, end_line=1083, patch=patch)
+print(result)
+```

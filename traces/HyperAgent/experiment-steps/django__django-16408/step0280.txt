@@ -1,0 +1,20 @@
+### Input
+<empty>
+
+### Output
+    def test_wrong_select_related(self):
+        connection.queries.clear()
+        try:
+            with self.assertNumQueries(3):
+                p = list(PoolStyle.objects.annotate(
+                    tournament_pool=FilteredRelation('pools__tournament'),
+                ).select_related('tournament_pool'))
+                print(f"p[0].pools.first().tournament: {p[0].pools.first().tournament}")
+                print(f"p[0].tournament_pool: {p[0].tournament_pool}")
+                print(f"Comparing: {p[0].pools.first().tournament} == {p[0].tournament_pool}")
+                self.assertEqual(p[0].pools.first().tournament, p[0].tournament_pool)
+            print("Assertion passed")
+        except AssertionError:
+            print("Assertion failed")
+            print(f"Expected: {p[0].pools.first().tournament}")
+            print(f"Actual: {p[0].tournament_pool}")

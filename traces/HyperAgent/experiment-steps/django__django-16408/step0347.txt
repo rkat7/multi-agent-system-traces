@@ -1,0 +1,10 @@
+### Input
+<empty>
+
+### Output
+    # Test case 3: Complex FilteredRelation
+    with self.assertNumQueries(3):
+        styles = list(PoolStyle.objects.annotate(
+            t1_pool=FilteredRelation('pools', condition=Q(pools__tournament__name='Tourney 1')),
+            t2_pool=FilteredRelation('pools', condition=Q(pools__tournament__name='Tourney 2')),
+        ).select_related('t1_pool__tournament', 't2_pool__tournament'))

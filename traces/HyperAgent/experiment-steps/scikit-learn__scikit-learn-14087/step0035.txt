@@ -1,0 +1,22 @@
+### Input
+<empty>
+
+### Output
+936             # In scipy <= 1.0.0, nit may exceed maxiter.
+937             # See https://github.com/scipy/scipy/issues/7854.
+938             n_iter_i = min(info['nit'], max_iter)
+939         elif solver == 'newton-cg':
+940             args = (X, target, 1. / C, sample_weight)
+941             w0, n_iter_i = newton_cg(hess, func, grad, w0, args=args,
+942                                      maxiter=max_iter, tol=tol)
+943         elif solver == 'liblinear':
+944             coef_, intercept_, n_iter_i, = _fit_liblinear(
+945                 X, target, C, fit_intercept, intercept_scaling, None,
+946                 penalty, dual, verbose, max_iter, tol, random_state,
+947                 sample_weight=sample_weight)
+948             if fit_intercept:
+949                 w0 = np.concatenate([coef_.ravel(), intercept_])
+950             else:
+951                 w0 = coef_.ravel()
+# ... (next code)
+```

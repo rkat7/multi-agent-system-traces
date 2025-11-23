@@ -1,0 +1,22 @@
+### Input
+<empty>
+
+### Output
+    m = re.match(r'(\d{3})[/-]([A-Z]{3,9})[/-](\d{1,2})[ T](\d{1,2}):(\d{1,2}):(\d{1,2})(?:\.(\d+))?(?:Z|([+-])(\d{2}):?(\d{2}))?', date_string)
+    if m:
+        year = int(m.group('year'))
+        if year < 100:
+            if year < 70:
+                year += 2000
+            else:
+                year += 1900
+        month = MONTHS.index(m.group('mon').lower()) + 1
+        day = int(m.group('day'))
+        hour = int(m.group('hour'))
+        min = int(m.group('min'))
+        sec = int(m.group('sec'))
+        result = datetime.datetime(year, month, day, hour, min, sec)
+        return calendar.timegm(result.utctimetuple())
+    except Exception as exc:
+        raise ValueError("%r is not a valid date" % date_string) from exc
+```

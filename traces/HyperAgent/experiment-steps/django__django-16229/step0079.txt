@@ -1,0 +1,46 @@
+### Input
+<empty>
+
+### Output
+class ModelFormMetaclass(DeclarativeFieldsMetaclass):
+    def __new__(mcs, name, bases, attrs):
+        # ...
+        if opts.model:
+            # If a model is defined, extract form fields from it.
+            if opts.fields is None and opts.exclude is None:
+                raise ImproperlyConfigured(
+                    "Creating a ModelForm without either the 'fields' attribute "
+                    "or the 'exclude' attribute is prohibited; form %s "
+                    "needs updating." % name
+                )
+            # ...
+            fields = fields_for_model(
+                opts.model,
+                opts.fields,
+                opts.exclude,
+                opts.widgets,
+                opts.formfield_callback,
+                opts.localized_fields,
+                opts.labels,
+                opts.help_texts,
+                opts.error_messages,
+                opts.field_classes,
+                # limit_choices_to will be applied during ModelForm.__init__().
+                apply_limit_choices_to=False,
+            )
+            # make sure opts.fields doesn't specify an invalid field
+            none_model_fields = {k for k, v in fields.items() if not v}
+            missing_fields = none_model_fields.difference(new_class.declared_fields)
+            if missing_fields:
+                message = "Unknown field(s) (%s) specified for %s"
+                message %= (", ".join(missing_fields), opts.model.__name__)
+                raise FieldError(message)
+            # Override default model fields with any custom declared ones
+            # (plus, include all the other declared fields).
+            fields.update(new_class.declared_fields)
+        else:
+            fields = new_class.declared_fields
+        new_class.base_fields = fields
+        return new_class
+```
+HyperAgent_django__django-16229 - INFO - Planner's Response: Thought: After reviewing these additional code snippets, I believe I've identified the root cause of the issue. The problem lies in how the initial data for ArrayFields with callable defaults (like `list`) is handled in inline formsets, particularly when there's a validation error.

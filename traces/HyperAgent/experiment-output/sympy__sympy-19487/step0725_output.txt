@@ -1,0 +1,16 @@
+```python
+def _eval_interval(self, x, a, b, _first):
+    # ...
+    if a == _a and b == _b:
+        # it's purely symbolic so just swap lo and hi and
+        # change the sign to get the value for when lo > hi
+        neg, pos = (-pos.xreplace({_a: hi, _b: lo}),
+                    pos.xreplace({_a: lo, _b: hi}))
+    else:
+        # at least one of the bounds was comparable, so allow
+        # _eval_interval to use that information when computing
+        # the interval with lo and hi reversed
+        neg, pos = (-self._eval_interval(x, hi, lo, _first=False),
+                    self._eval_interval(x, lo, hi, _first=False))
+    # ...
+```

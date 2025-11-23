@@ -1,0 +1,13 @@
+        for row_idx, row_size in enumerate(rowblocksizes):
+            for col_idx, col_size in enumerate(colblocksizes):
+                condition = And(
+                    row_accumulator <= i,
+                    i < row_accumulator + row_size,
+                    col_accumulator <= j,
+                    j < col_accumulator + col_size
+                )
+                element = MatrixElement(blocks[row_idx, col_idx], i - row_accumulator, j - col_accumulator)
+                result = Piecewise((element, condition)) if result is None else Piecewise((element, condition), (result, True))
+                col_accumulator += col_size
+            row_accumulator += row_size
+            col_accumulator = 0

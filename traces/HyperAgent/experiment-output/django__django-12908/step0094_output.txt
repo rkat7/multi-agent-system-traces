@@ -1,0 +1,12 @@
+    def test_union_annotated_diff_distinct(self):
+        reset_queries()
+        qs = Sample.objects.filter(user=self.user)
+        qs1 = qs.filter(name='Dub').annotate(rank=Value(0, IntegerField()))
+        qs2 = qs.filter(name='Sam1').annotate(rank=Value(1, IntegerField()))
+        qs = qs1.union(qs2)
+        qs = qs.order_by('name').distinct('name')
+        result = list(qs)
+        print(f'Result count: {len(result)}')
+        print('SQL queries:')
+        for query in connection.queries:
+            print(query['sql'])" > myapp/tests.py

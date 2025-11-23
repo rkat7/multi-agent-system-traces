@@ -1,0 +1,25 @@
+    def doit(self, *args):
+        arg = args[0]
+        if arg.is_zero:
+            return S.Zero
+        if arg.is_positive:
+            return arg
+        if arg.is_negative:
+            return -arg
+        if arg.is_imaginary:
+            return Abs(arg.as_real_imag()[0])
+        if arg.is_Mul:
+            c, args = arg.as_coeff_mul()
+            if c.is_positive:
+                return Abs(arg.as_real_imag()[0])
+            elif c.is_negative:
+                return -Abs(arg.as_real_imag()[0])
+            else:
+                return Abs(arg.as_real_imag()[0])
+        if arg.is_Pow:
+            if arg.exp.is_integer and arg.exp.is_even:
+                return Abs(arg.base)
+            else:
+                return Abs(arg.as_real_imag()[0])
+        return arg
+```

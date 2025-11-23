@@ -1,0 +1,14 @@
+    def _eval_limit(self, n, limit_type, **kwargs):
+        from sympy import oo, E, Sum, factorial, Dummy, S
+        if limit_type == 0:  # limit at positive infinity
+            if n == self.args[0]:
+                return oo
+            else:
+                return self._eval_rewrite_as_Sum(n=self.args[0], **kwargs)._eval_limit(n, limit_type, **kwargs)
+        else:
+            return self
+'''
+result = editor._run(relative_file_path="sympy/functions/combinatorial/numbers.py", start_line=322, end_line=455, patch=patch)
+print(result)
+```
+HyperAgent_sympy__sympy-13437 - INFO - Planner's Response: Thought: The patch has been successfully applied to the `bell` class in the `sympy/functions/combinatorial/numbers.py` file. Now, we need to verify if this change resolves the issue of `bell(n).limit(n, oo)` returning `oo` instead of `bell(oo)`. Let's use the Executor to run a test case and check if the limit is correctly evaluated.

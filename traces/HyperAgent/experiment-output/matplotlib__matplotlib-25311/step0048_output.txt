@@ -1,0 +1,34 @@
+* `matplotlib.legend` module:
+```python
+def set_draggable(self, state, use_blit=False, update='loc'):
+    ...
+    if state:
+        if self._draggable is None:
+            self._draggable = DraggableLegend(self, use_blit, update=update)
+    else:
+        if self._draggable is not None:
+            self._draggable.disconnect()
+        self._draggable = None
+    return self._draggable
+```
+* `matplotlib.legend.DraggableLegend` class:
+```python
+class DraggableLegend(DraggableOffsetBox):
+    def __init__(self, legend, use_blit=False, update="loc"):
+        ...
+    def finalize_offset(self):
+        if self._update == "loc":
+            self._update_loc(self.get_loc_in_canvas())
+        elif self._update == "bbox":
+            self._bbox_to_anchor(self.get_loc_in_canvas())
+```
+* `matplotlib.offsetbox` module:
+```python
+class DraggableOffsetBox(DraggableBase):
+    def __init__(self, ref_artist, offsetbox, use_blit=False):
+        ...
+    def get_loc_in_canvas(self):
+        ...
+```
+These code snippets show how the `DraggableLegend` class interacts with the figure's canvas and the Qt backend to make legends draggable.
+HyperAgent_matplotlib__matplotlib-25311 - INFO - Planner's Response: Thought: Thank you for the detailed information. Now we have a clearer picture of how the draggable legend functionality is implemented and how it interacts with the figure's canvas and the Qt backend. The issue seems to arise because the draggable functionality introduces elements that are not easily picklable, particularly those related to the Qt backend.

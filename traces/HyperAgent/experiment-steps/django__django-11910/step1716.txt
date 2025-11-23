@@ -1,0 +1,14 @@
+### Input
+<empty>
+
+### Output
+        # Additional logic to handle primary key field renaming
+        if self.old_name == 'id' and self.field.primary_key:
+            # Update any ForeignKey references to the old primary key field name
+            for (model_app_label, model_name), model_state in state.models.items():
+                for index, (name, field) in enumerate(model_state.fields):
+                    remote_field = field.remote_field
+                    if remote_field and remote_field.model == app_label, self.model_name_lower:
+                        if remote_field.field_name == self.old_name:
+                            remote_field.field_name = self.new_name
+                            field.to_fields = (self.new_name,)

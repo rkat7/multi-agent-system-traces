@@ -1,0 +1,24 @@
+### Input
+<empty>
+
+### Output
+   ```python
+327         try:
+328             get_resolver().urlconf_module
+329         except Exception:
+330             # Loading the urlconf can result in errors during development.
+331             # If this occurs then swallow the error and continue.
+332             pass
+333         logger.debug('Apps ready_event triggered. Sending autoreload_started signal.')
+334         autoreload_started.send(sender=self)
+335         self.run_loop()
+336 
+337     def run_loop(self):
+338         ticker = self.tick()
+339         while not self.should_stop:
+340             try:
+341                 next(ticker)
+342             except StopIteration:
+343                 break
+344         self.stop()
+```

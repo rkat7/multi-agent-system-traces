@@ -1,0 +1,26 @@
+```python
+# From django/db/models/query.py
+1546     def select_related(self, *fields):
+1547         """
+1548         Return a new QuerySet instance that will select related objects.
+1549 
+1550         If fields are specified, they must be ForeignKey fields and only those
+1551         related objects are included in the selection.
+1552 
+1553         If select_related(None) is called, clear the list.
+1554         """
+1555         self._not_support_combined_queries("select_related")
+1556         if self._fields is not None:
+1557             raise TypeError(
+1558                 "Cannot call select_related() after .values() or .values_list()"
+1559             )
+1560 
+1561         obj = self._chain()
+1562         if fields == (None,):
+1563             obj.query.select_related = False
+1564         elif fields:
+1565             obj.query.add_select_related(fields)
+1566         else:
+1567             obj.query.select_related = True
+1568         return obj
+```

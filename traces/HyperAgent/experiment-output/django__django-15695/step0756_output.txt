@@ -1,0 +1,5 @@
+        if self._is_postgresql(schema_editor) and self.old_fields:
+            self._rename_unnamed_index(schema_editor, new_model, self.old_fields, self.old_name or f"{model._meta.db_table}_{'_'.join(self.old_fields)}_idx")
+        else:
+            old_name = self._get_index_name(schema_editor, new_model, self.old_fields)
+            schema_editor.alter_index(model, self.new_name, new_name=old_name)

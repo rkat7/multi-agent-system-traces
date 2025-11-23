@@ -1,0 +1,84 @@
+result = open_file_gen._run(relative_file_path="django/templatetags/static.py", keywords=["class StaticNode"])
+print(result)
+```
+HyperAgent_django__django-11564 - INFO - Editor->Planner: exitcode: 0 (execution succeeded)
+Code output: The content of django/templatetags/static.py is: 1 from urllib.parse import quote, urljoin
+2 
+3 from django import template
+4 from django.apps import apps
+5 from django.utils.encoding import iri_to_uri
+6 from django.utils.html import conditional_escape
+7 
+8 register = template.Library()
+9 
+10 
+11 
+12 from django.middleware.script_name import get_script_prefix
+13 
+14 class PrefixNode(template.Node):
+15     def __repr__(self):
+16         return "<PrefixNode for %r>" % self.name
+17 
+18     def __init__(self, varname=None, name=None):
+19         if name is None:
+20             raise template.TemplateSyntaxError(
+21                 "Prefix nodes must be given a name to return.")
+22         self.varname = varname
+23         self.name = name
+24 
+25     @classmethod
+26     def handle_token(cls, parser, token, name):
+27         """
+28         Class method to parse prefix node and return a Node.
+29         """
+30         tokens = token.contents.split()
+31         if len(tokens) > 1 and tokens[1] != 'as':
+32             raise template.TemplateSyntaxError(
+33                 "First argument in '%s' must be 'as'" % tokens[0])
+34         if len(tokens) > 1:
+35             varname = tokens[2]
+36         else:
+37             varname = None
+38         return cls(varname, name)
+39 
+40     @classmethod
+41     def handle_simple(cls, name):
+42         try:
+43             from django.conf import settings
+44         except ImportError:
+45             prefix = ''
+46         else:
+47             prefix = iri_to_uri(getattr(settings, name, ''))
+48         return prefix
+49 
+50     def render(self, context):
+51         prefix = self.handle_simple(self.name)
+52         if prefix is None:
+53             prefix = ''
+54         script_prefix = get_script_prefix().rstrip('/')
+55         url = f'{script_prefix}{prefix}'
+56         if self.varname is None:
+57             return url
+58         context[self.varname] = url
+59         return ''
+60 
+61 
+62 
+63 @register.tag
+64 def get_static_prefix(parser, token):
+65     """
+66     Populate a template variable with the static prefix,
+67     ``settings.STATIC_URL``.
+68 
+69     Usage::
+70 
+71         {% get_static_prefix [as varname] %}
+72 
+73     Examples::
+74 
+75         {% get_static_prefix %}
+76         {% get_static_prefix as static_prefix %}
+77     """
+78     return PrefixNode.handle_token(parser, token, "STATIC_URL")
+79 
+80 

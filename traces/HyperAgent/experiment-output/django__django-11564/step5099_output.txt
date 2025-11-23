@@ -1,0 +1,14 @@
+1. In the `PrefixNode` class:
+   The `render` method now includes `SCRIPT_NAME` handling:
+   ```python
+   def render(self, context):
+       prefix = self.handle_simple(self.name)
+       if prefix is None:
+           prefix = ''
+       script_prefix = get_script_prefix().rstrip('/')
+       url = f'{script_prefix}{prefix}'
+       if self.varname is None:
+           return url
+       context[self.varname] = url
+       return ''
+   ```

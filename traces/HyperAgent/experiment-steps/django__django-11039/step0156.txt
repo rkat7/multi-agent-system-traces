@@ -1,0 +1,21 @@
+### Input
+<empty>
+
+### Output
+    def collect_sql(self, plan, database_name):
+        """
+        Takes a list of (migration, True/False) pairs and generates SQL
+        statements to apply/unapply them.
+        """
+        connection = connections[database_name]
+        executor = MigrationExecutor(connection)
+        output = []
+        for migration, backwards in plan:
+            with connection.schema_editor(atomic=migration.atomic) as schema_editor:
+                if backwards:
+                    migration.unapply(schema_editor)
+                else:
+                    migration.apply(schema_editor)
+                output.extend(schema_editor.collected_sql)
+        return output
+```

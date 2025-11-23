@@ -1,0 +1,51 @@
+### Input
+<empty>
+
+### Output
+```python
+440     def _print_Pow(self, expr):
+441         # Treat x**Rational(1,n) as special case
+442         if expr.exp.is_Rational and abs(expr.exp.p) == 1 and expr.exp.q != 1:
+443             base = self._print(expr.base)
+444             expq = expr.exp.q
+445 
+446             if expq == 2:
+447                 tex = r"\sqrt{%s}" % base
+448             elif self._settings['itex']:
+449                 tex = r"\root{%d}{%s}" % (expq, base)
+450             else:
+451                 tex = r"\sqrt[%d]{%s}" % (expq, base)
+452 
+453             if expr.exp.is_negative:
+454                 return r"\frac{1}{%s}" % tex
+455             else:
+456                 return tex
+457         elif self._settings['fold_frac_powers'] \
+458             and expr.exp.is_Rational \
+459                 and expr.exp.q != 1:
+460             base, p, q = self.parenthesize(expr.base, PRECEDENCE['Pow']), expr.exp.p, expr.exp.q
+461             if expr.base.is_Function:
+462                 return self._print(expr.base, "%s/%s" % (p, q))
+463             return r"%s^{%s/%s}" % (base, p, q)
+464         elif expr.exp.is_Rational and expr.exp.is_negative and expr.base.is_commutative:
+465             # Things like 1/x
+466             return self._print_Mul(expr)
+467         else:
+468             if expr.base.is_Function:
+469                 return self._print(expr.base, self._print(expr.exp))
+470             else:
+471                 if expr.is_commutative and expr.exp == -1:
+472                     #solves issue 4129
+473                     #As Mul always simplify 1/x to x**-1
+474                     #The objective is achieved with this hack
+475                     #first we get the latex for -1 * expr,
+476                     #which is a Mul expression
+477                     tex = self._print(S.NegativeOne * expr).strip()
+478                     #the result comes with a minus and a space, so we remove
+479                     if tex[:1] == "-":
+480                         return tex[1:].strip()
+481                 tex = r"%s^{%s}"
+482 
+483                 return tex % (self.parenthesize(expr.base, PRECEDENCE['Pow']),
+484                               self._print(expr.exp))
+```

@@ -1,0 +1,86 @@
+### Input
+<empty>
+
+### Output
+    # Original simplification logic continues here
+'''
+result = editor._run(relative_file_path="sympy/simplify/powsimp.py", start_line=117, end_line=129, patch=patch)
+print(result)
+```
+HyperAgent_sympy__sympy-14024 - INFO - Editor->Planner: exitcode: 0 (execution succeeded)
+Code output: Successfully edited the file sympy/simplify/powsimp.py from line 117 to 129. Here is the original block of code:
+```python
+107         _force = kwargs.get('force', force)
+108         _measure = kwargs.get('measure', measure)
+109         return powsimp(arg, _deep, _combine, _force, _measure)
+110 
+111     expr = sympify(expr)
+112 
+113     if (not isinstance(expr, Basic) or isinstance(expr, MatrixSymbol) or (
+114             expr.is_Atom or expr in (exp_polar(0), exp_polar(1)))):
+115         return expr
+116 
+117 
+118     # Add this new block
+119     if expr.is_Mul and len(expr.args) == 2:
+120         arg1, arg2 = expr.args
+121         if arg1.is_Pow and arg2.is_Pow:
+122             base1, exp1 = arg1.as_base_exp()
+123             base2, exp2 = arg2.as_base_exp()
+124             if (base1 == -base2 and exp1 == -exp2) or (base2 == -base1 and exp2 == -exp1):
+125                 if base1.is_positive and base1.is_integer and base1.is_number:
+126                     return expr  # Don't simplify for concrete positive integers
+127                 elif base2.is_positive and base2.is_integer and base2.is_number:
+128                     return expr  # Don't simplify for concrete positive integers
+129 
+130 
+131         expr = expr.func(*[recurse(w) for w in expr.args])
+132 
+133     if expr.is_Pow:
+134         return recurse(expr*_y, deep=False)/_y
+135 
+136     if not expr.is_Mul:
+137         return expr
+138 
+139     # handle the Mul
+140 
+```
+Here is the proposed block of code:
+```python
+107         _force = kwargs.get('force', force)
+108         _measure = kwargs.get('measure', measure)
+109         return powsimp(arg, _deep, _combine, _force, _measure)
+110 
+111     expr = sympify(expr)
+112 
+113     if (not isinstance(expr, Basic) or isinstance(expr, MatrixSymbol) or (
+114             expr.is_Atom or expr in (exp_polar(0), exp_polar(1)))):
+115         return expr
+116 
+117 
+118     # Special case: don't simplify (-a)**x * a**(-x) when 'a' is a concrete positive integer
+119     if expr.is_Mul and len(expr.args) == 2:
+120         arg1, arg2 = expr.args
+121         if arg1.is_Pow and arg2.is_Pow:
+122             base1, exp1 = arg1.as_base_exp()
+123             base2, exp2 = arg2.as_base_exp()
+124             if (base1 == -base2 and exp1 == -exp2) or (base2 == -base1 and exp2 == -exp1):
+125                 if base1.is_positive and base1.is_integer and base1.is_number:
+126                     return expr  # Don't simplify for concrete positive integers
+127                 elif base2.is_positive and base2.is_integer and base2.is_number:
+128                     return expr  # Don't simplify for concrete positive integers
+129 
+130     # Original simplification logic continues here
+131 
+132 
+133         expr = expr.func(*[recurse(w) for w in expr.args])
+134 
+135     if expr.is_Pow:
+136         return recurse(expr*_y, deep=False)/_y
+137 
+138     if not expr.is_Mul:
+139         return expr
+140 
+141     # handle the Mul
+142 
+```

@@ -1,0 +1,42 @@
+### Input
+<empty>
+
+### Output
+```python
+def get_commands():
+    """
+    Returns a dictionary of all available management commands.
+    """
+    commands = {}
+    for app in settings.INSTALLED_APPS:
+        try:
+            app_path = importlib.import_module(app).apps.get_app_config(app).path
+        except (ImportError, LookupError):
+            app_path = None
+        if app_path is not None:
+            if os.path.isdir(os.path.join(app_path, 'management')):
+                management_dir = os.path.join(app_path, 'management')
+                if os.path.isdir(os.path.join(management_dir, 'commands')):
+                    command_dir = os.path.join(management_dir, 'commands')
+                    for name in os.listdir(command_dir):
+                        if name.endswith('.py') and name != '__init__.py':
+                            command_name = name[:-3]
+                            commands[command_name] = '%s.management.commands.%s' % (app, name[:-3])
+            else:
+                try:
+                    import_module('%s.management' % app)
+                except ImportError:
+                    pass
+                else:
+                    if hasattr(sys.modules['%s.management' % app], 'commands'):
+                        command_module = sys.modules['%s.management' % app].commands
+                        for attr in dir(command_module):
+                            if not attr.startswith('_'):
+                                try:
+                                    if hasattr(getattr(command_module, attr), 'handle'):
+                                        commands[attr] = '%s.management.commands.%s' % (app, attr)
+                                except TypeError:
+                                    # Some objects in the module might not be management commands
+                                    pass
+    return commands
+```

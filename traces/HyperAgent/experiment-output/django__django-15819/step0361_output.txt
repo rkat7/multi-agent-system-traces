@@ -1,0 +1,21 @@
+        if is_relation:
+            ref_db_column, ref_db_table = relations[column_name]
+            if extra_params.pop("unique", False) or extra_params.get("primary_key"):
+                rel_type = "OneToOneField"
+            else:
+                rel_type = "ForeignKey"
+                ref_pk_column = connection.introspection.get_primary_key_column(cursor, ref_db_table)
+                if ref_pk_column and ref_pk_column != ref_db_column:
+                    extra_params["to_field"] = ref_db_column
+            rel_to = "self" if self.table == ref_db_table else table2model(ref_db_table)
+            if rel_to in known_models:
+                # Generate a unique related_name
+                related_name = f"{self.table_name}_{column_name}"
+                extra_params["related_name"] = related_name
+                field_type = f"{rel_type}({rel_to})"
+            else:
+                field_type = f"{rel_type}('{rel_to}'"
+        else:
+            # Use the column's data type to determine the Django field type.
+            field_type, field_params, field_notes = connection.introspection.get_field_type(row[1], row)
+            extra_params.update(field_params)

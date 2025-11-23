@@ -1,0 +1,13 @@
+    def istrue(self) -> bool:
+        try:
+            return self._istrue()
+        except Exception as e:
+            if self.invalidraise(e):
+                return True
+            self.exc = e  # type: ignore[attr-defined]
+            if isinstance(e, SyntaxError):
+                msg = [" " * (e.offset + 4) + "^", e.text]  # type: ignore[operator]
+                raise pytest.UsageError(*msg)
+            raise pytest.UsageError(
+                f"Error evaluating {self._mark!r}: {e}".format(e=ascii_escaped(str(e)))
+            ) from e

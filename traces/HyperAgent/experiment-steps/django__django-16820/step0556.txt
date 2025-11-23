@@ -1,0 +1,21 @@
+### Input
+<empty>
+
+### Output
+    def test_multiple_alter_index_together(self):
+        """
+        Tests that multiple AlterIndexTogether operations on the same model are merged and optimized.
+        """
+        self.assertOptimizesTo(
+            [
+                migrations.AlterIndexTogether("Foo", [("field1", "field2")]),
+                migrations.AlterIndexTogether("Foo", [("field3", "field4")]),
+            ],
+            [
+                migrations.RemoveIndex("Foo", name="idx_field1_field2"),
+                migrations.AddIndex("Foo", models.Index(fields=["field1", "field2"], name="idx_field1_field2")),
+                migrations.RemoveIndex("Foo", name="idx_field3_field4"),
+                migrations.AddIndex("Foo", models.Index(fields=["field3", "field4"], name="idx_field3_field4")),
+            ],
+        )
+'''

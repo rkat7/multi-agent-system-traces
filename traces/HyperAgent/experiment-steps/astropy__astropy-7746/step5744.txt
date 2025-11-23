@@ -1,0 +1,45 @@
+### Input
+<empty>
+
+### Output
+```python
+1348     def wcs_pix2world(self, *args, **kwargs):
+1349         if self.wcs is None:
+1350             raise ValueError("No basic WCS settings were created.")
+1351         return self._array_converter(
+1352             lambda xy, o: self.wcs.p2s(xy, o)['world'],
+1353             'output', *args, **kwargs)
+1354     wcs_pix2world.__doc__ = """
+1355         Transforms pixel coordinates to world coordinates by doing
+1356         only the basic `wcslib`_ transformation.
+1357 
+1358         No `SIP`_ or `distortion paper`_ table lookup correction is
+1359         applied.  To perform distortion correction, see
+1360         `~astropy.wcs.WCS.all_pix2world`,
+1361         `~astropy.wcs.WCS.sip_pix2foc`, `~astropy.wcs.WCS.p4_pix2foc`,
+1362         or `~astropy.wcs.WCS.add_distortion`.
+1363 
+1364         This function takes either a pair of 1-D arrays or a single
+1365         2-D array as input, and returns either a pair of 1-D arrays or
+1366         a single 2-D array as output.
+1367 
+1368         Parameters
+1369         ----------
+1370         x, y : float or array-like
+1371             The input coordinate(s) in pixel space.
+1372 
+1373         origin : {0, 1}
+1374             Whether the input pixel coordinates are 0-based (as in FITS
+1375             and Numpy) or 1-based (as in IRAF).
+1376 
+1377         Returns
+1378         -------
+1379         world : ndarray
+1380             The output world coordinates.
+1381 
+1382         Notes
+1383         -----
+1384         This method uses the `wcslib`_ function `wcsp2s` to do the
+1385         basic transformation from pixel to world coordinates.
+1386         """
+```

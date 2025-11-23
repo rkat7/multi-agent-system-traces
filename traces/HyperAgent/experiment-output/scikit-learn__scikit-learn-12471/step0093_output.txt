@@ -1,0 +1,13 @@
+new_function = '''
+def _encode_with_ignore(values, uniques):
+    encoded = np.zeros(len(values), dtype=int)
+    for i, val in enumerate(values):
+        try:
+            encoded[i] = np.where(uniques == val)[0][0]
+        except IndexError:
+            encoded[i] = 0  # Use the first category for unknown values
+    return encoded
+'''
+result = editor._run(relative_file_path="sklearn/preprocessing/_encoders.py", start_line=0, end_line=0, patch=new_function)
+print(result)
+```

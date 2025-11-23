@@ -1,0 +1,18 @@
+        # If they supplied command line arguments, work out what they mean.
+        run_syncdb = options["run_syncdb"]
+        target_app_labels_only = True
+        if options["app_label"]:
+            # Validate app_label.
+            app_label = options["app_label"]
+            try:
+                apps.get_app_config(app_label)
+            except LookupError as err:
+                raise CommandError(str(err))
+            if run_syncdb:
+                if app_label in executor.loader.migrated_apps:
+                    raise CommandError(
+                        "Can't use run_syncdb with app '%s' as it has migrations."
+                        % app_label
+                    )
+            elif app_label not in executor.loader.migrated_apps:
+                raise CommandError("App '%s' does not have migrations." % app_label)

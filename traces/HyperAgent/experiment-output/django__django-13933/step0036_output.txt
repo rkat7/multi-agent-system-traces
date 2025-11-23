@@ -1,0 +1,19 @@
+def to_python(self, value):
+    if value in self.empty_values:
+        return None
+    try:
+        key = self.to_field_name or 'pk'
+        if isinstance(value, self.queryset.model):
+            value = getattr(value, key)
+        value = self.queryset.get(**{key: value})
+    except (ValueError, TypeError, self.queryset.model.DoesNotExist):
+        raise ValidationError(
+            self.error_messages['invalid_choice'],
+            code='invalid_choice',
+            params={'value': value},
+        )
+    return value
+'''
+result = editor._run(relative_file_path="django/forms/models.py", start_line=1190, end_line=1288, patch=patch)
+print(result)
+```

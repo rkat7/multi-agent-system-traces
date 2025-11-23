@@ -1,0 +1,64 @@
+### Input
+<empty>
+
+### Output
+```python
+180     """
+181     """
+182 
+183 def _parse_qdp_file(self, filename, **kwargs):
+184     """Parse a QDP file.
+185 
+186     Parameters
+187     ----------
+188     filename : str
+189         The name of the file to parse.
+190     """
+191     with open(filename, 'r') as f:
+192         lines = f.readlines()
+193 
+194     contents = []
+195     err_specs = {'serr': [], 'terr': []}
+196 
+197     for line in lines:
+198         command, args = self._process_qdp_command(line)
+199         if command:
+200             if command == 'READ SERR':
+201                 err_specs['serr'].extend(map(int, args))
+202             elif command == 'READ TERR':
+203                 err_specs['terr'].extend(map(int, args))
+204             contents.append([command] + args)
+205         else:
+206             contents.append(self._process_line(line))
+207 
+208     if err_specs['serr'] or err_specs['terr']:
+209         self._interpret_err_lines(err_specs, len(contents[0]) - 1)
+210 
+211     return contents
+212 
+213 def _process_qdp_command(self, line):
+214     """Process a QDP command line.
+215 
+216     Parameters
+217     ----------
+218     line : str
+219         A line from the QDP file.
+220 
+221     Returns
+222     -------
+223     command : str or None
+224         The QDP command, if any, or `None` if the line is not a command.
+225     args : list of str or None
+226         The arguments to the QDP command, if any.
+227     """
+228     line = line.strip()
+229     if line.startswith('!'):
+230         return None, None
+231     parts = line.split()
+232     if parts[0].upper() in ('READ', 'TERR', 'SERR'):
+233         command = ' '.join(parts[:2]).upper()
+234         args = parts[2:]
+235         return command, args
+236     else:
+237         return None, None
+```

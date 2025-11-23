@@ -1,0 +1,9 @@
+    @patch('django.db.connections.ConnectionHandler.__getitem__')
+    def test_sqlmigrate_no_transaction_for_no_ddl_rollback(self, getitem_mock):
+        """
+        Test that sqlmigrate doesn't wrap SQL in a transaction when the
+        database doesn't support transactional DDL, even if the migration
+        is marked as atomic.
+        """
+        connection_mock = getitem_mock.return_value
+        connection_mock.features.can_rollback_ddl = False

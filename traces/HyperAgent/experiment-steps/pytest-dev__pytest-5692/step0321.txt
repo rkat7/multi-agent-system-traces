@@ -1,0 +1,14 @@
+### Input
+<empty>
+
+### Output
+```python
+def pytest_addhooks(pytestconfig):
+    class CustomJunitXmlReporter(JunitXmlReporter):
+        def add_attributes(self, suite, attributes):
+            if 'hostname' in attributes:
+                suite._attrs['hostname'] = attributes['hostname']
+            if 'timestamp' in attributes:
+                suite._attrs['timestamp'] = attributes['timestamp']
+    pytest.hookimpl(hookwrapper=True)(CustomJunitXmlReporter)
+```

@@ -1,0 +1,31 @@
+```python
+425     def __init__(self, *args):
+426         """Load up a Cycle instance with the values for the cycle.
+427 
+428         Examples
+429         ========
+430 
+431         >>> from sympy.combinatorics.permutations import Cycle
+432         >>> Cycle(1, 2, 6)
+433         (1 2 6)
+434         """
+435 
+436         if not args:
+437             return
+438         if len(args) == 1:
+439             if isinstance(args[0], Permutation):
+440                 for c in args[0].cyclic_form:
+441                     self.update(self(*c))
+442                 return
+443             elif isinstance(args[0], Cycle):
+444                 for k, v in args[0].items():
+445                     self[k] = v
+446                 return
+447         args = [as_int(a) for a in args]
+448         if any(i < 0 for i in args):
+449             raise ValueError('negative integers are not allowed in a cycle.')
+450         if has_dups(args):
+451             raise ValueError('All elements must be unique in a cycle.')
+452         for i in range(-len(args), 0):
+453             self[args[i]] = args[i + 1]
+```

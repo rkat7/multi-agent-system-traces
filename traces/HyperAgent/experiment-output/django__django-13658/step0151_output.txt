@@ -1,0 +1,18 @@
+def get_commands_from_user_apps():
+    """
+    Return a dictionary mapping command names to their callback applications
+    for user-installed applications.
+    """
+    commands = {}
+    for app_config in apps.get_app_configs():
+        if hasattr(app_config.module, 'get_commands'):
+            try:
+                commands.update(app_config.module.get_commands())
+            except Exception as e:
+                if settings.DEBUG:
+                    raise
+                else:
+                    sys.stderr.write("An error occurred in the '%s' app's get_commands() function.\n" % app_config.name)
+                    sys.stderr.write(traceback.format_exc())
+    return commands
+```

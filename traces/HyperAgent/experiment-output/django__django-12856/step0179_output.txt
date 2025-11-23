@@ -1,0 +1,22 @@
+* `django/db/models/constraints.py`:
+```python
+class UniqueConstraint(BaseConstraint):
+    def __init__(self, *, fields, name, condition=None, deferrable=None):
+        if not fields:
+            raise ValueError('At least one field is required to define a unique constraint.')
+        if not isinstance(condition, (type(None), Q)):
+            raise ValueError('UniqueConstraint.condition must be a Q instance.')
+        if condition and deferrable:
+            raise ValueError(
+                'UniqueConstraint with conditions cannot be deferred.'
+            )
+        if not isinstance(deferrable, (type(None), Deferrable)):
+            raise ValueError(
+                'UniqueConstraint.deferrable must be a Deferrable instance.'
+            )
+        self.fields = tuple(fields)
+        self.condition = condition
+        self.deferrable = deferrable
+        super().__init__(name)
+```
+HyperAgent_django__django-12856 - INFO - Planner's Response: Thank you for providing this detailed information about how Django handles the validation of unique_together constraints and the UniqueConstraint class. This gives us a clear picture of where we need to implement the field existence check for UniqueConstraints.

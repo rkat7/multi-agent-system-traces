@@ -1,0 +1,19 @@
+### Input
+<empty>
+
+### Output
+```python
+def __mul__(self, other):
+    from sympy.physics.units import Quantity
+    if isinstance(other, Quantity):
+        return other._mul_prefix(self)
+    elif isinstance(other, Prefix):
+        fact = self.scale_factor * other.scale_factor
+        # simplify prefix
+        for p in PREFIXES:
+            if PREFIXES[p].scale_factor == fact:
+                return PREFIXES[p]
+        return fact
+    else:
+        return super().__mul__(other)
+```

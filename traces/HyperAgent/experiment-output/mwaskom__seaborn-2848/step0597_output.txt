@@ -1,0 +1,13 @@
+    try:
+        # Use a value that's in the original data vector
+        value = self.lookup_table[key]
+    except KeyError:
+        # Handle the case where the key is not in the lookup table
+        if pd.isna(key):
+            value = (0, 0, 0, 0)  # Return a transparent color for NaN values
+        elif isinstance(key, (str, int, float)):
+            # If the key is a valid data type but not in the lookup table,
+            # assign a default value or raise an appropriate error
+            value = self.lookup_table.get(key, self.lookup_table.values()[0])  # Use the first value as default
+        else:
+            raise ValueError(f"Invalid hue value: {key}")

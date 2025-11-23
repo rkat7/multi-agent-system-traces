@@ -1,0 +1,9 @@
+```python
+def has_key(self, key, version=None):
+    fname = self._key_to_file(key, version)
+    if os.path.exists(fname):
+        with open(fname, "rb") as f:
+            return not self._is_expired(f)
+    return False
+```
+HyperAgent_django__django-16379 - INFO - Planner's Response: Thought: Thank you for providing the code. Now that we have the implementation of the `has_key` method, we can clearly see the race condition issue. The problem occurs between the `os.path.exists(fname)` check and the `open(fname, "rb")` call. If the file is deleted in this small window of time, it will lead to a `FileNotFoundError`.

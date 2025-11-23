@@ -1,0 +1,24 @@
+### Input
+<empty>
+
+### Output
+```python
+1721     def get_object_members(self, want_all: bool) -> Tuple[bool, ObjectMembers]:
+1722         members = get_class_members(self.object, self.objpath, self.get_attr)
+1723         if not want_all:
+1724             if not self.options.members:
+1725                 return False, []  # type: ignore
+1726             # specific members given
+1727             selected = []
+1728             for name in self.options.members:  # type: str
+1729                 if name in members:
+1730                     selected.append(members[name])
+1731                 else:
+1732                     logger.warning(__('missing attribute %s in object %s') %
+1733                                    (name, self.fullname), type='autodoc')
+1734             return False, selected
+1735         elif self.options.inherited_members:
+1736             return False, list(members.values())
+1737         else:
+1738             return False, [m for m in members.values() if m.class_ == self.object]
+```

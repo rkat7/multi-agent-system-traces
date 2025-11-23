@@ -1,0 +1,22 @@
+    for line, datatype in zip(lines, contents):
+        if datatype == "comment":
+            if table is not None:
+                table.meta["comments"].append(line[2:].strip())
+        elif datatype == "command":
+            if err_specs != {}:
+                warnings.warn(
+                    "This file contains multiple command blocks. Please verify",
+                    AstropyUserWarning,
+                )
+            command_lines += line + "\n"
+            continue
+        elif datatype == "skiprow":
+            if table is not None:
+                table.skiprows.append(len(table.data))
+        else:
+            if table is None:
+                table = QDP(lines=command_lines.strip().split('\n'), delimiter=delimiter)
+                table.meta["header"] = command_lines.strip()
+                tables.append(table)
+                command_lines = ""
+            table.add_row([float(x) for x in line.split()])

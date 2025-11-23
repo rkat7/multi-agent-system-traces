@@ -1,0 +1,14 @@
+### Input
+Action:
+```python
+
+### Output
+# Modify the create_option method to use the value attribute of ModelChoiceIteratorValue instead of the instance
+def create_option(self, name, value, label, selected, index, subindex=None, attrs=None):
+    context = super().create_option(name, value.value, label, selected, index, subindex, attrs)
+    if not value.value:
+        return context
+    if value.value in self.show_fields:
+        context['attrs']['data-fields'] = json.dumps(self.show_fields[value.value])
+    return context
+```

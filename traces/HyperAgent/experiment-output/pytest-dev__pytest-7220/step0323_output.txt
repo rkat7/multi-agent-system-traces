@@ -1,0 +1,13 @@
+    def get_location(self):
+        # ...
+        if self.fslocation:
+            if isinstance(self.fslocation, tuple) and len(self.fslocation) >= 2:
+                filename, linenum = self.fslocation[:2]
+                # Use os.path.abspath to get the absolute path of the file
+                abs_filename = os.path.abspath(filename)
+                # Use os.path.relpath to get the path relative to the invocation directory
+                relpath = os.path.relpath(abs_filename, self.config.invocation_dir)
+                return "{}:{}".format(relpath, linenum)
+            else:
+                return str(self.fslocation)
+        return None

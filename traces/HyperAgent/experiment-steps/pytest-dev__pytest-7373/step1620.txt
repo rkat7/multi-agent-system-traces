@@ -1,0 +1,36 @@
+### Input
+<empty>
+
+### Output
+```python
+def _istrue(self) -> bool:
+    self._marks = self._get_marks()
+    if self._marks:
+        for mark in self._marks:
+            args = mark.args
+            if "condition" in mark.kwargs:
+                args = (mark.kwargs["condition"],)
+            for expr in args:
+                self.expr = expr
+                if isinstance(expr, str):
+                    # Always evaluate the condition in the context of the current test item
+                    result = eval(expr, self._getglobals())
+                else:
+                    if "reason" not in mark.kwargs:
+                        msg = (
+                            "you need to specify reason=STRING "
+                            "when using booleans as conditions."
+                        )
+                        fail(msg)
+                    result = bool(expr)
+                if result:
+                    self.result = True
+                    self.reason = mark.kwargs.get("reason", None)
+                    return True
+            if not args:
+                self.result = True
+                self.reason = mark.kwargs.get("reason", None)
+                return True
+    self.result = False
+    return False
+```

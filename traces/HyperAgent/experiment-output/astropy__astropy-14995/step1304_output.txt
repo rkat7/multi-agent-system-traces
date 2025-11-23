@@ -1,0 +1,15 @@
+    if isinstance(self_or_cls, NDArithmeticMixin):
+        # True means it was called on the instance, so self_or_cls is
+        # a reference to self
+        cls = self_or_cls.__class__
+        if operand2 is None:
+            # Only one operand was given. Set operand2 to operand and
+            # operand to self so that we call the appropriate method of the
+            # operand.
+            operand2 = operand
+            operand = self_or_cls
+        else:
+            # Convert the first operand to the class of this method.
+            # This is important so that always the correct _arithmetics is
+            # called later that method.
+            operand = cls(operand)

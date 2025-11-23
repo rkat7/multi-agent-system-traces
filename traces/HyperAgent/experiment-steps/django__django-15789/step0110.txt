@@ -1,0 +1,28 @@
+### Input
+<empty>
+
+### Output
+    def test_json_script(self):
+        tests = (
+            # "<", ">" and "&" are quoted inside JSON strings
+            (
+                "&<>",
+                '<script id="test_id" type="application/json">"\\u0026\\u003C\\u003E"</script>',
+            ),
+            (
+                {"a": 1, "b": ["c", "&"]},
+                '<script id="test_id" type="application/json">{"a": 1, "b": ["c", "\\u0026"]}</script>',
+            ),
+            (
+                {"a": 1, "b": ["c", "&"], "c": {"d": "e"}},
+                '<script id="test_id" type="application/json">{"a": 1, "b": ["c", "\\u0026"], "c": {"d": "e"}}</script>',
+            ),
+        )
+        for arg, expected in tests:
+            with self.subTest(arg=arg):
+                self.assertEqual(json_script(arg, "test_id"), expected)
+'''
+result = editor._run(relative_file_path="tests/utils_tests/test_html.py", start_line=180, end_line=218, patch=patch)
+print(result)
+```
+HyperAgent_django__django-15789 - INFO - Planner's Response: Thought: The test cases have been successfully updated in the `tests/utils_tests/test_html.py` file. Now we have comprehensive tests that cover both the new functionality with a custom encoder and the existing functionality with the default encoder. The next step is to run these tests to ensure that our changes work as expected and don't introduce any regressions.

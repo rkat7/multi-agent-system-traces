@@ -1,0 +1,10 @@
+### Input
+<empty>
+
+### Output
+1. The `_propagate_multiply` method calls the `_propagate_multiply_divide` method, passing `divide=False` to indicate that it should handle multiplication.
+2. The `_propagate_multiply_divide` method contains the main implementation for propagating the mask and uncertainty during multiplication or division.
+3. The method calculates the variance-based uncertainty propagation using the formula:
+   `sigma**2 = (d_a*B**2 + d_b*A**2 + (2 * cor * ABsqrt(dAdB)))`
+   where `d_a` and `d_b` are the variances of the two operands, `A` and `B` are the data values, and `cor` is the correlation between the operands.
+4. If one of the operands does not have a mask, the corresponding variance `d_a` or `d_b` will be set to 0, which can lead to the observed issue where the bitwise_or operation fails when trying to combine a valid mask with a `None` mask.

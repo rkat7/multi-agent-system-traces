@@ -1,0 +1,6 @@
+1. The `get_object_members` function in the `sphinx.ext.autodoc.importer` module gathers all the members of the object being documented, including those defined in `__all__`.
+2. The `Documenter.get_object_members` method calls `get_object_members` to obtain the list of members.
+3. If `self.options.members` is not empty, the `get_object_members` method filters the list of members to only include those specified in `self.options.members`.
+4. The filtered list of members is then passed to the `Documenter.filter_members` method, which applies additional filtering based on options like `private-members`, `special-members`, and `undoc-members`.
+5. If `self.options.ignore_module_all` is `False` (the default), the `Documenter.import_object` method sets `self.__all__` to the result of `inspect.getall(self.object)` before calling `filter_members`.
+6. The `filter_members` method then respects the `__all__` attribute when deciding which members to include in the documentation.

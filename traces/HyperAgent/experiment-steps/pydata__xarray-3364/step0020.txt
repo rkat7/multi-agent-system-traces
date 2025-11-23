@@ -1,0 +1,15 @@
+### Input
+<empty>
+
+### Output
+        # Fill missing variables with NaN for each dataset
+        filled_objs = []
+        for obj in objs:
+            if isinstance(obj, Dataset):
+                missing_vars = all_vars - set(obj.data_vars)
+                filled_obj = obj.copy()
+                for var in missing_vars:
+                    filled_obj[var] = xr.full_like(obj[list(obj.data_vars)[0]], fill_value)
+                filled_objs.append(filled_obj)
+            else:
+                filled_objs.append(obj)

@@ -1,0 +1,29 @@
+### Input
+<empty>
+
+### Output
+        # otherwise values are set from the boundaries
+        if isinstance(self.norm, colors.BoundaryNorm):
+            b = self.norm.boundaries
+        elif isinstance(self.norm, colors.LogNorm):
+            # For LogNorm, we need to ensure we don't have zero or negative values
+            vmin, vmax = self.norm.vmin, self.norm.vmax
+            if vmin <= 0:
+                vmin = np.nextafter(0, 1)
+            if vmax <= vmin:
+                vmax = np.nextafter(vmin, np.inf)
+            b = np.logspace(np.log10(vmin), np.log10(vmax), self.cmap.N + 1)
+        elif isinstance(self.norm, colors.NoNorm):
+            # NoNorm has N blocks, so N+1 boundaries, centered on integers:
+            b = np.arange(self.cmap.N + 1) - .5
+        elif self.boundaries is not None:
+            b = self.boundaries
+        else:
+            # otherwise make the boundaries from the size of the cmap:
+            N = self.cmap.N + 1
+            b, _ = self._uniform_y(N)
+        # add extra boundaries if needed:
+        if self._extend_lower():
+            b = np.hstack((b[0] - 1, b))
+        if self._extend_upper():
+            b = np.hstack((b, b[-1] + 1))

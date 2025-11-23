@@ -1,0 +1,19 @@
+        if subcommand == 'help':
+            if '--commands' in args:
+                sys.stdout.write(self.main_help_text(commands_only=True) + '\n')
+            elif len(args) <= 1:
+                sys.stdout.write(self.main_help_text() + '\n')
+            else:
+                self.fetch_command(args[0]).print_help(self.prog_name, args[0])
+        # Special-cases: We want 'django-admin --version' and
+        # 'django-admin --help' to work, for backwards compatibility.
+        elif subcommand == 'version' or self.argv[1:] == ['--version']:
+            sys.stdout.write(django.get_version() + '\n')
+        elif self.argv[1:] in (['--help'], ['-h']):
+            sys.stdout.write(self.main_help_text() + '\n')
+        else:
+            self.fetch_command(subcommand).run_from_argv(self.argv, prog_name=self.prog_name)
+'''
+result = editor._run(relative_file_path="django/core/management/__init__.py", start_line=334, end_line=408, patch=patch)
+print(result)
+```

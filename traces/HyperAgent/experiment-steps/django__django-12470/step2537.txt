@@ -1,0 +1,36 @@
+### Input
+<empty>
+
+### Output
+```python
+# options.py
+...
+163         if self.meta:
+164             meta_attrs = self.meta.__dict__.copy()
+165             for name in self.meta.__dict__:
+166                 # Ignore any private attributes that Django doesn't care about.
+167                 # NOTE: We can't modify a dictionary's contents while looping
+168                 # over it, so we loop over the *original* dictionary instead.
+169                 if name.startswith('_'):
+170                     continue
+171 
+172                 # If the attribute is not a string, it's not a Meta option.
+173                 if not isinstance(meta_attrs[name], str):
+174                     continue
+175 
+176                 # If the attribute is not a valid Meta option, raise an error.
+177                 if name not in self.valid_meta_opts:
+178                     raise TypeError("'class Meta' got invalid attribute(s): %s" % name)
+179 
+180                 # If the attribute is not set, use the default value.
+181                 if not meta_attrs[name]:
+182                     continue
+183 
+184                 # If the attribute is set, store it in the original_attrs dictionary.
+185                 self.original_attrs[name] = meta_attrs[name]
+186 
+187                 # If the attribute is set, apply the overridden value.
+188                 setattr(self, name, meta_attrs[name])
+189 
+190             # ...
+```

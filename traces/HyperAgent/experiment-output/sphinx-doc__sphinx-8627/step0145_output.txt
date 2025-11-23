@@ -1,0 +1,21 @@
+def record_typehints(app: Sphinx, objtype: str, name: str, obj: Any,
+                     options: Dict, args: str, retann: str) -> None:
+    """Record type hints to env object."""
+    try:
+        if callable(obj):
+            annotations = app.env.temp_data.setdefault('annotations', {})
+            annotation = annotations.setdefault(name, OrderedDict())
+            sig = inspect.signature(obj, type_aliases=app.config.autodoc_type_aliases)
+            for param in sig.parameters.values():
+                if param.annotation is not param.empty:
+                    resolved_annotation = resolve_annotation(param.annotation)
+                    annotation[param.name] = typing.stringify(resolved_annotation)
+            if sig.return_annotation is not sig.empty:
+                resolved_return_annotation = resolve_annotation(sig.return_annotation)
+                annotation['return'] = typing.stringify(resolved_return_annotation)
+    except (TypeError, ValueError):
+        pass
+'''
+result = editor._run(relative_file_path="sphinx/ext/autodoc/typehints.py", start_line=22, end_line=37, patch=patch)
+print(result)
+```

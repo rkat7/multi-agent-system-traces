@@ -1,0 +1,24 @@
+### Input
+<empty>
+
+### Output
+   ```python
+# src/_pytest/_code/code.py
+def recursionindex() -> int:
+    try:
+        return traceback.recursionindex()
+    except Exception as e:
+        max_frames = 10
+        extraline: Optional[str] = (
+            "!!! Recursion error detected, but an error occurred locating the origin of recursion.\n"
+            "  The following exception happened when comparing locals in the stack frame:\n"
+            "    {exc_type}: {exc_msg}\n"
+            "  Displaying first and last {max_frames} stack frames out of {total}."
+        ).format(
+            exc_type=type(e).__name__,
+            exc_msg=str(e),
+            max_frames=max_frames,
+            total=traceback.extract_stack()[-1][1]
+        )
+        return traceback.extract_stack()[:max_frames]
+```

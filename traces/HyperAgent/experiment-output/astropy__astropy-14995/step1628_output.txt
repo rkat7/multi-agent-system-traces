@@ -1,0 +1,23 @@
+```python
+# File: astropy/nddata/nduncertainty.py
+if other_uncert.array is not None:
+    # We want the result to have a unit consistent with the parent, so
+    # we only need to convert the unit of the other uncertainty if it
+    # is different from its data's unit.
+    if (
+        other_uncert.unit
+        and to_variance(1 * other_uncert.unit)
+        != ((1 * other_uncert.parent_nddata.unit) ** 2).unit
+    ):
+        d_b = (
+            to_variance(other_uncert.array << other_uncert.unit)
+            .to((1 * other_uncert.parent_nddata.unit) ** 2)
+            .value
+        )
+    else:
+        d_b = to_variance(other_uncert.array)
+    # Formula: sigma**2 = |A|**2 * d_b
+    right = np.abs(self.parent_nddata.data**2 * d_b)
+else:
+    right = 0
+```

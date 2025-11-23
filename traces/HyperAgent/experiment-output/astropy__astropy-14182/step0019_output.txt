@@ -1,0 +1,34 @@
+```python
+35 class RST(FixedWidth):
+36     """reStructuredText simple format table.
+37 
+38     See: https://docutils.sourceforge.io/docs/ref/rst/restructuredtext.html#simple-tables
+39 
+40     Example::
+41 
+42         ==== ===== ======
+43         Col1  Col2  Col3
+44         ==== ===== ======
+45           1    2.3  Hello
+46           2    4.5  Worlds
+47         ==== ===== ======
+48 
+49     Currently there is no support for reading tables which utilize continuation lines,
+50     or for ones which define column spans through the use of an additional
+51     line of dashes in the header.
+52 
+53     """
+54 
+55     _format_name = "rst"
+56     _description = "reStructuredText simple table"
+57     data_class = SimpleRSTData
+58     header_class = SimpleRSTHeader
+59 
+60     def __init__(self):
+61         super().__init__(delimiter_pad=None, bookend=False)
+62 
+63     def write(self, lines):
+64         lines = super().write(lines)
+65         lines = [lines[1]] + lines + [lines[1]]
+```
+HyperAgent_astropy__astropy-14182 - INFO - Planner's Response: Thought: After examining the RST writer class in the `astropy/io/ascii/rst.py` file, it's clear that the current implementation doesn't support the `header_rows` argument. To add this functionality, we need to modify the `RST` class to handle the `header_rows` parameter and adjust the `write` method accordingly. We'll need to update the class initialization and the write method to incorporate the new feature.

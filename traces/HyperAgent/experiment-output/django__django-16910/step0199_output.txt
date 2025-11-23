@@ -1,0 +1,48 @@
+* `add_fields()` method in the `Query` class (django/db/models/sql/query.py):
+```python
+2121     def add_fields(self, field_names, allow_m2m=True):
+2122         """
+2123         Add the given (model) fields to the select set. Add the field names in
+2124         the order specified.
+2125         """
+2126         alias = self.get_initial_alias()
+2127         opts = self.get_meta()
+2128 
+2129         try:
+2130             cols = []
+2131             for name in field_names:
+2132                 # Join promotion note - we must not remove any rows here, so
+2133                 # if there is no existing joins, use outer join.
+2134                 join_info = self.setup_joins(
+2135                     name.split(LOOKUP_SEP), opts, alias, allow_many=allow_m2m
+2136                 )
+2137                 targets, final_alias, joins = self.trim_joins(
+2138                     join_info.targets,
+2139                     join_info.joins,
+2140                     join_info.path,
+2141                 )
+2142                 for target in targets:
+2143                     cols.append(join_info.transform_function(target, final_alias))
+2144             if cols:
+2145                 self.set_select(cols)
+2146         except MultiJoin:
+2147             raise FieldError("Invalid field name: '%s'" % name)
+2148         except FieldError:
+2149             if LOOKUP_SEP in name:
+2150                 # For lookups spanning over relationships, show the error
+2151                 # from the model on which the lookup failed.
+2152                 raise
+2153             else:
+2154                 names = sorted(
+2155                     [
+2156                         *get_field_names_from_opts(opts),
+2157                         *self.extra,
+2158                         *self.annotation_select,
+2159                         *self._filtered_relations,
+2160                     ]
+2161                 )
+2162                 raise FieldError(
+2163                     "Cannot resolve keyword %r into field. "
+2164                     "Choices are: %s" % (name, ", ".join(names))
+2165                 )
+```

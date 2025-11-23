@@ -1,0 +1,12 @@
+    try:
+        routine = code_gen.routine('autofunc', expr, args)
+    except CodeGenArgumentListError as e:
+        # if all missing arguments are for pure output, we simply attach them
+        # at the end and try again, because the wrappers will silently convert
+        # them to return values anyway.
+        new_args = []
+        for missing in e.missing_args:
+            if not isinstance(missing, OutputArgument):
+                raise
+            new_args.append(missing.name)
+        routine = code_gen.routine('autofunc', expr, args + new_args)

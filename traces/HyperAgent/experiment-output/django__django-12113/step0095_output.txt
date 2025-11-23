@@ -1,0 +1,13 @@
+    @mock.patch('django.contrib.admin.options.transaction')
+    def test_delete_view(self, mock):
+        for db in connections:
+            with self.subTest(db=db):
+                Router.target_db = db
+                self.client.force_login(self.superusers[db])
+                self.client.post(
+                    reverse('test_adminsite:admin_views_book_delete', args=[self.test_book_ids[db]]),
+                    {'post': 'yes'},
+                )
+                mock.atomic.assert_called_with(using=db)
+```
+HyperAgent_django__django-12113 - INFO - Planner's Response: Thought: Thank you for providing the current content of the file. Now that we have the correct context, we can make the necessary modifications to address the "database is locked" issue. The problem occurs because multiple database operations are being performed in quick succession without properly managing connections and transactions.

@@ -1,0 +1,21 @@
+### Input
+<empty>
+
+### Output
+        # Create failure message.
+        body = self.expl_stmts
+        self.statements.append(ast.If(negation, body, []))
+        if assert_.msg:
+            assertmsg = self.helper("_format_assertmsg", assert_.msg)
+            explanation = "\n>assert " + explanation
+        else:
+            assertmsg = ast.Str("")
+            explanation = "assert " + explanation
+        template = ast.BinOp(assertmsg, ast.Add(), ast.Str(explanation))
+        msg = self.pop_format_context(template)
+        fmt = self.helper("_format_explanation", msg)
+        err_name = ast.Name("AssertionError", ast.Load())
+        exc = ast.Call(err_name, [fmt], [])
+        raise_ = ast.Raise(exc, None)
+        body.append(raise_)
+        # ...

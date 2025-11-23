@@ -1,0 +1,16 @@
+    >>> from sympy import Symbol, S
+    >>> def my_measure(expr):
+    ...     POW = Symbol('POW')
+    ...     # Discourage powers by giving POW a weight of 10
+    ...     count = count_ops(expr, visual=True).subs(POW, 10)
+    ...     # Every other operation gets a weight of 1 (the default)
+    ...     count = count.replace(Symbol, type(S.One))
+    ...     return count
+    >>> my_measure(g)
+    8
+    >>> my_measure(h)
+    14
+    >>> 15./8 > 1.7 # 1.7 is the default ratio
+    True
+    >>> simplify(g, measure=my_measure)
+    -log(a)*log(b) + log(a) + log(b)

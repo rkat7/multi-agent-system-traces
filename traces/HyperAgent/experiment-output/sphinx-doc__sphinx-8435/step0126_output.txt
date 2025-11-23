@@ -1,0 +1,16 @@
+        if isinstance(obj, type):
+            type_name = obj.__name__
+            return type_aliases.get(type_name, type_name)
+        elif isinstance(obj, (list, tuple)):
+            elem_type = self.get_type(obj[0]) if obj else 'Any'
+            return f"List[{elem_type}]"
+        elif isinstance(obj, dict):
+            key_type = self.get_type(next(iter(obj.keys()))) if obj else 'Any'
+            value_type = self.get_type(next(iter(obj.values()))) if obj else 'Any'
+            return f"Dict[{key_type}, {value_type}]"
+        elif isinstance(obj, set):
+            elem_type = self.get_type(next(iter(obj))) if obj else 'Any'
+            return f"Set[{elem_type}]"
+        else:
+            type_name = type(obj).__name__
+            return type_aliases.get(type_name, type_name)

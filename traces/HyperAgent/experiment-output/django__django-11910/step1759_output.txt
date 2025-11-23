@@ -1,0 +1,12 @@
+    def state_forwards(self, app_label, state):
+        model_state = state.models[app_label, self.model_name_lower]
+        fields = model_state.fields
+        for index, (name, field) in enumerate(fields):
+            if name == self.name:
+                fields[index] = (name, self.field)
+                break
+        else:
+            raise FieldDoesNotExist(
+                "%s.%s has no field named '%s'" % (app_label, self.model_name, self.name)
+            )
+```

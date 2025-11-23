@@ -1,0 +1,89 @@
+### Input
+Action:
+```python
+
+### Output
+result = open_file_gen._run(relative_file_path="django/db/models/sql/query.py", keywords=["class Query", "def add_deferred_loading", "def clear_deferred_loading"])
+print(result)
+```
+HyperAgent_django__django-14667 - INFO - Editor->Planner: exitcode: 0 (execution succeeded)
+Code output: The content of django/db/models/sql/query.py is: 1 """
+2 Create SQL statements for QuerySets.
+3 
+4 The code in here encapsulates all of the SQL construction so that QuerySets
+5 themselves do not have to (and could be backed by things other than SQL
+6 databases). The abstraction barrier only works one way: this module has to know
+7 all about the internals of models in order to get the information it needs.
+8 """
+9 import copy
+10 import difflib
+11 import functools
+12 import sys
+13 from collections import Counter, namedtuple
+14 from collections.abc import Iterator, Mapping
+15 from itertools import chain, count, product
+16 from string import ascii_uppercase
+17 
+18 from django.core.exceptions import FieldDoesNotExist, FieldError
+19 from django.db import DEFAULT_DB_ALIAS, NotSupportedError, connections
+20 from django.db.models.aggregates import Count
+21 from django.db.models.constants import LOOKUP_SEP
+22 from django.db.models.expressions import (
+23     BaseExpression, Col, Exists, F, OuterRef, Ref, ResolvedOuterRef,
+24 )
+25 from django.db.models.fields import Field
+26 from django.db.models.fields.related_lookups import MultiColSource
+27 from django.db.models.lookups import Lookup
+28 from django.db.models.query_utils import (
+29     Q, check_rel_lookup_compatibility, refs_expression,
+30 )
+31 from django.db.models.sql.constants import INNER, LOUTER, ORDER_DIR, SINGLE
+32 from django.db.models.sql.datastructures import (
+33     BaseTable, Empty, Join, MultiJoin,
+34 )
+35 from django.db.models.sql.where import (
+36     AND, OR, ExtraWhere, NothingNode, WhereNode,
+37 )
+38 from django.utils.functional import cached_property
+39 from django.utils.tree import Node
+40 
+41 __all__ = ['Query', 'RawQuery']
+42 
+43 
+44 def get_field_names_from_opts(opts):
+45     return set(chain.from_iterable(
+46         (f.name, f.attname) if f.concrete else (f.name,)
+47         for f in opts.get_fields()
+48     ))
+49 
+50 
+51 def get_children_from_q(q):
+52     for child in q.children:
+53         if isinstance(child, Node):
+54             yield from get_children_from_q(child)
+55         else:
+56             yield child
+57 
+58 
+59 JoinInfo = namedtuple(
+60     'JoinInfo',
+61     ('final_field', 'targets', 'opts', 'joins', 'path', 'transform_function')
+62 )
+63 
+64 
+65 class RawQuery:
+66     """A single raw SQL query."""
+67 
+68     def __init__(self, sql, using, params=()):
+69         self.params = params
+70         self.sql = sql
+71         self.using = using
+72         self.cursor = None
+73 
+74         # Mirror some properties of a normal query so that
+75         # the compiler can be used to process results.
+76         self.low_mark, self.high_mark = 0, None  # Used for offset/limit
+77         self.extra_select = {}
+78         self.annotation_select = {}
+79 
+80     def chain(self, using):

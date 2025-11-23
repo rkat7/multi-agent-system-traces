@@ -1,0 +1,38 @@
+```python
+def handle(self, *args, **options):
+    # ...
+    database = options["database"]
+    if not options["skip_checks"]:
+        self.check(databases=[database])
+    self.verbosity = options["verbosity"]
+    self.interactive = options["interactive"]
+    # ...
+    # Get the database we're operating from
+    connection = connections[database]
+    # Hook for backends needing any database preparation
+    connection.prepare_database()
+    # ...
+    executor = MigrationExecutor(connection, self.migration_progress_callback)
+    # ...
+    # Run the syncdb phase.
+    if run_syncdb:
+        # ...
+        if options["app_label"]:
+            self.sync_apps(connection, [app_label])
+        else:
+            self.sync_apps(connection, executor.loader.unmigrated_apps)
+    # Migrate!
+    if self.verbosity >= 1:
+        self.stdout.write(self.style.MIGRATE_HEADING("Running migrations:"))
+    if not plan:
+        # ...
+    else:
+        post_migrate_state = executor.migrate(
+            targets,
+            plan=plan,
+            state=pre_migrate_state.clone(),
+            fake=fake,
+            fake_initial=fake_initial,
+        )
+    # ...
+```

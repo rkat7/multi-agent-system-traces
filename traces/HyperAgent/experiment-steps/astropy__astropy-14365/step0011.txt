@@ -1,0 +1,22 @@
+### Input
+<empty>
+
+### Output
+1. Modify the `_command_re` regular expression pattern in the `_line_type` function to be case-insensitive:
+   ```python
+   _command_re = r"read [TS]ERR(\s+[0-9]+)+"
+   ```
+2. Update the `_type_re` regular expression pattern to also be case-insensitive:
+   ```python
+   _type_re = rf"^\s*((?P<command>{_command_re})|(?P<new>{_new_re})|(?P<data>{_data_re})?\s*(\!(?P<comment>.*))?\s*$"
+   ```
+3. In the `_line_type` function, modify the logic to handle mixed-case commands:
+   ```python
+   if match is None:
+       # Try again with lowercase command
+       _command_re = r"read [TS]err(\s+[0-9]+)+"
+       _type_re = rf"^\s*((?P<command>{_command_re})|(?P<new>{_new_re})|(?P<data>{_data_re})?\s*(\!(?P<comment>.*))?\s*$"
+       match = re.compile(_type_re).match(line)
+       if match is None:
+           raise ValueError(f"Unrecognized QDP line: {line}")
+   ```

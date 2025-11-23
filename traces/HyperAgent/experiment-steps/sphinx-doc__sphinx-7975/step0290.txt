@@ -1,0 +1,40 @@
+### Input
+<empty>
+
+### Output
+# Apply the changes to the create_index method
+for i, line in enumerate(lines):
+    if line.startswith("def create_index"):
+        break
+lines = lines[:i] + [
+    "    def keyfunc(entry: Tuple[str, List]) -> Tuple[str, str]:\n",
+    "        key, (void, void, category_key) = entry\n",
+    "        if category_key:\n",
+    "            # using specified category key to sort\n",
+    "            key = category_key\n",
+    "        lckey = unicodedata.normalize('NFD', key.lower())\n",
+    "        if lckey.startswith('\N{RIGHT-TO-LEFT MARK}'):\n",
+    "            lckey = lckey[1:]\n",
+    "        if lckey[0:1].isalpha() or lckey.startswith('_'):\n",
+    "            return (chr(127) + lckey, entry[0])\n",
+    "        else:\n",
+    "            # Place all symbols at the beginning\n",
+    "            return (chr(0) + lckey, entry[0])\n",
+    "\n",
+    "    def keyfunc3(item: Tuple[str, List]) -> str:\n",
+    "        # hack: mutating the subitems dicts to a list in the keyfunc\n",
+    "        k, v = item\n",
+    "        v[1] = sorted(((si, se) for (si, (se, void, void)) in v[1].items()),\n",
+    "                     key=keyfunc2)\n",
+    "        if v[2] is None:\n",
+    "            # now calculate the key\n",
+    "            if k.startswith('\N{RIGHT-TO-LEFT MARK}'):\n",
+    "                k = k[1:]\n",
+    "            letter = unicodedata.normalize('NFD', k[0])[0].upper()\n",
+    "            if letter.isalpha() or letter == '_':\n",
+    "                return letter\n",
+    "            else:\n",
+    "                # group all symbols under one heading at the beginning\n",
+    "                return chr(0) + _('Symbols')\n",
+    "        else:\n",
+    "            return v[2]\n"] + lines[i+1:]

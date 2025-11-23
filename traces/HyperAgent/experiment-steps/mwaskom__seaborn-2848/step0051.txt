@@ -1,0 +1,37 @@
+### Input
+<empty>
+
+### Output
+```python
+def scatterplot(
+    data=None, *,
+    x=None, y=None, hue=None, size=None, style=None,
+    palette=None, hue_order=None, hue_norm=None,
+    sizes=None, size_order=None, size_norm=None,
+    markers=True, style_order=None,
+    x_bins=None, y_bins=None,
+    units=None, estimator=None, ci=95, n_boot=1000,
+    alpha=None, x_jitter=None, y_jitter=None,
+    legend="auto", ax=None,
+    **kwargs
+):
+    variables = _ScatterPlotter.get_semantics(locals())
+    p = _ScatterPlotter(
+        data=data, variables=variables,
+        x_bins=x_bins, y_bins=y_bins,
+        estimator=estimator, ci=ci, n_boot=n_boot,
+        alpha=alpha, x_jitter=x_jitter, y_jitter=y_jitter, legend=legend,
+    )
+    p.map_hue(palette=palette, order=hue_order, norm=hue_norm)
+    p.map_size(sizes=sizes, order=size_order, norm=size_norm)
+    p.map_style(markers=markers, order=style_order)
+    if ax is None:
+        ax = plt.gca()
+    if not p.has_xy_data:
+        return ax
+    p._attach(ax)
+    color = kwargs.pop("color", None)
+    kwargs["color"] = _default_color(ax.scatter, hue, color, kwargs)
+    p.plot(ax, kwargs)
+    return ax
+```

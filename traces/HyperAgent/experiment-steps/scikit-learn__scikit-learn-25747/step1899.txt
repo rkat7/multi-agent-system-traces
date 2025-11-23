@@ -1,0 +1,13 @@
+### Input
+<empty>
+
+### Output
+    def fit_transform(self, X, y=None, **fit_params):
+        """Fit all transformers, transform the data and concatenate results."""
+        results = self._parallel_func(X, y, fit_params, _fit_transform_one)
+        if not results:
+            # All transformers are None
+            return np.zeros((X.shape[0], 0))
+        Xs, transformers = zip(*results)
+        self._update_transformer_list(transformers)
+        return self._hstack(Xs)

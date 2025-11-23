@@ -1,0 +1,12 @@
+ab_query = AB.objects.filter(a=OuterRef("pk"), b=1)
+filter_conditions = Q(pk=1) | Q(ab_a__b=1)
+query = A.objects.\
+    filter(filter_conditions).\
+    annotate(
+        status=Subquery(ab_query.values("status")),
+        c_count=Count("c"),
+)
+answer = query.values("status").annotate(total_count=Count("status"))
+```
+The test query is present in the `test_project/test_app/tests.py` file.
+HyperAgent_django__django-12589 - INFO - Navigator->Planner: Based on the provided context and actions, I will provide the contents of the requested files and search for the test query in the `test_project` directory.

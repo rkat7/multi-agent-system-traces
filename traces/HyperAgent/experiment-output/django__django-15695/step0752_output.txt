@@ -1,0 +1,6 @@
+    def _rename_unnamed_index(self, schema_editor, model, old_fields, new_name):
+        table_name = model._meta.db_table
+        columns = [model._meta.get_field(field_name).column for field_name in old_fields]
+        schema_editor.execute(
+            f"ALTER INDEX IF EXISTS {table_name}_{'_'.join(columns)}_idx RENAME TO {new_name}"
+        )

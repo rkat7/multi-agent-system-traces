@@ -1,0 +1,20 @@
+### Input
+Action:
+```python
+
+### Output
+def _separable(transform):
+    if transform.n_inputs == 1 and transform.n_outputs > 1:
+        return np.zeros((transform.n_outputs, transform.n_inputs))
+    if isinstance(transform, CompoundModel):
+        # Recursively call _separable on each component model
+        component_matrices = [_separable(component) for component in transform.components]
+        # Combine the results
+        separable_matrix = np.zeros((transform.n_outputs, transform.n_inputs))
+        for component_matrix in component_matrices:
+            separable_matrix += component_matrix
+        return separable_matrix
+    else:
+        # Base case: a single model
+        return np.zeros((transform.n_outputs, transform.n_inputs))
+```

@@ -1,0 +1,40 @@
+### Input
+<empty>
+
+### Output
+```python
+try:
+    if not chunked:
+        resp = conn.urlopen(
+            method=request.method,
+            url=url,
+            body=request.body,
+            headers=request.headers,
+            redirect=False,
+            assert_same_host=False,
+            preload_content=False,
+            decode_content=False,
+            retries=self.max_retries,
+            timeout=timeout
+        )
+    # Send the request.
+    else:
+        # Chunked request handling logic
+except (ProtocolError, socket.error) as err:
+    raise ConnectionError(err, request=request)
+except MaxRetryError as e:
+    if isinstance(e.reason, ConnectTimeoutError):
+        raise ConnectTimeout(e, request=request)
+    if isinstance(e.reason, ResponseError):
+        raise RetryError(e, request=request)
+    raise ConnectionError(e, request=request)
+except _ProxyError as e:
+    raise ProxyError(e)
+except (_SSLError, _HTTPError) as e:
+    if isinstance(e, _SSLError):
+        raise SSLError(e, request=request)
+    elif isinstance(e, ReadTimeoutError):
+        raise ReadTimeout(e, request=request)
+    else:
+        raise
+```

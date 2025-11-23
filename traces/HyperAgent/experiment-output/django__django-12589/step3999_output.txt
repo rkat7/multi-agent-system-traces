@@ -1,0 +1,21 @@
+patch = '''
+    def get_group_by_cols(self):
+        group_by_cols = []
+        for col in self.annotations:
+            if isinstance(col, Subquery):
+                # For subquery annotations, use the entire subquery in the GROUP BY
+                group_by_cols.append(col)
+            elif hasattr(col, 'resolve_expression'):
+                resolved = col.resolve_expression(self)
+                if hasattr(resolved, 'get_group_by_cols'):
+                    group_by_cols.extend(resolved.get_group_by_cols())
+                else:
+                    group_by_cols.append(resolved)
+            else:
+                group_by_cols.append(col)
+        return group_by_cols
+'''
+result = editor._run(relative_file_path="django/db/models/sql/query.py", start_line=2236, end_line=2236, patch=patch)
+print(result)
+```
+HyperAgent_django__django-12589 - INFO - Inner-Editor-Assistant's Response: Thought: I apologize for the oversight. The error indicates that the `Subquery` class is not imported. We need to import it before using it in the `get_group_by_cols` method. Let's modify the code to include the necessary import.

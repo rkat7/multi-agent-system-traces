@@ -1,0 +1,19 @@
+### Input
+<empty>
+
+### Output
+                transformers = [
+                    replace_passthrough(*trans) for trans in self.transformers_
+                ]
+            else:
+                transformers = self.transformers_
+        else:
+            # interleave the validated column specifiers
+            transformers = [
+                (name, trans, column)
+                for (name, trans, _), column in zip(self.transformers, self._columns)
+            ]
+            # add transformer tuple for remainder
+            if self._remainder[2]:
+                transformers = chain(transformers, [self._remainder])
+        get_weight = (self.transformer_weights or {}).get

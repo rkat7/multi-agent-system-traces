@@ -1,0 +1,31 @@
+Results for keyword: class sign
+681 class sign(Function):
+682     """
+683     Returns the complex sign of an expression:
+684     
+685     If the expression is real the sign will be:
+686         * 1 if expression is positive
+687         * 0 if expression is equal to zero
+688         * -1 if expression is negative
+689     
+690     If the expression is imaginary the sign will be:
+691         * I if im(expression) is positive
+692         * -I if im(expression) is negative
+693     
+694     Otherwise an unevaluated expression will be returned. When evaluated, the
+695     result (in general) will be ``cos(arg(expr)) + I*sin(arg(expr))``.
+696     """
+697     is_complex = True
+698     _singularities = True
+699 
+700     def doit(self, **hints):
+701         if self.args[0].is_zero is False:
+702             return self.args[0] / Abs(self.args[0])
+703         return self
+704 
+705     def _eval_rewrite_as_Abs(self, arg, **kwargs):
+706         from sympy import Piecewise, S
+707         return Piecewise(
+708             (arg / Abs(arg), arg.is_nonzero),
+709             (S.NaN, True)
+710         )

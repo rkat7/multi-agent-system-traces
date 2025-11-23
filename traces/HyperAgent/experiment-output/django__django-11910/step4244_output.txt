@@ -1,0 +1,11 @@
+        # Add this new section to update foreign key references
+        for (other_app_label, other_model_name), other_model_state in state.models.items():
+            for index, (name, field) in enumerate(other_model_state.fields):
+                if isinstance(field, models.ForeignKey):
+                    if (field.remote_field.model == f'{app_label}.{self.model_name}' and
+                        field.to_fields and field.to_fields[0] == self.old_name):
+                        # Update the to_fields attribute
+                        field.to_fields = (self.new_name,) + field.to_fields[1:]
+                        # Update the field in the model state
+                        other_model_state.fields[index] = (name, field)
+                        state.reload_model(other_app_label, other_model_name, delay=True)

@@ -1,0 +1,18 @@
+    if opts.get('deep', True):
+        expr = expr.replace(lambda x: isinstance(x, (TrigonometricFunction, HyperbolicFunction)), lambda x: x.rcall(factor(x.args[0])))
+    if opts['method'] == 'matching':
+        expr = _trigsimp(expr, **opts)
+    elif opts['method'] == 'combined':
+        expr = _trigsimp(expr, **opts)
+        expr = trigsimp_groebner(expr, **opts)
+    elif opts['method'] == 'groebner':
+        expr = trigsimp_groebner(expr, **opts)
+    elif opts['method'] in ('fu', 'futrig'):
+        expr = fu(expr)
+    else:
+        raise ValueError('method must be one of "matching", '
+            '"groebner", "combined", "fu", or "futrig"')
+    if opts.get('recursive', False):
+        expr = expr.replace(lambda x: isinstance(x, (TrigonometricFunction, HyperbolicFunction)),
+                            lambda x: trigsimp(x, **opts))
+    expr = bottom_up(expr, lambda x: x.cancel())

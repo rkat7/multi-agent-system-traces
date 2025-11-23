@@ -1,0 +1,13 @@
+```python
+# Check if there are any options that we do not recognize
+unrecognized_options: list[str] = []
+for opt in parsed_args_list:
+    if opt.startswith("--"):
+        unrecognized_options.append(opt[2:])
+    elif opt.startswith("-"):
+        unrecognized_options.append(opt[1:])
+if unrecognized_options:
+    msg = ", ".join(unrecognized_options)
+    linter.add_message("unrecognized-option", line=0, args=msg)
+    raise _UnrecognizedOptionError(options=unrecognized_options)
+```

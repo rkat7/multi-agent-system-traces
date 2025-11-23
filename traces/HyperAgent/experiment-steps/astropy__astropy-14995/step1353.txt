@@ -1,0 +1,14 @@
+### Input
+<empty>
+
+### Output
+        # Mask propagation
+        mask = None
+        if self.meta is not None and hasattr(self.meta, 'mask'):
+            mask = self.meta.mask
+        for operand in operands:
+            if operand is not None and hasattr(operand, 'meta') and hasattr(operand.meta, 'mask'):
+                if mask is None:
+                    mask = operand.meta.mask
+                elif operand.meta.mask is not None:
+                    mask = np.logical_or(mask, operand.meta.mask)

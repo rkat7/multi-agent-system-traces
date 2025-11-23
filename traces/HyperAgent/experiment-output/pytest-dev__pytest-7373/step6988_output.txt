@@ -1,0 +1,18 @@
+-def cached_eval(config: Config, expr: str, d: Dict[str, object]) -> Any:
+-    default = {}  # type: Dict[str, object]
+-    evalcache = config._store.setdefault(evalcache_key, default)
+-    try:
+-        return evalcache[expr]
+-    except KeyError:
+-        import _pytest._code
+-        exprcode = _pytest._code.compile(expr, mode="eval")
+-        evalcache[expr] = x = eval(exprcode, d)
+-        return x
++def evaluate_marks(mark, config=None):
++    if config is None:
++        # If config is not provided, use a default configuration
++        config = Config()
++    return mark.evaluate(config)
++
++def evaluate_mark(mark, config=None):
++    return evaluate_marks(mark, config)

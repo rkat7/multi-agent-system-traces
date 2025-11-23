@@ -1,0 +1,13 @@
+        Returns
+        -------
+        C : ndarray or DataFrame of shape (n_samples, n_classes)
+            The predicted probas. Returns a DataFrame when the global
+            configuration is set to return pandas output.
+        """
+        check_is_fitted(self)
+        # Compute the arithmetic mean of the predictions of the calibrated
+        # classifiers
+        mean_proba = np.zeros((_num_samples(X), len(self.classes_)))
+        for calibrated_classifier in self.calibrated_classifiers_:
+            proba = calibrated_classifier.predict_proba(X)
+            mean_proba += proba

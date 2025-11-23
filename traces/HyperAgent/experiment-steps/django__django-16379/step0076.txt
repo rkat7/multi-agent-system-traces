@@ -1,0 +1,9 @@
+### Input
+<empty>
+
+### Output
+1. We removed the `os.path.exists()` check, which was the source of the race condition.
+2. We now handle the `FileNotFoundError` explicitly, returning `False` if the file doesn't exist.
+3. We ensure that the file is always closed after checking for expiration, regardless of the outcome.
+4. The updated method works well with the existing `_is_expired` method, maintaining its functionality.
+5. Other methods in the `FileBasedCache` class (`get`, `set`, and `delete`) were found to be already implemented in a race-condition-resistant manner, so no changes were needed for them.

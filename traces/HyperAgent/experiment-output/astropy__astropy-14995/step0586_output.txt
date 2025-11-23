@@ -1,0 +1,40 @@
+```python
+def _propagate_multiply_divide(
+    self,
+    other_uncert,
+    result_data,
+    correlation,
+    divide=False,
+    to_variance=lambda x: x,
+    from_variance=lambda x: x,
+):
+    # ...
+    if other_uncert.array is not None:
+        # ...
+    else:
+        right = 0
+    # ...
+    if self.array is not None:
+        # ...
+    else:
+        left = 0
+    # ...
+    if isinstance(correlation, np.ndarray) or correlation != 0:
+        corr = (
+            2
+            * correlation
+            * np.sqrt(d_a * d_b)
+            * self.parent_nddata.data
+            * other_uncert.parent_nddata.data
+        )
+    else:
+        corr = 0
+    # ...
+    if divide:
+        return from_variance(
+            (left + right + correlation_sign * corr)
+            / other_uncert.parent_nddata.data**4
+        )
+    else:
+        return from_variance(left + right + correlation_sign * corr)
+```

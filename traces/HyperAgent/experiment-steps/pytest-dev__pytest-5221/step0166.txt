@@ -1,0 +1,22 @@
+### Input
+<empty>
+
+### Output
+    for argname, fixturedefs in fm._arg2fixturedefs.items():
+        assert fixturedefs is not None
+        if not fixturedefs:
+            continue
+        for fixturedef in fixturedefs:
+            loc = getlocation(fixturedef.func, curdir)
+            if (fixturedef.argname, loc) in seen:
+                continue
+            seen.add((fixturedef.argname, loc))
+            available.append(
+                (
+                    len(fixturedef.baseid),
+                    fixturedef.func.__module__,
+                    curdir.bestrelpath(loc),
+                    fixturedef.argname,
+                    fixturedef,
+                )
+            )

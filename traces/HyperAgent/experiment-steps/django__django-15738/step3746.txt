@@ -1,0 +1,8 @@
+### Input
+<empty>
+
+### Output
+1. The `Authors` model currently has a `ForeignKey` to the `ProjectDataSet` model, with a unique constraint on `('project_data_set', 'state', 'start_date')`.
+2. When trying to change the `project_data_set` field to a `ManyToManyField`, the unique constraint cannot be maintained, as unique constraints are not allowed on many-to-many fields.
+3. Attempting to make the migration results in a `ValueError: Found wrong number (0) of constraints for app_authors(project_data_set, state, start_date)`.
+4. The current solution is to first remove the unique constraint, then make the migration to change the field, and finally add the unique constraint again. This results in two migrations instead of one.

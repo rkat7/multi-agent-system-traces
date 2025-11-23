@@ -1,0 +1,91 @@
+```python
+# _pytest/mark/evaluate.py
+34 class MarkEvaluator:
+35     def __init__(self, item: Item, name: str) -> None:
+36         self.item = item
+37         self._marks = None  # type: Optional[List[Mark]]
+38         self._mark = None  # type: Optional[Mark]
+39         self._mark_name = name
+40 
+41     def __bool__(self) -> bool:
+42         # don't cache here to prevent staleness
+43         return bool(self._get_marks())
+44 
+45     def wasvalid(self) -> bool:
+46         return not hasattr(self, "exc")
+47 
+48     def _get_marks(self) -> List[Mark]:
+49         return list(self.item.iter_markers(name=self._mark_name))
+50 
+51     def invalidraise(self, exc) -> Optional[bool]:
+52         raises = self.get("raises")
+53         if not raises:
+54             return None
+55         return not isinstance(exc, raises)
+56 
+57     def istrue(self) -> bool:
+58         try:
+59             return self._istrue()
+60         except TEST_OUTCOME:
+61             self.exc = sys.exc_info()
+62             if isinstance(self.exc[1], SyntaxError):
+63                 # TODO: Investigate why SyntaxError.offset is Optional, and if it can be None here.
+64                 assert self.exc[1].offset is not None
+65                 msg = [" " * (self.exc[1].offset + 4) + "^"]
+66                 msg.append("SyntaxError: invalid syntax")
+67             else:
+68                 msg = traceback.format_exception_only(*self.exc[:2])
+69             fail(
+70                 "Error evaluating %r expression\n"
+71                 "    %s\n"
+72                 "%s" % (self._mark_name, self.expr, "\n".join(msg)),
+73                 pytrace=False,
+74             )
+75 
+76     def _getglobals(self) -> Dict[str, object]:
+77         d = {"os": os, "sys": sys, "platform": platform, "config": self.item.config}
+78         if hasattr(self.item, "obj"):
+79             d.update(self.item.obj.__globals__)  # type: ignore[attr-defined] # noqa: F821
+80         return d
+81 
+82     def _istrue(self) -> bool:
+83         if hasattr(self, "result"):
+84             result = getattr(self, "result")  # type: bool
+85             return result
+86         self._marks = self._get_marks()
+87 
+88         if self._marks:
+89             self.result = False
+90             for mark in self._marks:
+91                 self._mark = mark
+92                 if "condition" not in mark.kwargs:
+93                     args = mark.args
+94                 else:
+95                     args = (mark.kwargs["condition"],)
+96 
+97                 for expr in args:
+98                     self.expr = expr
+99                     if isinstance(expr, str):
+100                         d = self._getglobals()
+101                         result = cached_eval(self.item.config, expr, d)
+102                     else:
+103                         if "reason" not in mark.kwargs:
+104                             # XXX better be checked at collection time
+105                             msg = (
+106                                 "you need to specify reason=STRING "
+107                                 "when using booleans as conditions."
+108                             )
+109                             fail(msg)
+110                         result = bool(expr)
+111                     if result:
+112                         self.result = True
+113                         self.reason = mark.kwargs.get("reason", None)
+114                         self.expr = expr
+115                         return self.result
+116 
+117                 if not args:
+118                     self.result = True
+119                     self.reason = mark.kwargs.get("reason", None)
+120                     return self.result
+121         return False
+```

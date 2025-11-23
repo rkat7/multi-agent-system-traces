@@ -1,0 +1,35 @@
+### Input
+<empty>
+
+### Output
+    except (Timeout, SSLError, HTTPError, BaseHTTPError, ProxyError,
+            SSLError, ConnectionError, ChunkedEncodingError,
+            ContentDecodingError, URLRequired, TooManyRedirects,
+            InvalidHeader, InvalidProxyURL, UnrewindableBodyError) as e:
+        if isinstance(e, (SSLError, _SSLError)):
+            raise SSLError(e, request=request)
+        elif isinstance(e, (ConnectionError, _HTTPError, ProtocolError)):
+            raise ConnectionError(e, request=request)
+        elif isinstance(e, (Timeout, socket.timeout)):
+            raise Timeout(e, request=request)
+        elif isinstance(e, URLRequired):
+            raise URLRequired(e, request=request)
+        elif isinstance(e, TooManyRedirects):
+            raise TooManyRedirects(redirect_history=response.history, request=request)
+        elif isinstance(e, HTTPError):
+            raise HTTPError(e, request=request)
+        elif isinstance(e, InvalidHeader):
+            raise InvalidHeader(e, request=request)
+        elif isinstance(e, InvalidProxyURL):
+            raise InvalidProxyURL(e, request=request)
+        elif isinstance(e, ChunkedEncodingError):
+            raise ChunkedEncodingError(e, request=request)
+        elif isinstance(e, ContentDecodingError):
+            raise ContentDecodingError(e, request=request)
+        elif isinstance(e, ProxyError):
+            raise ProxyError(e, request=request)
+        elif isinstance(e, UnrewindableBodyError):
+            raise UnrewindableBodyError(e, request=request)
+        else:
+            raise RequestException(e, request=request)
+```

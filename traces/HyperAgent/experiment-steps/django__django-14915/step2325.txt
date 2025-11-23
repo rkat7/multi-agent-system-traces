@@ -1,0 +1,16 @@
+### Input
+<empty>
+
+### Output
+    def create_option(self, name, value, label, selected, index, subindex=None, attrs=None):
+        option = super().create_option(name, value, label, selected, index, subindex, attrs)
+        print(f"Value: {value}, Type: {type(value)}")
+        if value:
+            print(f"Value attributes: {dir(value)}")
+            if hasattr(value, 'value'):
+                print(f"Value.value: {value.value}")
+            elif isinstance(value, int):
+                print(f"Value is an integer: {value}")
+        if value and (hasattr(value, 'value') and value.value in self.show_fields or value in self.show_fields):
+            option['attrs']['data-fields'] = json.dumps(self.show_fields[value.value if hasattr(value, 'value') else value])
+        return option

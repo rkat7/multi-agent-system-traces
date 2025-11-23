@@ -1,0 +1,11 @@
+### Input
+<empty>
+
+### Output
+    if self.n_jobs is not None:
+        self.estimators_ = Parallel(n_jobs=self.n_jobs)(
+            delayed(_parallel_fit_estimator)(clone(estimator), X, transformed_y, sample_weight)
+            for estimator in self.estimators_)
+    else:
+        self.estimators_ = [estimator.fit(X, transformed_y, sample_weight)
+                           for estimator in self.estimators_]

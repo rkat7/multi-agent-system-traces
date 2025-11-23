@@ -1,0 +1,19 @@
+### Input
+<empty>
+
+### Output
+def test_multiline_rawsql_order_by():
+    compiler = MockSQLCompiler()
+    order_by = [
+        ('expr1', ('''
+            case when status in ('accepted', 'verification')
+                 then 2 else 1 end DESC''', [], False)),
+        ('expr2', ('''
+            case when status in ('accepted', 'verification')
+                 then (accepted_datetime, preferred_datetime)
+                 else null end ASC''', [], False)),
+        ('expr3', ('''
+            case when status not in ('accepted', 'verification')
+                 then (accepted_datetime, preferred_datetime, created_at)
+                 else null end DESC''', [], False))
+    ]

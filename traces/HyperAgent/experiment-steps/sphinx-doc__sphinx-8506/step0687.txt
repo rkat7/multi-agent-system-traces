@@ -1,0 +1,23 @@
+### Input
+<empty>
+
+### Output
+```python
+def parse_option(self, node, option, content):
+    if option.startswith('py:'):
+        # Use existing Python-specific parsing logic
+        match = self.PYTHON_OPTION_RE.match(option)
+        if not match:
+            raise self.state_machine.warning(
+                'Invalid Python option syntax: %s' % option,
+                node)
+        # ... (rest of existing Python-specific logic)
+    else:
+        # Use new general option parsing logic
+        match = self.GENERAL_OPTION_RE.match(option)
+        if not match:
+            raise self.state_machine.warning(
+                'Invalid option syntax: %s' % option,
+                node)
+        name = match.group(1)
+        value = match.group(2).strip() if match.group(2) else None

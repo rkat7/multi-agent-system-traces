@@ -1,0 +1,30 @@
+def sympify(a, locals=None, convert_xor=True, strict=False, rational=False, evaluate=None):
+    """
+    Converts an arbitrary expression to a type that can be used inside SymPy.
+    """
+    if isinstance(a, str):
+        # If the input is a string, parse it using the SymPy parser
+        from sympy.parsing.sympy_parser import parse_expr
+        try:
+            # Use the ast module to parse the string and check if it contains any potentially unsafe constructs
+            tree = ast.parse(a, mode='eval')
+            if any(isinstance(node, ast.Call) and node.func.id in ['eval', 'exec'] for node in ast.walk(tree)):
+                raise SympifyError(f"Cannot evaluate string {a!r} as it may contain potentially unsafe constructs")
+            return parse_expr(a, locals=locals, evaluate=evaluate)
+        except (SyntaxError, ValueError):
+            # If the string is not a valid Python expression, raise a SympifyError
+            raise SympifyError(f"Cannot parse string {a!r} as a valid Python expression")
+    elif isinstance(a, (Expr, Number)):
+        # If the input is already a SymPy expression or number, return it as is
+        return a
+    elif hasattr(a, '_sympy_'):
+        # If the input has a _sympy_ method, use it to convert to a SymPy expression
+        return a._sympy_()
+    else:
+        try:
+            # Attempt to convert the input to a SymPy expression
+            return _sympify(a)
+        except (AttributeError, TypeError):
+            # If conversion fails, raise a SympifyError
+            raise SympifyError(f"Cannot convert {a!r} to a SymPy expression")
+```

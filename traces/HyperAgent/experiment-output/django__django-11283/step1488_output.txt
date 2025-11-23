@@ -1,0 +1,5 @@
+# Verify that there are no duplicate permissions
+print('\nChecking for duplicate permissions...')
+duplicates = Permission.objects.values('content_type', 'codename').annotate(
+    count=models.Count('id')
+).filter(count__gt=1)

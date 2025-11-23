@@ -1,0 +1,16 @@
+### Input
+<empty>
+
+### Output
+    # Call each receiver with whatever arguments it can accept.
+    # Return a list of tuple pairs [(receiver, response), ... ].
+    responses = []
+    for receiver in self._live_receivers(sender):
+        try:
+            response = receiver(signal=self, sender=sender, **named)
+        except Exception as err:
+            responses.append((receiver, err))
+        else:
+            responses.append((receiver, response))
+    return responses
+```

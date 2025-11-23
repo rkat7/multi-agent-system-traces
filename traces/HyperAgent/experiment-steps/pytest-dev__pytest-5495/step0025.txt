@@ -1,0 +1,22 @@
+### Input
+<empty>
+
+### Output
+```python
+def _write_pyc(state, co, source_stat, pyc):
+    # Technically, we don't have to have the same pyc format as
+    # (C)Python, since these "pycs" should never be seen by builtin
+    # import. However, there's little reason deviate.
+    try:
+        with atomicwrites.atomic_write(pyc, mode="wb", overwrite=True) as fp:
+            fp.write(importlib.util.MAGIC_NUMBER)
+            # as of now, bytecode header expects 32-bit numbers for size and mtime (#4903)
+            mtime = int(source_stat.st_mtime) & 0xFFFFFFFF
+            size = source_stat.st_size & 0xFFFFFFFF
+            # "<LL" stands for 2 unsigned longs, little-ending
+            fp.write(struct.pack("<LL", mtime, size))
+            fp.write(marshal.dumps(co))
+    except EnvironmentError as e:
+        state.trace("error writing pyc file at {}: errno={}".format(pyc, e.errno))
+```
+HyperAgent_pytest-dev__pytest-5495 - INFO - Planner's Response: Thought: Now that we have located the relevant file, we need to understand how the assertion rewriting process works for byte strings. The issue seems to be in how the differences between byte strings are presented, particularly when comparing an empty byte string with a non-empty one. The current output is showing the ASCII ordinal of the first differing byte, which can be confusing. Let's examine the specific part of the code that handles the comparison and difference reporting for byte strings.

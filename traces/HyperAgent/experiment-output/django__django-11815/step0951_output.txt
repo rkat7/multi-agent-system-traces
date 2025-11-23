@@ -1,0 +1,9 @@
+1. It first checks if the value is a `Promise` or a `LazyObject`, and handles those cases accordingly.
+2. It then checks the type of the value and returns the appropriate serializer:
+   - If the value is a `models.Field`, it returns a `ModelFieldSerializer`.
+   - If the value is a `models.manager.BaseManager`, it returns a `ModelManagerSerializer`.
+   - If the value is an `Operation`, it returns an `OperationSerializer`.
+   - If the value is a `type`, it returns a `TypeSerializer`.
+   - If the value has a `deconstruct` method, it returns a `DeconstructableSerializer`.
+3. If none of the above conditions match, it searches the `Serializer._registry` for a serializer that matches the type of the value.
+4. If no suitable serializer is found, it raises a `ValueError` with a message explaining that the value cannot be serialized.

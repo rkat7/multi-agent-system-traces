@@ -1,0 +1,41 @@
+```python
+# src/py.py
+def initialize():
+    # ... (other initialization code)
+    logging_config = {
+        'version': 1,
+        'formatters': {
+            'default': {
+                'format': '[%(asctime)s] %(levelname)s in %(module)s: %(message)s',
+                'datefmt': '%Y-%m-%d %H:%M:%S',
+            },
+        },
+        'handlers': {
+            'console': {
+                'class': 'logging.StreamHandler',
+                'level': 'INFO',
+                'formatter': 'default',
+            },
+            'file': {
+                'class': 'logging.FileHandler',
+                'level': 'DEBUG',
+                'filename': 'log.txt',
+                'formatter': 'default',
+            },
+        },
+        'loggers': {
+            'pmxbot': {
+                'level': 'DEBUG',
+                'handlers': ['console', 'file'],
+            },
+        },
+        'store': {  # Add the store attribute
+            'class': 'logging.handlers.MemoryHandler',
+            'level': 'DEBUG',
+            'maxRecords': 100,
+        },
+    }
+    logging.config.dictConfig(logging_config)
+    # ... (other initialization code)
+    return core
+```

@@ -1,0 +1,19 @@
+### Input
+Action:
+```python
+
+### Output
+patch = '''
+    def __repr__(self):
+        if isinstance(self.func, functools.partial):
+            func_repr = f"functools.partial({self.func.func.__module__}.{self.func.func.__name__}, args={self.func.args}, keywords={self.func.keywords})"
+        else:
+            func_repr = self._func_path
+        return "ResolverMatch(func=%s, args=%s, kwargs=%s, url_name=%s, app_names=%s, namespaces=%s, route=%s)" % (
+            func_repr, self.args, self.kwargs, self.url_name,
+            self.app_names, self.namespaces, self.route,
+        )
+'''
+result = editor._run(relative_file_path="django/urls/resolvers.py", start_line=61, end_line=65, patch=patch)
+print(result)
+```

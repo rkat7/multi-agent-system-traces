@@ -1,0 +1,31 @@
+### Input
+Action:
+```python
+
+### Output
+patch = '''
+    def clean(self, value):
+        value = self.prepare_value(value)
+        if self.required and not value:
+            raise ValidationError(self.error_messages['required'], code='required')
+        elif not self.required and not value:
+            # Check if the queryset is a union query
+            if hasattr(self.queryset, 'query') and hasattr(self.queryset.query, 'combinator') and self.queryset.query.combinator == 'union':
+                # For union queries, return an empty queryset using a filter that always evaluates to False
+                return self.queryset.model.objects.filter(pk__in=[])
+            else:
+                return self.queryset.none()
+        if not isinstance(value, (list, tuple)):
+            raise ValidationError(
+                self.error_messages['invalid_list'],
+                code='invalid_list',
+            )
+        qs = self._check_values(value)
+        # Since this overrides the inherited ModelChoiceField.clean
+        # we run custom validators here
+        self.run_validators(value)
+        return qs
+'''
+result = editor._run(relative_file_path="django/forms/models.py", start_line=1321, end_line=1336, patch=patch)
+print(result)
+```

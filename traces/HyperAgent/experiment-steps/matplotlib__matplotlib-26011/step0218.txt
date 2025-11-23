@@ -1,0 +1,22 @@
+### Input
+<empty>
+
+### Output
+        if self.get_scale() == 'log' and (v0 <= 0 or v1 <= 0):
+            old0, old1 = self.get_view_interval()
+            if v0 <= 0:
+                _api.warn_external(f"Attempt to set non-positive {name}lim on "
+                                   f"a log-scaled axis will be ignored.")
+                v0 = old0
+            if v1 <= 0:
+                _api.warn_external(f"Attempt to set non-positive {name}lim on "
+                                   f"a log-scaled axis will be ignored.")
+                v1 = old1
+        if v0 == v1:
+            _api.warn_external(
+                f"Attempting to set identical low and high {name}lims "
+                f"makes transformation singular; automatically expanding.")
+        reverse = bool(v0 > v1)
+        v0, v1 = self.get_major_locator().nonsingular(v0, v1)
+        v0, v1 = self.limit_range_for_scale(v0, v1)
+        v0, v1 = sorted([v0, v1], reverse=reverse)

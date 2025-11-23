@@ -1,0 +1,20 @@
+3. `_process_values` method:
+```python
+661     def _process_values(self):
+662         """Calculate num ticks and tick loc based on min/max."""
+663         # Calculate the tick locations. If a ListColormap is used, the ticks
+664         # should be at the center of the color bands.
+665         if self.boundaries is None:
+666             self.boundaries = self.cmap.N + 1
+667         if self.values is None:
+668             b = self.norm.inverse(self._uniform_y(self.cmap.N + 1))
+669             self.values = 0.5 * (b[:-1] + b[1:])
+670         else:
+671             b = self.norm.inverse(self._uniform_y(len(self.values) + 1))
+672         self.ticks = self.locator.tick_values(min(b), max(b))
+673         self.set_ticks(self.ticks)
+674 
+675         # Calculate the tick labels.
+676         if self.formatter:
+677             self.set_ticklabels(self.formatter(self.ticks))
+678 ```

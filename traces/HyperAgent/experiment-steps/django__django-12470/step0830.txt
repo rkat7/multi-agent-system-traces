@@ -1,0 +1,15 @@
+### Input
+<empty>
+
+### Output
+        # Inherit Meta options from parent models
+        meta = attrs.get('Meta', None)
+        if meta is None:
+            meta = {}
+        for base in bases:
+            if hasattr(base, 'Meta'):
+                base_meta = base._meta
+                for key, value in base_meta.__dict__.items():
+                    if key not in meta:
+                        meta[key] = value
+        # ...

@@ -1,0 +1,15 @@
+### Input
+Action:
+```python
+
+### Output
+patch = '''
+    async def get_response_async(self, request):
+        try:
+            return await asyncio.to_thread(self.serve, request)
+        except Http404 as e:
+            return await asyncio.to_thread(response_for_exception, request, e)
+'''
+result = editor._run(relative_file_path="django/contrib/staticfiles/handlers.py", start_line=88, end_line=88, patch=patch)
+print(result)
+```

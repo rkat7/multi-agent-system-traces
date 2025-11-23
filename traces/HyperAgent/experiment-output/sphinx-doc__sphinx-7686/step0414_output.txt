@@ -1,0 +1,28 @@
+```python
+759 def setup(app: Sphinx) -> Dict[str, Any]:
+760     # I need autodoc
+761     app.setup_extension('sphinx.ext.autodoc')
+762     app.add_node(autosummary_toc,
+763                  html=(autosummary_toc_visit_html, autosummary_noop),
+764                  latex=(autosummary_noop, autosummary_noop),
+765                  text=(autosummary_noop, autosummary_noop),
+766                  man=(autosummary_noop, autosummary_noop),
+767                  texinfo=(autosummary_noop, autosummary_noop))
+768     app.add_node(autosummary_table,
+769                  html=(autosummary_table_visit_html, autosummary_noop),
+770                  latex=(autosummary_noop, autosummary_noop),
+771                  text=(autosummary_noop, autosummary_noop),
+772                  man=(autosummary_noop, autosummary_noop),
+773                  texinfo=(autosummary_noop, autosummary_noop))
+774     app.add_directive('autosummary', Autosummary)
+775     app.add_role('autolink', AutoLink())
+776     app.connect('builder-inited', process_generate_options)
+777     app.add_config_value('autosummary_context', {}, True)
+778     app.add_config_value('autosummary_generate', [], True, [bool])
+779     app.add_config_value('autosummary_generate_overwrite', True, False)
+780     app.add_config_value('autosummary_mock_imports',
+781                          lambda config: config.autodoc_mock_imports, 'env')
+782     app.add_config_value('autosummary_imported_members', [], False, [bool])
+783 
+784     return {'version': sphinx.__display_version__, 'parallel_read_safe': True}
+```

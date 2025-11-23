@@ -1,0 +1,17 @@
+### Input
+<empty>
+
+### Output
+    use_grouping = (
+        use_l10n or (use_l10n is None and settings.USE_L10N)
+    ) and settings.USE_THOUSAND_SEPARATOR
+    use_grouping = use_grouping or force_grouping
+    use_grouping = use_grouping and grouping != 0
+    # Make the common case fast
+    if isinstance(number, int) and not use_grouping and not decimal_pos:
+        return mark_safe(number)
+    # sign
+    sign = ""
+    # Treat potentially very large/small floats as Decimals.
+    if isinstance(number, float) and "e" in str(number).lower():
+        number = Decimal(str(number))

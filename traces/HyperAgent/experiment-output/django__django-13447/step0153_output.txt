@@ -1,0 +1,28 @@
+```python
+315     def get_template_name(self, request, app_dict=None):
+316         """
+317         Return a list of template names to search for in the following order:
+318         1. a template specified in the modeladmin
+319         2. a template specified in the AdminSite
+320         3. the default template 'admin/app_index.html'
+321         """
+322         if app_dict:
+323             app_label = app_dict['app_label']
+324             opts = app_dict
+325         else:
+326             app_label = None
+327             opts = None
+328 
+329         if self.app_index_template:
+330             return [self.app_index_template]
+331         return [
+332             'admin/%s/app_index.html' % app_label,
+333             'admin/app_index.html',
+334         ]
+335 
+336     def has_permission(self, request):
+337         """
+338         Return True if the given request has permission to view at least one
+339         active model.
+340         """
+```

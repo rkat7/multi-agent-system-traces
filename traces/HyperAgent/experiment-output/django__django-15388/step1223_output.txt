@@ -1,0 +1,15 @@
+   - `run_with_reloader` function (django/utils/autoreload.py):
+     ```python
+638 def run_with_reloader(main_func, *args, **kwargs):
+639     signal.signal(signal.SIGTERM, lambda *args: sys.exit(0))
+640     try:
+641         if os.environ.get(DJANGO_AUTORELOAD_ENV) == 'true':
+642             reloader = get_reloader()
+643             logger.info('Watching for file changes with %s', reloader.__class__.__name__)
+644             start_django(reloader, main_func, *args, **kwargs)
+645         else:
+646             exit_code = restart_with_reloader()
+647             sys.exit(exit_code)
+648     except KeyboardInterrupt:
+649         pass
+```

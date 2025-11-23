@@ -1,0 +1,12 @@
+def test_duration(request):
+    if request.method == 'POST':
+        duration_str = request.POST.get('duration', '')
+        try:
+            duration_model = DurationModel(duration=duration_str)
+            duration_model.full_clean()
+            duration_model.save()
+            return HttpResponse(f"Duration saved: {duration_model.duration}")
+        except ValidationError as e:
+            return HttpResponse(f"Validation Error: {e}")
+    return render(request, 'test_duration.html')
+```

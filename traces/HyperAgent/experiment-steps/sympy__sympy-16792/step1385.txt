@@ -1,0 +1,19 @@
+### Input
+<empty>
+
+### Output
+```python
+# sympy/utilities/codegen.py
+class Routine:
+    def get_signature(self):
+        # Generate the C function signature
+        signature = ""
+        for arg in self.argument_sequence:
+            if arg.is_input:
+                if isinstance(arg, MatrixSymbol):
+                    # For array arguments, add the array size to the type
+                    signature += f"{arg.type} {arg.name}[{arg.shape[0]}]\n"
+                else:
+                    signature += f"{arg.type} {arg.name}\n"
+        return signature
+```

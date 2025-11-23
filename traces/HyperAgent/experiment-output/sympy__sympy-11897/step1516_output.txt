@@ -1,0 +1,12 @@
+    numer = []
+    denom = []
+    for factor in expr.as_ordered_factors():
+        if isinstance(factor, Rational):
+            if factor.p != 1:
+                numer.append(str(factor.p))
+            if factor.q != 1:
+                denom.append(str(factor.q))
+        elif isinstance(factor, Pow) and factor.exp.is_Rational and factor.exp.is_negative:
+            denom.append(self._print(Pow(factor.base, -factor.exp)))
+        else:
+            numer.append(self._print(factor))

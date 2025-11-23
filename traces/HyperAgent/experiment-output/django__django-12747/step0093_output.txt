@@ -1,0 +1,29 @@
+patch = '''
+424             # delete instances
+425             for model, instances in self.data.items():
+426                 query = sql.DeleteQuery(model)
+427                 pk_list = [obj.pk for obj in instances]
+428                 count = query.delete_batch(pk_list, self.using)
+429                 if count > 0:
+430                     deleted_counter[model._meta.label] = count
+431 
+432                 if not model._meta.auto_created:
+433                     for obj in instances:
+434                         signals.post_delete.send(
+435                             sender=model, instance=obj, using=self.using
+436                         )
+437 
+438         # update collected instances
+439         for instances_for_fieldvalues in self.field_updates.values():
+440             for (field, value), instances in instances_for_fieldvalues.items():
+441                 for obj in instances:
+442                     setattr(obj, field.attname, value)
+443         for model, instances in self.data.items():
+444             for instance in instances:
+445                 setattr(instance, model._meta.pk.attname, None)
+446         return sum(deleted_counter.values()), dict(deleted_counter)
+'''
+result = editor._run(relative_file_path="django/db/models/deletion.py", start_line=424, end_line=446, patch=patch)
+print(result)
+```
+HyperAgent_django__django-12747 - INFO - Editor->Planner: Thought: The patch still seems to have a syntax error. Let's carefully review the patch again to ensure it is correct. The most common issues are indentation and missing or extra characters. I'll recheck the patch and make sure it matches the surrounding code's indentation and structure.

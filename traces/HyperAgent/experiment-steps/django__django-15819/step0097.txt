@@ -1,0 +1,66 @@
+### Input
+<empty>
+
+### Output
+--------------------
+File: tests/inspectdb/tests.py
+Name: inspectdb_views_only
+Line Range: (21, 25)
+Documentation: 
+--------------------
+File: tests/inspectdb/tests.py
+Implementation:
+11 
+12 
+13 def inspectdb_tables_only(table_name):
+14     """
+--------------------
+File: tests/inspectdb/tests.py
+Implementation:
+16     Some databases such as Oracle are extremely slow at introspection.
+17     """
+18     return table_name.startswith("inspectdb_")
+19 
+--------------------
+File: tests/inspectdb/tests.py
+Implementation:
+19 
+20 
+21 def inspectdb_views_only(table_name):
+22     return table_name.startswith("inspectdb_") and table_name.endswith(
+--------------------
+File: tests/inspectdb/tests.py
+Implementation:
+20 
+21 def inspectdb_views_only(table_name):
+22     return table_name.startswith("inspectdb_") and table_name.endswith(
+23         ("_materialized", "_view")
+--------------------
+File: tests/inspectdb/tests.py
+Implementation:
+26 
+27 def special_table_only(table_name):
+28     return table_name.startswith("inspectdb_special")
+29 
+--------------------
+File: tests/inspectdb/tests.py
+Implementation:
+34     def test_stealth_table_name_filter_option(self):
+35         out = StringIO()
+36         call_command("inspectdb", table_name_filter=inspectdb_tables_only, stdout=out)
+37         error_message = (
+--------------------
+File: tests/inspectdb/tests.py
+Implementation:
+36         call_command("inspectdb", table_name_filter=inspectdb_tables_only, stdout=out)
+37         error_message = (
+38             "inspectdb has examined a table that should have been filtered out."
+39         )
+--------------------
+File: tests/inspectdb/tests.py
+Implementation:
+47     def test_table_option(self):
+48         """
+49         inspectdb can inspect a subset of tables by passing the table names as
+50         arguments.
+--------------------

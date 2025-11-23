@@ -1,0 +1,18 @@
+13     def setUp(self):
+20         """
+21         Create proxy permissions with content_type to the concrete model
+22         rather than the proxy model (as they were before Django 2.2 and
+23         migration 11).
+24         """
+25         Permission.objects.all().delete()
+26         self.concrete_content_type = ContentType.objects.get_for_model(UserProxy)
+27         self.default_permission = Permission.objects.create(
+28             content_type=self.concrete_content_type,
+29             codename='add_userproxy',
+30             name='Can add userproxy',
+31         )
+32         self.custom_permission = Permission.objects.create(
+33             content_type=self.concrete_content_type,
+34             codename='use_different_app_label',
+35             name='May use a different app label',
+36         )

@@ -1,0 +1,256 @@
+```python
+81         self.reason = reason
+82         self.strict = strict
+83         self.decode_content = decode_content
+84 
+85         self._decoder = None
+86         self._body = None
+87         self._fp = None
+88         self._original_response = original_response
+89         self._fp_bytes_read = 0
+90 
+91         if body and isinstance(body, (basestring, binary_type)):
+92             self._body = body
+93 
+94         self._pool = pool
+95         self._connection = connection
+96 
+97         if hasattr(body, 'read'):
+98             self._fp = body
+99 
+100         if preload_content and not self._body:
+101             self._body = self.read(decode_content=decode_content)
+102 
+103     def get_redirect_location(self):
+104         """
+105         Should we redirect and where to?
+106 
+107         :returns: Truthy redirect location string if we got a redirect status
+108             code and valid location. ``None`` if redirect status and no
+109             location.
+110         """
+111         return self.headers.get('Location')
+112 
+113     def __init__(self, connection, preload_content=True, max_redirects=10,
+114                 **kw):
+115         self.connection = connection
+116         self._pool = None
+117         self._connection = None
+118         self._fp = None
+119         self._body = None
+120         self._fp_bytes_read = 0
+121         self._decoder = None
+122 
+123     @property
+124     def data(self):
+125         # For backwords-compat with earlier urllib3 0.4 and earlier.
+126         if self._body:
+127             return self._body
+128 
+129         if self._fp:
+130             return self.read(cache_content=True)
+131 
+132     def tell(self):
+133         """
+134         Obtain the number of bytes pulled over the wire so far. May differ from
+135         the amount of content returned by :meth:``HTTPResponse.read`` if bytes
+136         are encoded on the wire (e.g, compressed).
+137         """
+138         return self._fp_bytes_read
+139 
+140     def read(self, amt=None, decode_content=None, cache_content=False):
+141         """
+142         Similar to :meth:`httplib.HTTPResponse.read`, but with two additional
+143         parameters: ``decode_content`` and ``cache_content``.
+144 
+145         :param amt:
+146             The number of bytes to read. If ``None``, read the entire body.
+147         :param decode_content:
+148             If ``True``, will attempt to decode the body based on the
+149             'content-encoding' header.
+150         :param cache_content:
+151             If ``True``, will cache the decoded content.
+152         """
+153         if amt is None:
+154             amt = 2**16
+155 
+156         if self._fp is None:
+157             raise ValueError("Cannot read from a closed response")
+158 
+159         if self._decoder is not None:
+160             data = self._decoder.decode(self._fp.read(amt))
+161         else:
+162             data = self._fp.read(amt)
+163 
+164         if decode_content is not None:
+165             self._decoder = self._create_decoder(decode_content)
+166 
+167         if cache_content:
+168             self._body = data
+169 
+170         return data
+171 
+172     def close(self):
+173         """
+174         Close the underlying connection.
+175         """
+176         if self._fp is not None:
+177             self._fp.close()
+178         self._fp = None
+179 
+180     def release_conn(self):
+181         """
+182         Release the connection back to the connection pool.
+183         """
+184         if self._pool is not None:
+185             self._pool.release(self._connection)
+186         self._pool = None
+187         self._connection = None
+188 
+189     def is_fp_closed(self):
+190         """
+191         Check if the underlying file pointer is closed.
+192         """
+193         return self._fp is None
+194 
+195     def stream(self, amt=2**16, decode_content=None):
+196         """
+197         A generator wrapper for the read() method. A call will block until
+198         ``amt`` bytes have been read from the connection or until the
+199         connection is closed.
+200 
+201         :param amt:
+202             How much of the content to read. The generator will return up to
+203             much data per iteration, but may return less. This is particularly
+204             likely when using compressed data. However, the empty string will
+205             never be returned.
+206         :param decode_content:
+207             If True, will attempt to decode the body based on the
+208             'content-encoding' header.
+209         """
+210         while not is_fp_closed(self._fp):
+211             data = self.read(amt=amt, decode_content=decode_content)
+212 
+213             if data:
+214                 yield data
+215 
+216     def get_redirect_location(self):
+217         """
+218         Should we redirect and where to?
+219 
+220         :returns: Truthy redirect location string if we got a redirect status
+221             code and valid location. ``None`` if redirect status and no
+222             location.
+223         """
+224         return self.headers.get('Location')
+225 
+226     def __repr__(self):
+227         return "<%s(%r, %r)>" % (self.__class__.__name__, self.status, self.reason)
+228 
+229     def __str__(self):
+230         return "%s %s" % (self.status, self.reason)
+231 
+232     def __eq__(self, other):
+233         return (self.__class__ == other.__class__ and
+134         self.status == other.status and
+135         self.reason == other.reason and
+136         self.version == other.version and
+137         self.headers == other.headers and
+138         self.body == other.body)
+139 
+140     def __ne__(self, other):
+141         return not self == other
+142 
+143     def __hash__(self):
+144         return hash((self.status, self.reason, self.version, self.headers, self.body))
+145 
+146     def __getattr__(self, name):
+147         return getattr(self._original_response, name)
+148 
+149     def __setattr__(self, name, value):
+150         return setattr(self._original_response, name, value)
+151 
+152     def __delattr__(self, name):
+153         return delattr(self._original_response, name)
+154 
+155     def __dir__(self):
+156         return dir(self._original_response)
+157 
+158     def __getstate__(self):
+159         return self._original_response.__getstate__()
+160 
+161     def __setstate__(self, state):
+162         self._original_response.__setstate__(state)
+163 
+164     def __reduce__(self):
+165         return self._original_response.__reduce__()
+166 
+167     def __reduce_ex__(self, protocol):
+168         return self._original_response.__reduce_ex(protocol)
+169 
+170     def __getinitargs__(self):
+171         return self._original_response.__getinitargs__()
+172 
+173     def __getnewargs__(self):
+174         return self._original_response.__getnewargs__()
+175 
+176     def __getnewcls__(self):
+177         return self._original_response.__getnewcls__()
+178 
+179     def __getstate__(self):
+180         return self._original_response.__getstate__()
+181 
+182     def __setstate__(self, state):
+183         self._original_response.__setstate__(state)
+184 
+185     def __reduce__(self):
+186         return self._original_response.__reduce__()
+187 
+188     def __reduce_ex__(self, protocol):
+189         return self._original_response.__reduce_ex(protocol)
+190 
+191     def __getinitargs__(self):
+192         return self._original_response.__getinitargs__()
+193 
+194     def __getnewargs__(self):
+195         return self._original_response.__getnewargs__()
+196 
+197     def __getnewcls__(self):
+198         return self._original_response.__getnewcls__()
+199 
+200     def __getstate__(self):
+201         return self._original_response.__getstate__()
+202 
+203     def __setstate__(self, state):
+204         self._original_response.__setstate__(state)
+205 
+206     def __reduce__(self):
+207         return self._original_response.__reduce__()
+208 
+209     def __reduce_ex__(self, protocol):
+210         return self._original_response.__reduce_ex(protocol)
+211 
+212     def __getinitargs__(self):
+213         return self._original_response.__getinitargs__()
+214 
+215     def __getnewargs__(self):
+216         return self._original_response.__getnewargs__()
+217 
+218     def __getnewcls__(self):
+219         return self._original_response.__getnewcls__()
+220 
+221     def __getstate__(self):
+222         return self._original_response.__getstate__()
+223 
+224     def __setstate__(self, state):
+225         self._original_response.__setstate__(state)
+226 
+227     def __reduce__(self):
+228         return self._original_response.__reduce__()
+229 
+230     def __reduce_ex__(self, protocol):
+231         return self._original_response.__reduce_ex(protocol)
+232 
+233     def __getinitargs__(self):
+234         return self._original_response.__get
+HyperAgent_psf__requests-2148 - INFO - Planner's Response: Thought: Thank you for providing the content of the "response.py" file. After examining the code, I can see that the `read` and `stream` methods are indeed present, but they don't seem to have any specific exception handling for socket errors. This explains why the socket.error is propagating through without being caught and wrapped in a Requests exception.

@@ -1,0 +1,32 @@
+### Input
+<empty>
+
+### Output
+```python
+# sphinx/ext/autodoc/__init__.py
+...
+992     def __init__(self, *args: Any) -> None:
+993         super().__init__(*args)
+994         merge_members_option(self.options)
+995         self.__all__ = None  # type: Optional[Sequence[str]]
+...
+1012                            type='autodoc')
+1013         return ret
+1014 
+1015     def import_object(self, raiseerror: bool = False) -> bool:
+1016         ret = super().import_object(raiseerror)
+1017 
+1018         try:
+1019             if not self.options.ignore_module_all:
+1020                 self.__all__ = inspect.getall(self.object)
+1021         except AttributeError as exc:
+1022             # __all__ raises an error.
+1023             logger.warning(__('%s.__all__ raises an error. Ignored: %r'),
+1024                            (self.fullname, exc), type='autodoc')
+1025         except ValueError as exc:
+1026             # invalid __all__ found.
+1027             logger.warning(__('__all__ should be a list of strings, not %r '
+1028                               '(in module %s) -- ignoring __all__') %
+1029                            (exc.args[0], self.fullname), type='autodoc')
+...
+```

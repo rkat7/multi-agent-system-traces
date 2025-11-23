@@ -1,0 +1,21 @@
+Results for keyword: def _array_converter
+1208     def _array_converter(self, func, sky, *args, ra_dec_order=False):
+1209         """
+1210         A helper function to support reading either a pair of arrays
+1211         or a single Nx2 array.
+1212         """
+1213         # Check for empty input arrays
+1214         if len(args) == 2:
+1215             xy, origin = args
+1216             if isinstance(xy, (list, np.ndarray)) and len(xy) == 0:
+1217                 return np.array([])
+1218         elif len(args) == self.naxis + 1:
+1219             if all(isinstance(arg, (list, np.ndarray)) and len(arg) == 0 for arg in args[:-1]):
+1220                 return [np.array([]) for _ in range(self.naxis)]
+1221 
+1222         def _return_list_of_arrays(axes, origin):
+1223             try:
+1224                 axes = np.broadcast_arrays(*axes)
+1225             except ValueError:
+1226                 raise ValueError(
+1227                     "Coordinate arrays are not broadcastable to each other")

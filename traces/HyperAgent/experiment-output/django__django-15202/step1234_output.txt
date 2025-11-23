@@ -1,0 +1,8 @@
+        # The maximum length of a full host name is 253 characters per RFC 1034
+        # section 3.1. It's defined to be 255 bytes or less, but this includes
+        # one byte for the length of the name and one byte for the trailing dot
+        # that's used to indicate absolute names in DNS.
+        if len(urlsplit(value).hostname) > 253:
+            raise ValidationError(self.message, code=self.code, params={'value': value})
+```
+HyperAgent_django__django-15202 - INFO - Planner's Response: Thought: After examining the code, I can see that the issue lies in the URLValidator class in django/core/validators.py. The validator is catching the ValueError from urlsplit() but then raising a ValidationError. However, this ValidationError is not being properly propagated to the URLField's clean method.

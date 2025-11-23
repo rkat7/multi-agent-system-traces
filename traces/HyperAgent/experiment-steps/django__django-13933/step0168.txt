@@ -1,0 +1,17 @@
+### Input
+<empty>
+
+### Output
+    def widget_attrs_for_value(self, value):
+        """Returns a dictionary of widget attributes for the given value."""
+        if value in self.empty_values:
+            return {}
+        try:
+            key = self.to_field_name or 'pk'
+            if isinstance(value, self.queryset.model):
+                value = getattr(value, key)
+            return self.queryset.get(**{key: value})._meta.widget_attrs
+        except (ValueError, TypeError, self.queryset.model.DoesNotExist):
+            return {}
+```
+HyperAgent_django__django-13933 - INFO - Planner's Response: Thought: Thank you for providing the full implementation of the ModelChoiceField class. After reviewing the code, I can see that our previous changes have been successfully applied. The class now includes the updated default_error_messages and the to_python method with the desired error handling. 

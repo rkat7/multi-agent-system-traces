@@ -1,0 +1,26 @@
+### Input
+<empty>
+
+### Output
+        ok = True
+        if not args:  # a
+            return _af_new(list(range(size or 0)))
+        elif len(args) > 1:  # c
+            return _af_new(Cycle(*args).list(size))
+        if len(args) == 1:
+            a = args[0]
+            if isinstance(a, Perm):  # g
+                if size is None or size == a.size:
+                    return a
+                return Perm(a.array_form, size=size)
+            if isinstance(a, Cycle):  # f
+                return _af_new(a.list(size))
+            if not is_sequence(a):  # b
+                return _af_new(list(range(a + 1)))
+            if has_variety(is_sequence(ai) for ai in a):
+                ok = False
+        else:
+            ok = False
+        if not ok:
+            raise ValueError("Permutation argument must be a list of ints, "
+                             "a list of lists, Permutation or Cycle.")

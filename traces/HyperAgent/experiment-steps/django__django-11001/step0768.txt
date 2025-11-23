@@ -1,0 +1,23 @@
+### Input
+<empty>
+
+### Output
+        The order_by clause can alter the select clause (for example it
+        can add aliases to clauses that do not yet have one, or it can
+        add totally new select clauses).
+        """
+        if self.query.extra_order_by:
+            ordering = self.query.extra_order_by
+        elif not self.query.default_ordering:
+            ordering = self.query.order_by
+        elif self.query.order_by:
+            ordering = self.query.order_by
+        elif self.query.get_meta().ordering:
+            ordering = self.query.get_meta().ordering
+            self._meta_ordering = ordering
+        else:
+            ordering = []
+        if self.query.standard_ordering:
+            asc, desc = ORDER_DIR['ASC']
+        else:
+            asc, desc = ORDER_DIR['DESC']

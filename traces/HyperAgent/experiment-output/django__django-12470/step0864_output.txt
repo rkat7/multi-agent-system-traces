@@ -1,0 +1,7 @@
+        # Add the ordering attribute from parent models if not defined in the child
+        if not hasattr(meta, 'ordering'):
+            for parent in parents:
+                parent_meta = getattr(parent, '_meta', None)
+                if parent_meta and parent_meta.ordering:
+                    meta.ordering = parent_meta.ordering
+                    break

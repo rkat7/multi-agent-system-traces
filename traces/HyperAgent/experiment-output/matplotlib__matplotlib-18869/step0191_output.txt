@@ -1,0 +1,12 @@
+2. We updated the `__getattr__` function in `lib/matplotlib/__init__.py` to use `parse_version_string` for creating the `version_info` attribute:
+   ```python
+   def __getattr__(name):
+       if name == "__version__":
+           # ... (existing code for __version__)
+           return __version__
+       elif name == "version_info":
+           global version_info
+           version_info = parse_version_string(__version__)
+           return version_info
+       raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+   ```

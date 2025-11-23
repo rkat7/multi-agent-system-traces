@@ -1,0 +1,20 @@
+        patches = []
+        args = zip(left, bottom, width, height, color, edgecolor, linewidth,
+                   hatch, patch_labels)
+        for l, b, w, h, c, e, lw, htch, lbl in args:
+            r = mpatches.Rectangle(
+                xy=(l, b), width=w, height=h,
+                facecolor=c,
+                edgecolor=e,
+                linewidth=lw,
+                label=lbl,
+                hatch=htch,
+            )
+            r._internal_update(kwargs)
+            r.get_path()._interpolation_steps = 100
+            if orientation == 'vertical':
+                r.sticky_edges.y.append(b)
+            else:
+                r.sticky_edges.x.append(l)
+            self.add_patch(r)
+            patches.append(r)

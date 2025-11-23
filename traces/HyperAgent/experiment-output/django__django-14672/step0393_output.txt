@@ -1,0 +1,12 @@
+patch = '''
+    @property
+    def identity(self):
+        return super().identity + (
+            self.through,
+            make_hashable(self.through_fields),
+            self.db_constraint,
+        )
+'''
+result = editor._run(relative_file_path="django/db/models/fields/reverse_related.py", start_line=310, end_line=315, patch=patch)
+print(result)
+```

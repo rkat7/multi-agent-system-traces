@@ -1,0 +1,17 @@
+### Input
+<empty>
+
+### Output
+```python
+class CharChoiceField(CharField, ChoiceField):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.max_length is not None and self.choices:
+            longest_choice = max(len(str(choice[0])) for choice in self.choices)
+            if longest_choice > self.max_length:
+                raise ValueError(
+                    f"The max_length ({self.max_length}) is too short to fit "
+                    f"the longest choice ({longest_choice} characters)."
+                )
+```
+HyperAgent_django__django-11742 - INFO - Planner's Response: Thought: Thank you for confirming that the new `CharChoiceField` class has been successfully added to the `django/forms/fields.py` file. This implementation addresses the core issue raised in the GitHub ticket by ensuring that the `max_length` is sufficient for the longest choice.

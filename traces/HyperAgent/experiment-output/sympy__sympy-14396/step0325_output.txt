@@ -1,0 +1,13 @@
+        if isinstance(value, str):
+            if '[' in value and ']' in value:
+                # Handle polynomial ring specification
+                base_field, variables = value.split('[')
+                variables = variables.rstrip(']').split(',')
+                if base_field in ['QQ', 'ZZ', 'RR', 'CC']:
+                    base = eval(base_field)
+                    return PolynomialRing(base, [Symbol(v.strip()) for v in variables])
+            elif value in ['QQ', 'ZZ', 'RR', 'CC']:
+                return eval(value)
+            elif value.startswith('GF'):
+                # Handle finite fields (existing implementation)
+                ...

@@ -1,0 +1,10 @@
+def search_migration_files(root_dir):
+    for dirpath, dirnames, filenames in os.walk(root_dir):
+        for filename in filenames:
+            if filename.endswith(".py") and "migration" in filename.lower():
+                file_path = os.path.join(dirpath, filename)
+                result = open_file_gen._run(relative_file_path=file_path, keywords=["class Migration", "CreateModel", "AddIndex", "AlterOrderWithRespectTo", "LookImage"])
+                if all(keyword in result for keyword in ["class Migration", "CreateModel", "AddIndex", "AlterOrderWithRespectTo", "LookImage"]):
+                    print(f"Found migration file: {file_path}")
+                    return file_path
+    return None

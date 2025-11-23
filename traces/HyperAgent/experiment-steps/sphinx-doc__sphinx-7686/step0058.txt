@@ -1,0 +1,27 @@
+### Input
+Action:
+```python
+
+### Output
+patch = '''
+def get_module_attrs(members: Any, module: Any, imported_members: bool) -> Tuple[List[str], List[str]]:
+    """Find module attributes with docstrings."""
+    attrs, public = [], []
+    try:
+        analyzer = ModuleAnalyzer.for_module(module.__name__)
+        attr_docs = analyzer.find_attr_docs()
+        for namespace, attr_name in attr_docs:
+            if namespace == '' and attr_name in members:
+                # Check if the attribute is imported and respect the imported_members flag
+                if imported_members or hasattr(module, '__all__') and attr_name in module.__all__ or not imported_members and attr_name in module.__dict__:
+                    attrs.append(attr_name)
+                    if not attr_name.startswith('_'):
+                        public.append(attr_name)
+    except PycodeError:
+        pass    # give up if ModuleAnalyzer fails to parse code
+    return public, attrs
+'''
+result = editor._run(relative_file_path="sphinx/ext/autosummary/generate.py", start_line=222, end_line=235, patch=patch)
+print(result)
+```
+HyperAgent_sphinx-doc__sphinx-7686 - INFO - Inner-Editor-Assistant's Response: Thought: I apologize for the confusion. It seems that the modifications we made to the `get_module_attrs` function have caused issues with other parts of the file. Let's reopen the file and examine the context around the `get_module_attrs` function to ensure our changes are consistent with the rest of the code.

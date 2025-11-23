@@ -1,0 +1,10 @@
+        # Test with empty_permitted=False
+        formset = FormSet(
+            queryset=MyModel.objects.none(),
+            form_kwargs={'empty_permitted': False}
+        )
+        try:
+            empty_form_html = formset.empty_form.as_p()
+            self.assertIn('a_field', empty_form_html)
+        except Exception as e:
+            self.fail(f"Rendering empty_form raised an exception: {e}")

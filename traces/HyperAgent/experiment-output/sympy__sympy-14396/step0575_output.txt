@@ -1,0 +1,79 @@
+HyperAgent_sympy__sympy-14396 - INFO - Editor->Planner: exitcode: 0 (execution succeeded)
+Code output: Successfully edited the file sympy/polys/polyoptions.py from line 58 to 58. Here is the original block of code:
+```python
+48 
+49 class BooleanOption(Option):
+50     """An option that must have a boolean value or equivalent assigned. """
+51 
+52     @classmethod
+53     def preprocess(cls, value):
+54         if value in [True, False]:
+55             return bool(value)
+56         else:
+57             raise OptionError("'%s' must have a boolean value assigned, got %s" % (cls.option, value))
+58 
+59 
+60 class OptionType(type):
+61     """Base type for all options that does registers options. """
+62 
+63     def __init__(cls, *args, **kwargs):
+64         @property
+65         def getter(self):
+66             try:
+67                 return self[cls.option]
+68             except KeyError:
+69 
+```
+Here is the proposed block of code:
+```python
+48 
+49 class BooleanOption(Option):
+50     """An option that must have a boolean value or equivalent assigned. """
+51 
+52     @classmethod
+53     def preprocess(cls, value):
+54         if value in [True, False]:
+55             return bool(value)
+56         else:
+57             raise OptionError("'%s' must have a boolean value assigned, got %s" % (cls.option, value))
+58 
+59 import re
+60 from sympy.polys.domains import RR
+61 
+62 class DomainOption(Option):
+63     """An option for specifying the domain."""
+64 
+65     option = 'domain'
+66 
+67     @classmethod
+68     def preprocess(cls, domain):
+69         if isinstance(domain, string_types):
+70             # Check for 'RR[var1,var2,...]' format
+71             match = re.match(r'RR\[([\w,\s]+)\]', domain)
+72             if match:
+73                 variables = [var.strip() for var in match.group(1).split(',')]
+74                 return RR.poly_ring(*variables)
+75             # ... other domain string processing ...
+76         
+77         # If it's not a string or doesn't match our new format, 
+78         # return the domain as is (it will be validated later)
+79         return domain
+80 
+81     @classmethod
+82     def postprocess(cls, options):
+83         # Additional domain validation can be done here if needed
+84         pass
+85 
+86 
+87 
+88 class OptionType(type):
+89     """Base type for all options that does registers options. """
+90 
+91     def __init__(cls, *args, **kwargs):
+92         @property
+93         def getter(self):
+94             try:
+95                 return self[cls.option]
+96             except KeyError:
+97 
+```

@@ -1,0 +1,16 @@
+### Input
+<empty>
+
+### Output
+```python
+def resolve_redirects(self, resp, req, stream=False, timeout=None,
+                      verify=True, cert=None, proxies=None):
+    i = 0
+    while resp.is_redirect:
+        prepared_request = req.copy()
+        resp.content  # Consume socket so it can be released
+        if i >= self.max_redirects:
+            raise TooManyRedirects('Exceeded %s redirects.' % self.max_redirects)
+        resp.close()
+        url = resp.headers['location']
+        method = req.method

@@ -1,0 +1,20 @@
+        month, day = map(int, (month, day))
+        hour, minute, second = map(int, time.split(':'))
+        tz = int(tz)
+        if tz < 0:
+            tz = -tz
+            sign = -1
+        else:
+            sign = 1
+        tz = tz * sign
+        dt = datetime(year, month, day, hour, minute, second)
+        if tz:
+            if tz < 60:
+                dt = dt.replace(minute = dt.minute + tz)
+            elif tz < 3600:
+                dt = dt.replace(hour = dt.hour + tz // 60)
+            else:
+                dt = dt.replace(day = dt.day + tz // 3600)
+        return dt
+    return None
+```

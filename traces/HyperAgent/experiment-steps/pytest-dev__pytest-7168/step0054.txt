@@ -1,0 +1,23 @@
+### Input
+Action:
+```python
+
+### Output
+patch = '''
+    def repr_instance(self, x: Any, level: int) -> str:
+        try:
+            s = repr(x)
+        except (KeyboardInterrupt, SystemExit):
+            raise
+        except RuntimeError as exc:
+            if str(exc) == "No active exception to reraise":
+                s = "<instance raises RuntimeError: No active exception to reraise>"
+            else:
+                s = _format_repr_exception(exc, x)
+        except BaseException as exc:
+            s = _format_repr_exception(exc, x)
+        return _ellipsize(s, self.maxsize)
+'''
+result = editor._run(relative_file_path="src/_pytest/_io/saferepr.py", start_line=54, end_line=61, patch=patch)
+print(result)
+```

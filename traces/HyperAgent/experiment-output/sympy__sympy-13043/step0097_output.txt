@@ -1,0 +1,32 @@
+    if isinstance(expr, Expr) and not expr.is_number:
+        if expr.is_Symbol:
+            poly_dict[1] = expr
+        elif expr.is_Add:
+            symbols = expr.free_symbols
+            degrees = [(sum(degree_list(monom, *symbols)), monom)
+                       for monom in expr.args]
+            if separate:
+                return sorted(
+                    [monom[1] for monom in degrees],
+                    key=lambda x: Poly(x, *symbols).total_degree()
+                )
+            else:
+                for monom in degrees:
+                    degree, term = monom
+                    if poly_dict.get(degree):
+                        poly_dict[degree] += term
+                    else:
+                        poly_dict[degree] = term
+        elif expr.is_Pow:
+            base, exponent = expr.args
+            poly_dict[exponent] = base
+        else:  # Now expr can only be of `Mul` type
+            degree = 0
+            for term in expr.args:
+                if term.is_Symbol:
+                    degree += 1
+                elif term.is_Pow:
+                    degree += term.args[1]
+            poly_dict[degree] = expr
+    else:
+        poly_dict[0] = expr

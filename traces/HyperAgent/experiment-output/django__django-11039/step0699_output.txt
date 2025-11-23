@@ -1,0 +1,9 @@
+    # You might want to add another test for when can_rollback_ddl is True
+    @patch('django.db.backends.base.features.BaseDatabaseFeatures.can_rollback_ddl', True)
+    def test_sqlmigrate_with_transaction_for_ddl_rollback(self):
+        """
+        Test that sqlmigrate adds transaction wrappers when the
+        database supports transactional DDL.
+        """
+        with captured_stdout() as stdout:
+            call_command('sqlmigrate', 'migrations', '0001_initial')

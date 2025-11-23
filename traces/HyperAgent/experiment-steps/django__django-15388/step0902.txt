@@ -1,0 +1,25 @@
+### Input
+<empty>
+
+### Output
+    def run(self):
+        self._last_reload_time = time.time()
+        while True:
+            try:
+                with self._reloading_lock:
+                    if self._reloading:
+                        continue
+                    if self._file_changed():
+                        self._reloading = True
+                        self._update_watched_files()
+                        self.callback(*self.args, **self.kwargs)
+                        self._last_reload_time = time.time()
+                    self._reloading = False
+            except Exception as e:
+                self._reloading = False
+                raise
+            time.sleep(1)
+'''
+result = editor._run(relative_file_path="django/core/management/utils.py", start_line=0, end_line=0, patch=patch)
+print(result)
+```

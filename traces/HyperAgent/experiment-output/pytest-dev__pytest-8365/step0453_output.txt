@@ -1,0 +1,18 @@
+    def __init__(
+        self,
+        given_basetemp: Optional[Path],
+        trace,
+        basetemp: Optional[Path] = None,
+        *,
+        _ispytest: bool = False,
+    ) -> None:
+        check_ispytest(_ispytest)
+        if given_basetemp is None:
+            self._given_basetemp = None
+        else:
+            # Use os.path.abspath() to get absolute path instead of resolve() as it
+            # does not work the same in all platforms (see #4427).
+            # Path.absolute() exists, but it is not public (see https://bugs.python.org/issue25012).
+            self._given_basetemp = Path(os.path.abspath(str(given_basetemp)))
+        self._trace = trace
+        self._basetemp = basetemp

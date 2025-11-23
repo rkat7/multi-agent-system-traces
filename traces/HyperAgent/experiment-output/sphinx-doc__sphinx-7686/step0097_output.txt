@@ -1,0 +1,20 @@
+```python
+def generate_autosummary_docs(app, what, docname, source, doc, config):
+    # ...
+    imported_members = config.autosummary_imported_members
+    # ...
+    if doc.objtype == 'module':
+        ns['members'] = dir(obj)
+        ns['functions'], ns['all_functions'] = \
+            get_members(obj, {'function'}, imported=imported_members)
+        ns['classes'], ns['all_classes'] = \
+            get_members(obj, {'class'}, imported=imported_members)
+        ns['exceptions'], ns['all_exceptions'] = \
+            get_members(obj, {'exception'}, imported=imported_members)
+        ns['attributes'], ns['all_attributes'] = \
+            get_module_attrs(ns['members'], obj, imported_members)
+        ispackage = hasattr(obj, '__path__')
+        if ispackage and recursive:
+            # ...
+    # ...
+```

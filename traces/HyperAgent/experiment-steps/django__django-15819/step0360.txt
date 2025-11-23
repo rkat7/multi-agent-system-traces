@@ -1,0 +1,18 @@
+### Input
+<empty>
+
+### Output
+```python
+def handle_inspection(self, connection, cursor):
+    "Inspect the database and output models.py contents"
+    output = []
+    table2model = self.table2model
+    known_models = self.known_models
+    table_info = connection.introspection.get_table_description(cursor, self.table)
+    relations = connection.introspection.get_relations(cursor, self.table)
+    indexes = connection.introspection.get_indexes(cursor, self.table)
+    primary_key_column = connection.introspection.get_primary_key_column(cursor, self.table)
+    for i, row in enumerate(table_info):
+        extra_params = {}
+        column_name = row[0]
+        is_relation = column_name in relations

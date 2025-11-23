@@ -1,0 +1,22 @@
+```python
+def handle_foreign_key(self, field):
+    """
+    Add a foreign key to the model.
+    """
+    rel_to = self.get_related_model(field)
+    if rel_to:
+        self.handle_model(rel_to)
+        f = models.ForeignKey(
+            rel_to,
+            on_delete=models.CASCADE,
+            db_column=field.db_column,
+            blank=True, null=True,
+        )
+    else:
+        f = models.ForeignKey(
+            "self",
+            on_delete=models.CASCADE,
+            db_column=field.db_column,
+            blank=True, null=True,
+        )
+    return f

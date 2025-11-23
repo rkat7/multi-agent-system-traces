@@ -1,0 +1,17 @@
+```python
+# From astropy/nddata/mixins/ndarithmetic.py
+323         if handle_mask is None:
+324             pass
+325         elif hasattr(result, "mask"):
+326             # if numpy.ma or astropy.utils.masked is being used, the constructor
+327             # will pick up the mask from the masked object:
+328             kwargs["mask"] = None
+329         elif handle_mask in ["ff", "first_found"]:
+330             if self.mask is None:
+331                 kwargs["mask"] = deepcopy(operand.mask)
+332             else:
+333                 kwargs["mask"] = deepcopy(self.mask)
+334         else:
+335             kwargs["mask"] = self._arithmetic_mask(
+336                 operation, operand, handle_mask, axis=axis, **kwds2["mask"]
+```

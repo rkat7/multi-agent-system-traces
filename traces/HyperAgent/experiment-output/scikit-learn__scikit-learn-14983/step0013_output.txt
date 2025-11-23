@@ -1,0 +1,22 @@
+# Update the _build_repr function to handle RepeatedKFold and RepeatedStratifiedKFold classes
+def _build_repr(self):
+    cls = self.__class__
+    init = getattr(cls.__init__, 'deprecated_original', cls.__init__)
+    init_signature = signature(init)
+    if init is object.__init__:
+        args = []
+    else:
+        args = sorted([p.name for p in init_signature.parameters.values()
+                       if p.name != 'self' and p.kind != p.VAR_KEYWORD])
+    class_name = self.__class__.__name__
+    params = dict()
+    for key in args:
+        warnings.simplefilter("always", DeprecationWarning)
+        try:
+            with warnings.catch_warnings(record=True) as w:
+                value = getattr(self, key, None)
+            if len(w) and w[0].category == DeprecationWarning:
+                continue
+        finally:
+            warnings.filters.pop(0)
+        params[key] = value

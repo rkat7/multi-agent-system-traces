@@ -1,0 +1,47 @@
+### Input
+<empty>
+
+### Output
+380                 try:
+381                     low_conn.putrequest(request.method,
+382                                         url,
+383                                         skip_accept_encoding=True)
+384 
+385                     for header, value in request.headers.items():
+386                         low_conn.putheader(header, value)
+387 
+388                     low_conn.endheaders()
+389 
+390                     for i in request.body:
+391                         low_conn.send(hex(len(i))[2:].encode('utf-8'))
+392                         low_conn.send(b'\r\n')
+393                         low_conn.send(i)
+394                         low_conn.send(b'\r\n')
+395                     low_conn.send(b'0\r\n\r\n')
+396 
+397                     r = low_conn.getresponse()
+398                     resp = HTTPResponse.from_httplib(
+399                         r,
+400                         pool=conn,
+401                         connection=low_conn,
+402                         preload_content=False,
+403                         decode_content=False
+404                     )
+405                 except:
+406                     # If we hit any problems here, clean up the connection.
+407                     # Then, reraise so that we can handle the actual exception.
+408                     low_conn.close()
+409                     raise
+410 
+411         except (ProtocolError, socket.error) as err:
+412             raise ConnectionError(err, request=request)
+413 
+414         except MaxRetryError as e:
+415             if isinstance(e.reason, ConnectTimeoutError):
+416                 raise ConnectTimeout(e, request=request)
+417 
+418             if isinstance(e.reason, ResponseError):
+419                 raise RetryError(e, request=request)
+420 
+# ... (omitted code)
+```

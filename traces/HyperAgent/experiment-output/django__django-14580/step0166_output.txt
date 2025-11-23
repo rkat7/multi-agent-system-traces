@@ -1,0 +1,11 @@
+# Modify the serialize method in django/db/migrations/serializer.py
+patch = '''
+    def serialize(self, value):
+        if isinstance(value, type) and issubclass(value, models.Field):
+            return "%s.%s" % (value.__module__, value.__name__), {"from %s import %s" % (value.__module__, value.__name__)}
+        if isinstance(value, type) and hasattr(value, '__mro__'):
+            for base in value.__mro__:
+                if base.__module__ == 'django.db.models':
+                    return "%s.%s" % (value.__module__, value.__name__), {"from %s import %s" % (value.__module__, value.__name__)}
+        # ... rest of the existing serialize method ...
+'''

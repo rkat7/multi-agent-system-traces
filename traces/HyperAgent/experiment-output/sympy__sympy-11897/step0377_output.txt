@@ -1,0 +1,11 @@
+    def _print_Mul(self, expr):
+        if expr.args[0] == -1 and len(expr.args) == 2:
+            # Handle -1 * expr
+            return r"-%s" % self._print(expr.args[1])
+        coeff, terms = expr.as_coeff_mul()
+        if coeff.is_negative:
+            coeff = -coeff
+            terms = (-S.One,) + terms
+        if coeff is not S.One:
+            terms = (coeff,) + terms
+        return r" \cdot ".join([self._print(t) for t in terms])

@@ -1,0 +1,96 @@
+### Input
+<empty>
+
+### Output
+*   The `_check_wildcard_imports` method in the `imports` module:
+    ```python
+def _check_wildcard_imports(
+    self, node: nodes.ImportFrom, imported_module: nodes.Module | None
+) -> None:
+    if node.root().package:
+        # Skip the check if in __init__.py issue #2026
+        return
+    ...
+```
+*   The `__init__` method in the `BaseChecker` class:
+    ```python
+def __init__(self, linter: PyLinter) -> None:
+    ...
+    self.import_graph: defaultdict[str, set[str]] = defaultdict(set)
+    self._imports_stack: list[tuple[Any, Any]] = []
+    self._first_non_import_node = None
+    self._module_pkg: dict[Any, Any] = {}  # mapping of modules to the pkg they belong in
+    self._allow_any_import_level: set[Any] = set()
+    ...
+```
+*   The `__init__.py` file in the `checkers` module:
+    ```python
+__init__.py
+```
+*   The `__init__.py` file in the `pylint` package:
+    ```python
+__init__.py
+```
+*   The `__init__.py` file in the `tests/functional/i/init_not_called.py` file:
+    ```python
+__init__
+```
+*   The search results for `__init__` in the Pylint codebase:
+    ```python
+File: tests/functional/i/init_not_called.py
+Name: __init__
+Line Range: (13, 15)
+Documentation: 
+--------------------
+File: tests/functional/i/init_not_called.py
+Name: __init__
+Line Range: (20, 22)
+Documentation: 
+--------------------
+File: tests/functional/i/init_not_called.py
+Name: __init__
+Line Range: (31, 33)
+Documentation: 
+--------------------
+File: tests/functional/i/init_not_called.py
+Name: __init__
+Line Range: (38, 41)
+Documentation: 
+--------------------
+File: tests/functional/i/init_not_called.py
+Name: __init__
+Line Range: (46, 48)
+Documentation: 
+--------------------
+File: tests/functional/i/init_not_called.py
+Name: __init__
+Line Range: (63, 65)
+Documentation: 
+--------------------
+File: tests/functional/i/init_not_called.py
+Name: __init__
+Line Range: (72, 74)
+Documentation: 
+--------------------
+File: tests/functional/i/init_not_called.py
+Name: __init__
+Line Range: (78, 80)
+Documentation: 
+--------------------
+File: tests/functional/i/init_not_called.py
+Name: __init__
+Line Range: (82, 84)
+Documentation: 
+--------------------
+File: tests/functional/i/init_not_called.py
+Name: __init__
+Line Range: (85, 87)
+Documentation: 
+--------------------
+```
+*   The search results for `module resolution same name as parent directory` in the Pylint issue tracker on GitHub:
+    ```python
+2024/09/25 02:50:19 shutting down
+. Selectively choose the right context and answer the following `Please search for files related to module resolution in pylint, particularly those that handle importing modules and searching for __init__.py files. Look for any logic that might be affected by the presence of a file with the same name as its parent directory.`. You should remain the key code snippets. If you can see which file that a code snippet belongs to, please mention the file path.
+```
+HyperAgent_pylint-dev__pylint-7114 - INFO - Planner's Response: Thought: Based on the search results, it appears that the issue with module resolution when a file has the same name as its parent directory is not directly addressed in the main parts of the pylint codebase that we've examined. However, we can see that module resolution and import handling are primarily dealt with in the `imports` module. To get a better understanding of how pylint handles module resolution, we should examine the `imports` module more closely, particularly focusing on how it resolves module paths and handles file naming conflicts.

@@ -1,0 +1,21 @@
+    Parameters
+    ----------
+    val : float
+    """
+    xy = self.poly.xy
+    if self.orientation == 'vertical':
+        xy[1] = .25, val
+        xy[2] = .75, val
+        self._handle.set_ydata([val])
+    else:
+        xy[2] = val, .75
+        xy[3] = val, .25
+        self._handle.set_xdata([val])
+    self.poly.xy = xy
+    self.valtext.set_text(self._format(val))
+    if self.drawon:
+        self.ax.figure.canvas.draw_idle()
+    self.val = val
+    if self.eventson:
+        self._observers.process('changed', val)
+```

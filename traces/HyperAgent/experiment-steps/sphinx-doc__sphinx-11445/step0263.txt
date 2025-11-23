@@ -1,0 +1,24 @@
+### Input
+<empty>
+
+### Output
+    def apply(self) -> None:
+        for node in self.document.traverse(nodes.Element):
+            if isinstance(node, nodes.paragraph) and len(node) > 0 and isinstance(node[0], nodes.literal):
+                literal = node[0]
+                if 'xref' in literal['classes'] and any(c.startswith('py-') for c in literal['classes']):
+                    # This is a domain directive, let's turn it into a section
+                    section = nodes.section()
+                    section['ids'].append(nodes.make_id(literal.astext()))
+                    title = nodes.title('', '', literal)
+                    section += title
+                    node.replace_self(section)
+                    # Move all subsequent siblings into this new section
+                    next_node = section.next_node()
+                    while next_node:
+                        if isinstance(next_node, nodes.section) and next_node['level'] <= section['level']:
+                            break
+                        section += next_node.deepcopy()
+                        next_node.parent.remove(next_node)
+                        next_node = section.next_node()
+                    logger.info(f"Created section for domain directive: {literal.astext()}")

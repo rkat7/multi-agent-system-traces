@@ -1,0 +1,18 @@
+### Input
+<empty>
+
+### Output
+@pytest.fixture(scope='function')
+def app(make_app, tmp_path):
+    srcdir = tmp_path / 'source'
+    srcdir.mkdir()
+    (srcdir / 'conf.py').write_text("""
+extensions = ['sphinx.ext.autodoc']
+man_pages = [
+    ('index', 'test', 'test documentation', ['test author'], 1),
+    ('library', 'testlibrary', 'test library documentation', ['test author'], 3),
+]
+""")
+    (srcdir / 'index.rst').write_text("""
+Test Documentation
+==================

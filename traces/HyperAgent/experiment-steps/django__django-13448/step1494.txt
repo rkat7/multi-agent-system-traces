@@ -1,0 +1,36 @@
+### Input
+<empty>
+
+### Output
+            # Actually create the database for the first connection
+            if first_alias is None:
+                first_alias = alias
+                with time_keeper.timed("  Creating '%s'" % alias):
+                    if connection.settings_dict['TEST'].get('MIGRATE', True):
+                        connection.creation.create_test_db(
+                            verbosity=verbosity,
+                            autoclobber=not interactive,
+                            keepdb=keepdb,
+                            serialize=connection.settings_dict['TEST'].get('SERIALIZE', True),
+                        )
+                    else:
+                        # If "TEST": {"MIGRATE": False}, skip migrations and just create an empty database
+                        connection.creation.create_test_db(
+                            verbosity=verbosity,
+                            autoclobber=not interactive,
+                            keepdb=keepdb,
+                            serialize=connection.settings_dict['TEST'].get('SERIALIZE', True),
+                            skip_modify_settings=True,
+                            load_initial_data=False,
+                        )
+                if parallel > 1:
+                    for index in range(parallel):
+                        with time_keeper.timed("  Cloning '%s'" % alias):
+                            connection.creation.clone_test_db(
+                                suffix=str(index + 1),
+                                verbosity=verbosity,
+                                keepdb=keepdb,
+                            )
+            # Configure all other connections as mirrors of the first one
+            else:
+                connections[alias].creation.set_as_test_mirror(connections[first_alias].settings_dict)

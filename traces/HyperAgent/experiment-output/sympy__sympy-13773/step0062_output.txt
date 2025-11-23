@@ -1,0 +1,13 @@
+# Step 2: Replace the __matmul__ method
+patch = '''
+    @call_highest_priority('__rmatmul__')
+    def __matmul__(self, other):
+        """Return self @ other where other must be a matrix of compatible dimensions."""
+        if not isinstance(other, (Matrix, MatrixLike)) or not hasattr(other, 'shape') or len(other.shape) != 2:
+            raise ValueError("Scalar operands are not allowed, use '*' instead")
+        return self.__mul__(other)
+'''
+result = editor._run(relative_file_path="sympy/matrices/common.py", start_line=1974, end_line=1976, patch=patch)
+print(result)
+```
+HyperAgent_sympy__sympy-13773 - INFO - Editor->Planner: Thought: The import statements have been successfully updated. Now, let's proceed to replace the `__matmul__` method with the new implementation.

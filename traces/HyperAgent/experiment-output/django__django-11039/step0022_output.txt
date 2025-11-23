@@ -1,0 +1,18 @@
+Results for keyword: sqlmigrate
+18             help='Nominates a database to create SQL for. Defaults to the "default" database.',
+19         )
+20         parser.add_argument(
+21             '--backwards', action='store_true',
+22             help='Creates SQL to unapply the migration, rather than to apply it',
+23         )
+24 
+25     def execute(self, *args, **options):
+26         # sqlmigrate doesn't support coloring its output but we need to force
+27         # no_color=True so that the BEGIN/COMMIT statements added by
+28         # output_transaction don't get colored either.
+29         options['no_color'] = True
+30         return super().execute(*args, **options)
+31 
+32     def handle(self, *args, **options):
+33         # Get the database we're operating from
+HyperAgent_django__django-11039 - INFO - Planner's Response: Thought: Now that we have located the `sqlmigrate` command implementation, we can see that it doesn't directly handle the transaction wrapping. The issue mentions that the problem is in the `output_transaction` assignment, which is likely happening in a different part of the code. We need to find where `self.output_transaction` is set and modify it to consider both `migration.atomic` and `connection.features.can_rollback_ddl`.

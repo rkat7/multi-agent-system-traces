@@ -1,0 +1,14 @@
+### Input
+<empty>
+
+### Output
+```python
+def get_total_scale_factor(expr):
+    if isinstance(expr, Mul):
+        return reduce(lambda x, y: x * y, [get_total_scale_factor(i) for i in expr.args])
+    elif isinstance(expr, Pow):
+        return get_total_scale_factor(expr.base) ** expr.exp
+    elif isinstance(expr, Quantity):
+        return unit_system.get_quantity_scale_factor(expr)
+    return expr
+```

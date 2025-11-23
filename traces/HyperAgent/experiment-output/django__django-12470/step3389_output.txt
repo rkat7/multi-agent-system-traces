@@ -1,0 +1,7 @@
+    # Add handling for multi-table inherited models
+    if query.model._meta.concrete_model is not query.model:
+        # For multi-table inherited models, we need to prefix the field names
+        # with the appropriate table alias
+        parent_model = query.model._meta.concrete_model
+        parent_alias = query.get_initial_alias()
+        order_by = [f"{parent_alias}.{field}" if field in parent_model._meta.fields else field for field in order_by]

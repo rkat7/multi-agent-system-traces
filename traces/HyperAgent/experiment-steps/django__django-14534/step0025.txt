@@ -1,0 +1,23 @@
+### Input
+<empty>
+
+### Output
+- `BoundField` class:
+```python
+# django/forms/boundfield.py
+41 
+42         This property is cached so that only one database query occurs when
+43         rendering ModelChoiceFields.
+44         """
+45         id_ = self.field.widget.attrs.get('id') or self.auto_id
+46         attrs = {'id': id_} if id_ else {}
+47         attrs = self.build_widget_attrs(attrs)
+48         return [
+49             BoundWidget(self.field.widget, widget, self.form.renderer)
+50             for widget in self.field.widget.subwidgets(self.html_name, self.value(), attrs=attrs)
+51         ]
+52 
+53     def __bool__(self):
+54         # BoundField evaluates to True even if it doesn't have subwidgets.
+55         return True
+```

@@ -1,0 +1,17 @@
+```python
+def get_tightbbox(self, renderer=None, call_axes_locator=True,
+                  bbox_extra_artists=None, *, for_layout_only=False):
+    ret = super().get_tightbbox(renderer,
+                                call_axes_locator=call_axes_locator,
+                                bbox_extra_artists=bbox_extra_artists,
+                                for_layout_only=for_layout_only)
+    batch = [ret]
+    if self._axis3don:
+        for axis in self._axis_map.values():
+            if axis.get_visible():
+                axis_bb = martist._get_tightbbox_for_layout_only(
+                    axis, renderer)
+                if axis_bb:
+                    batch.append(axis_bb)
+    return mtransforms.Bbox.union(batch)
+```

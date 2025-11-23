@@ -1,0 +1,36 @@
+   ```python
+def generate_deleted_models(self):
+    ...
+    # Gather related fields
+    related_fields = {}
+    for field in model._meta.local_fields:
+        if field.remote_field:
+            if field.remote_field.model:
+                related_fields[field.name] = field
+            # through will be none on M2Ms on swapped-out models;
+            # we can treat lack of through as auto_created=True, though.
+            if (getattr(field.remote_field, "through", None) and
+                    not field.remote_field.through._meta.auto_created):
+                related_fields[field.name] = field
+    ...
+    # Generate option removal first
+    unique_together = model_state.options.pop('unique_together', None)
+    index_together = model_state.options.pop('index_together', None)
+    if unique_together:
+        self.add_operation(
+            app_label,
+            operations.AlterUniqueTogether(
+                name=model_name,
+                unique_together=None,
+            )
+        )
+    if index_together:
+        self.add_operation(
+            app_label,
+            operations.AlterIndexTogether(
+                name=model_name,
+                index_together=None,
+            )
+        )
+    ...
+```

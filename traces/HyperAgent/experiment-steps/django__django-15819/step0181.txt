@@ -1,0 +1,19 @@
+### Input
+<empty>
+
+### Output
+                    if is_relation:
+                        ref_db_column, ref_db_table = relations[column_name]
+                        if extra_params.pop("unique", False) or extra_params.get(
+                            "primary_key"
+                        ):
+                            rel_type = "OneToOneField"
+                        else:
+                            rel_type = "ForeignKey"
+                            # Generate unique related_name
+                            if ref_db_table in foreign_keys:
+                                foreign_keys[ref_db_table] += 1
+                                related_name = f'{table_name}_{column_name}_set'
+                                extra_params['related_name'] = related_name
+                            else:
+                                foreign_keys[ref_db_table] = 1

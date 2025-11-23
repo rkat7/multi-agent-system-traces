@@ -1,0 +1,40 @@
+221     def get_module_attrs(members: Any) -> Tuple[List[str], List[str]]:
+222         """Find module attributes with docstrings."""
+223         attrs, public = [], []
+224         try:
+225             analyzer = ModuleAnalyzer.for_module(name)
+226             attr_docs = analyzer.find_attr_docs()
+227             for namespace, attr_name in attr_docs:
+228                 if namespace == '' and attr_name in members:
+229                     attrs.append(attr_name)
+230                     if not attr_name.startswith('_'):
+231                         public.append(attr_name)
+232         except PycodeError:
+233             pass    # give up if ModuleAnalyzer fails to parse code
+234         return public, attrs
+235 
+236     def get_modules(obj: Any) -> Tuple[List[str], List[str]]:
+237         items = []  # type: List[str]
+238         for _, modname, ispkg in pkgutil.iter_modules(obj.__path__):
+239             fullname = name + '.' + modname
+240             items.append(fullname)
+241         public = [x for x in items if not x.split('.')[-1].startswith('_')]
+242         return public, items
+243 
+244     ns = {}  # type: Dict[str, Any]
+245     ns.update(context)
+246 
+247     if doc.objtype == 'module':
+248         ns['members'] = dir(obj)
+249         ns['functions'], ns['all_functions'] = \
+250             get_members(obj, {'function'}, imported=imported_members)
+251         ns['classes'], ns['all_classes'] = \
+252             get_members(obj, {'class'}, imported=imported_members)
+253         ns['exceptions'], ns['all_exceptions'] = \
+254             get_members(obj, {'exception'}, imported=imported_members)
+255         ns['attributes'], ns['all_attributes'] = \
+256             get_module_attrs(ns['members'])
+257         ispackage = hasattr(obj, '__path__')
+258         if ispackage and recursive:
+259             # ...
+```

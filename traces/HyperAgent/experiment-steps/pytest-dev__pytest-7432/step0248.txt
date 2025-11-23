@@ -1,0 +1,138 @@
+### Input
+<empty>
+
+### Output
+    return rep
+'''
+result = editor._run(relative_file_path="src/_pytest/skipping.py", start_line=261, end_line=303, patch=patch)
+print(result)
+```
+HyperAgent_pytest-dev__pytest-7432 - INFO - Editor->Planner: exitcode: 0 (execution succeeded)
+Code output: Successfully edited the file src/_pytest/skipping.py from line 261 to 303. Here is the original block of code:
+```python
+251         item._store[xfailed_key] = xfailed = evaluate_xfail_marks(item)
+252 
+253     if not item.config.option.runxfail:
+254         if xfailed and not xfailed.run:
+255             xfail("[NOTRUN] " + xfailed.reason)
+256 
+257     yield
+258 
+259 
+260 @hookimpl(hookwrapper=True)
+261 from _pytest.reports import TestReport
+262 from _pytest._code import ExceptionInfo
+263 from _pytest.nodes import Item
+264 from _pytest.runner import CallInfo
+265 from _pytest.skipping import xfail_key, skipped_by_mark_key
+266 
+267 @hookimpl(hookwrapper=True)
+268 def pytest_runtest_makereport(item: Item, call: CallInfo[None]) -> TestReport:
+269     outcome = yield
+270     rep = outcome.get_result()
+271 
+272     if rep.outcome == "skipped":
+273         # Handle skipped tests
+274         if item._store.get(skipped_by_mark_key, True) and isinstance(rep.longrepr, tuple):
+275             filename, line, reason = rep.longrepr
+276             rep.longrepr = (str(item.path), item.location[1], reason)
+277     
+278     # Handle xfail tests
+279     xfail = item._store.get(xfail_key, None)
+280     if xfail:
+281         if item.config.option.runxfail:
+282             if call.excinfo:
+283                 rep.outcome = "failed"
+284                 rep.wasxfail = xfail.reason
+285             elif call.when == "call":
+286                 rep.outcome = "passed"
+287                 rep.wasxfail = xfail.reason
+288         else:
+289             if call.excinfo and call.excinfo.errisinstance(xfail.raises):
+290                 rep.outcome = "skipped"
+291                 rep.wasxfail = xfail.reason
+292             elif call.when == "call":
+293                 if rep.passed:
+294                     rep.outcome = "failed"
+295                     rep.longrepr = "[XPASS(strict)] " + xfail.reason if xfail.strict else "[XPASS] " + xfail.reason
+296                 else:
+297                     rep.outcome = "skipped"
+298                     rep.wasxfail = xfail.reason
+299 
+300     return rep
+301 
+302     return rep
+303 
+304 
+305 def pytest_report_teststatus(report: BaseReport) -> Optional[Tuple[str, str, str]]:
+306     if hasattr(report, "wasxfail"):
+307         if report.skipped:
+308             return "xfailed", "x", "XFAIL"
+309         elif report.passed:
+310             return "xpassed", "X", "XPASS"
+311     return None
+312 
+```
+Here is the proposed block of code:
+```python
+251         item._store[xfailed_key] = xfailed = evaluate_xfail_marks(item)
+252 
+253     if not item.config.option.runxfail:
+254         if xfailed and not xfailed.run:
+255             xfail("[NOTRUN] " + xfailed.reason)
+256 
+257     yield
+258 
+259 
+260 @hookimpl(hookwrapper=True)
+261 from _pytest.reports import TestReport
+262 from _pytest._code import ExceptionInfo
+263 from _pytest.nodes import Item
+264 from _pytest.runner import CallInfo
+265 from _pytest.skipping import xfail_key, skipped_by_mark_key
+266 
+267 @hookimpl(hookwrapper=True)
+268 def pytest_runtest_makereport(item: Item, call: CallInfo[None]) -> TestReport:
+269     outcome = yield
+270     rep = outcome.get_result()
+271 
+272     if rep.outcome == "skipped":
+273         # Handle skipped tests
+274         if item._store.get(skipped_by_mark_key, True) and isinstance(rep.longrepr, tuple):
+275             filename, line, reason = rep.longrepr
+276             rep.longrepr = (str(item.path), item.location[1], reason)
+277     
+278     # Handle xfail tests
+279     xfail = item._store.get(xfail_key, None)
+280     if xfail:
+281         if item.config.option.runxfail:
+282             if call.excinfo:
+283                 rep.outcome = "failed"
+284                 rep.wasxfail = xfail.reason
+285             elif call.when == "call":
+286                 rep.outcome = "passed"
+287                 rep.wasxfail = xfail.reason
+288         else:
+289             if call.excinfo and call.excinfo.errisinstance(xfail.raises):
+290                 rep.outcome = "skipped"
+291                 rep.wasxfail = xfail.reason
+292             elif call.when == "call":
+293                 if rep.passed:
+294                     rep.outcome = "failed"
+295                     rep.longrepr = "[XPASS(strict)] " + xfail.reason if xfail.strict else "[XPASS] " + xfail.reason
+296                 else:
+297                     rep.outcome = "skipped"
+298                     rep.wasxfail = xfail.reason
+299 
+300     return rep
+301 
+302 
+303 def pytest_report_teststatus(report: BaseReport) -> Optional[Tuple[str, str, str]]:
+304     if hasattr(report, "wasxfail"):
+305         if report.skipped:
+306             return "xfailed", "x", "XFAIL"
+307         elif report.passed:
+308             return "xpassed", "X", "XPASS"
+309     return None
+310 
+```

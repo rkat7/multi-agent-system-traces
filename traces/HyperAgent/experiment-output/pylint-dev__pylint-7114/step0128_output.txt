@@ -1,0 +1,15 @@
+3. The `add_imported_module` method in the `ImportsChecker` class:
+   ```python
+def _add_imported_module(self, node: ImportNode, importedmodname: str) -> None:
+    """Notify an imported module, used to analyze dependencies."""
+    module_file = node.root().file
+    context_name = node.root().name
+    base = os.path.splitext(os.path.basename(module_file))[0]
+    try:
+        importedmodname = astroid.modutils.get_module_part(
+            importedmodname, module_file
+        )
+    except ImportError:
+        pass
+```
+   This method is located in the `pylint.checkers.imports` module.

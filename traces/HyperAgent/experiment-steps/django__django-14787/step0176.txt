@@ -1,0 +1,21 @@
+### Input
+<empty>
+
+### Output
+ def method_decorator(decorator, name=''):
+     """
+-    Convert a function decorator into a method decorator
++    Convert a function decorator into a method decorator while preserving the attributes of the wrapped function.
+     """
+     def _dec(obj):
+         if not isinstance(obj, type):
+-            @wraps(obj)
+-            def wrapper(*args, **kwargs):
+-                return _multi_decorate(decorator, obj)(*args, **kwargs)
++            def wrapper(*args, **kwargs):
++                return decorator(obj)(*args, **kwargs)
++            wrapper = wraps(obj)(wrapper)
++            return wrapper
+         if not (name and hasattr(obj, name)):
+             raise ValueError(
+                 "The keyword argument `name` must be the name of a method '''

@@ -1,0 +1,11 @@
+2. Modify the part of the get_order_by() method that uses self.ordering_parts:
+```python
+sql, params = self.compile(resolved)
+normalized_sql = normalize_sql(sql)
+without_ordering = self.ordering_parts.search(normalized_sql).group(1)
+params_hash = make_hashable(params)
+if (without_ordering, params_hash) in seen:
+    continue
+seen.add((without_ordering, params_hash))
+result.append((resolved, (sql, params, is_ref)))
+```

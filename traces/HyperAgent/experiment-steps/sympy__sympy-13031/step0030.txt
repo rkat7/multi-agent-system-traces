@@ -1,0 +1,55 @@
+### Input
+<empty>
+
+### Output
+```python
+# Results for keyword: hstack
+2566         from sympy.matrices import Matrix, zeros
+2567 
+2568         aug = self.hstack(self.copy(), b.copy())
+2569         row, col = aug[:, :-1].shape
+2570 
+2571         # solve by reduced row echelon form
+2572         A, pivots = aug.rref(simplify=True)
+2573         A, v = A[:, :-1], A[:, -1]
+2574         pivots = list(filter(lambda p: p < col, pivots))
+2575         rank = len(pivots)
+2576 
+2577         # Bring to block form
+2578         permutation = Matrix(range(col)).T
+2579         A = A.hstack(A, permutation)
+2580 
+2581         for i, c in enumerate(pivots):
+2582             A.col_swap(i, c)
+2583 
+2584         A, permutation = A[:-1, :], A[-1, :]
+2585 
+2586         # check for existence of solutions
+2587         # Free parameters
+2588         dummygen = numbered_symbols("tau", Dummy)
+2589         tau = Matrix([next(dummygen) for k in range(col - rank)]).reshape(
+2590             col - rank, 1)
+2591 
+2592         # Full parametric solution
+2593         V = A[:rank, rank:]
+2594         vt = v[:rank, 0]
+2595         free_sol = tau.hstack(vt - V * tau, tau)
+2596 
+2597         # Undo permutation
+2598         sol = zeros(col, 1)
+2599         for k, v in enumerate(free_sol):
+2600             sol[permutation[k], 0] = v
+2601 
+2602         if freevar:
+2603             return sol
+2604         else:
+2605             return sol[0]
+2606 
+2607     def vstack(self, *args):
+2608         """Stack matrices vertically."""
+2609         return Matrix.vstack(*args)
+2610 
+2611     def hstack(self, *args):
+2612         """Stack matrices horizontally."""
+2613         return Matrix.hstack(*args)
+```

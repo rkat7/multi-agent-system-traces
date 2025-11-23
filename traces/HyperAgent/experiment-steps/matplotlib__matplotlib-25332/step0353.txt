@@ -1,0 +1,13 @@
+### Input
+<empty>
+
+### Output
+    def __setstate__(self, state):
+        if '_align_label_groups' in state:
+            # Convert strong references back to weak references
+            for group_name, group in state['_align_label_groups'].items():
+                state['_align_label_groups'][group_name] = [
+                    (weakref.ref(item) if isinstance(item, (list, tuple)) else item)
+                    for item in group
+                ]
+        self.__dict__.update(state)

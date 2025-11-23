@@ -1,0 +1,17 @@
+### Input
+<empty>
+
+### Output
+    def get_order_by(self, order_by):
+        result = []
+        seen = set()
+        for expr, (sql, params, is_ref) in order_by:
+            # Normalize the SQL string by removing newlines and extra spaces
+            normalized_sql = re.sub(r'\s+', ' ', sql.strip())
+            without_ordering = self.ordering_parts.search(normalized_sql).group(1)
+            params_hash = tuple(params)  # Simplified hashable representation
+            if (without_ordering, params_hash) in seen:
+                continue
+            seen.add((without_ordering, params_hash))
+            result.append((expr, (sql, params, is_ref)))
+        return result

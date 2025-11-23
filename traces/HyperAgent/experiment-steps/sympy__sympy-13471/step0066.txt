@@ -1,0 +1,24 @@
+### Input
+<empty>
+
+### Output
+```python
+elif isinstance(num, tuple) and len(num) in (3, 4):
+    if type(num[1]) is str:
+        # it's a hexadecimal (coming from a pickled object)
+        # assume that it is in standard form
+        num = list(num)
+        try:
+            # Python 2
+            num[1] = long(num[1], 16)
+        except NameError:
+            # Python 3
+            num[1] = int(num[1].rstrip('L'), 16)
+        _mpf_ = tuple(num)
+    else:
+        if len(num) == 4:
+            # handle normalization hack
+            return Float._new(num, precision)
+        else:
+            return (S.NegativeOne**num[0]*num[1]*S(2)**num[2]).evalf(precision)
+```

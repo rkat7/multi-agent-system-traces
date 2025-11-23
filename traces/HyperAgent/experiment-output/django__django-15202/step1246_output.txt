@@ -1,0 +1,25 @@
+        value = super().to_python(value)
+        if value:
+            try:
+                url_fields = split_url(value)
+                if not url_fields[0]:
+                    # If no URL scheme given, assume http://
+                    url_fields[0] = 'http'
+                if not url_fields[1]:
+                    # Assume that if no domain is provided, that the path segment
+                    # contains the domain.
+                    url_fields[1] = url_fields[2]
+                    url_fields[2] = ''
+                    # Rebuild the url_fields list, since the domain segment may now
+                    # contain the path too.
+                    url_fields = split_url(urlunsplit(url_fields))
+                value = urlunsplit(url_fields)
+            except ValidationError:
+                raise
+            except ValueError:
+                raise ValidationError(self.error_messages['invalid'], code='invalid')
+        return value
+'''
+result = editor._run(relative_file_path="django/forms/fields.py", start_line=1145, end_line=1184, patch=patch)
+print(result)
+```

@@ -1,0 +1,12 @@
+    elif isinstance(field, (models.IntegerField, models.FloatField)):
+        return formats.number_format(value)
+    elif isinstance(field, models.FileField) and value:
+        return format_html('<a href="{}">{}</a>', value.url, value)
+    elif isinstance(field, models.JSONField):  # Add this block
+        if value is None:
+            return empty_value_display
+        return field.get_prep_value(value)
+    else:
+        return display_for_value(value, empty_value_display)
+```
+HyperAgent_django__django-12308 - INFO - Inner-Editor-Assistant's Response: Thought: To modify the `display_for_field` function in the `django/contrib/admin/utils.py` file, I need to first locate the function, then add the new code block for JSONField handling, and finally add the necessary import at the beginning of the file. I'll do this in three steps.

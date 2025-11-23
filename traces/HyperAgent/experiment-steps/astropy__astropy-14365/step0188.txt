@@ -1,0 +1,24 @@
+### Input
+<empty>
+
+### Output
+    Examples
+    --------
+    >>> lines = ["READ SERR 1 2", "READ TERR 3"]
+    >>> err_specs = _parse_read_serr_terr(lines, 5)
+    >>> err_specs
+    {'serr': [1, 2], 'terr': [3]}
+    """
+    err_specs = {'serr': [], 'terr': []}
+    for line in lines:
+        line_upper = line.upper().strip()
+        if line_upper.startswith("READ SERR"):
+            parts = line_upper.split()
+            for i in range(2, len(parts)):
+                err_specs['serr'].append(int(parts[i]))
+        elif line_upper.startswith("READ TERR"):
+            parts = line_upper.split()
+            for i in range(2, len(parts)):
+                err_specs['terr'].append(int(parts[i]))
+    return err_specs
+```

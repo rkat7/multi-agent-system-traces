@@ -1,0 +1,24 @@
+### Input
+<empty>
+
+### Output
+            if first_alias is None:
+                first_alias = alias
+                with time_keeper.timed("  Creating '%s'" % alias):
+                    if not connection.settings_dict['TEST'].get('MIGRATE', True):
+                        connection.creation.create_test_db(
+                            verbosity=verbosity,
+                            autoclobber=not interactive,
+                            keepdb=keepdb,
+                            serialize=False,
+                        )
+                        # Create essential tables using Django's migration system
+                        essential_apps = ['admin', 'auth', 'contenttypes', 'sessions']
+                        for app in essential_apps:
+                            call_command('migrate', app, '--fake-initial', verbosity=verbosity, interactive=interactive, database=alias)
+                    else:
+                        connection.creation.create_test_db(
+                            verbosity=verbosity,
+                            autoclobber=not interactive,
+                            keepdb=keepdb,
+                        )

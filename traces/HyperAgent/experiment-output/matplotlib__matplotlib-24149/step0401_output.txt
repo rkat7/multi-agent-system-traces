@@ -1,0 +1,17 @@
+        # Because xerr and yerr will be passed to errorbar, most dimension
+        # checking and processing will be left to the errorbar method.
+        xerr = kwargs.pop('xerr', None)
+        yerr = kwargs.pop('yerr', None)
+        error_kw = kwargs.pop('error_kw', {})
+        ezorder = error_kw.pop('zorder', None)
+        if ezorder is None:
+            ezorder = kwargs.get('zorder', None)
+            if ezorder is not None:
+                # If using the bar zorder, increment slightly to make sure
+                # errorbars are drawn on top of bars
+                ezorder += 0.01
+        error_kw.setdefault('zorder', ezorder)
+        ecolor = kwargs.pop('ecolor', 'k')
+        capsize = kwargs.pop('capsize', mpl.rcParams["errorbar.capsize"])
+        error_kw.setdefault('ecolor', ecolor)
+        error_kw.setdefault('capsize', capsize)

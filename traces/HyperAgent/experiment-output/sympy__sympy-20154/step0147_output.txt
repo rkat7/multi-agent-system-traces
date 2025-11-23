@@ -1,0 +1,5 @@
+1. The root cause of the issue was that the `_set_partitions()` function was yielding the same `q` list object in each iteration, modifying it in place.
+2. We fixed this by using `q.copy()` when yielding the partition vector, ensuring that each yielded partition is an independent object.
+3. This change eliminates the confusing behavior mentioned in the GitHub issue, where simple operations like `list(partitions())` would give incorrect results.
+4. The performance impact of this change should be minimal, as creating a shallow copy of a list is a relatively inexpensive operation compared to the overall complexity of generating partitions.
+5. The fix maintains the original algorithm's logic and efficiency while resolving the unintended side effect of reusing the same list object.

@@ -1,0 +1,19 @@
+### Input
+<empty>
+
+### Output
+    def set_attributes_from_instance(self, instance):
+        """
+        Set the attributes of the field from the passed instance. This is used
+        to customize the attributes of a field (such as verbose_name) from
+        the model definition.
+        """
+        if instance is not None:
+            self.name = self.name or instance.name
+            if self.verbose_name is None:
+                self.verbose_name = capfirst(self.name.replace('_', ' '))
+            if self.help_text is None:
+                self.help_text = getattr(instance, 'help_text', '')
+            if self.default is not _unset:
+                self.default = getattr(instance, 'default', self.default)
+```

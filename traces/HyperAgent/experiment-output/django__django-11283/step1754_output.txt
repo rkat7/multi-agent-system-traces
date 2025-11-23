@@ -1,0 +1,10 @@
+### Step 4: Verify the permissions in the database for our proxy model
+```bash
+python manage.py shell -c "from django.contrib.auth.models import Permission; from django.contrib.contenttypes.models import ContentType; from test_app.models import MyProxyModel; ct = ContentType.objects.get_for_model(MyProxyModel); print(Permission.objects.filter(content_type=ct))"
+```
+Observation exitcode: 0 (execution succeeded)
+Code output:
+```python
+<QuerySet []>
+```
+This output indicates that there are no permissions associated with the `MyProxyModel` in the database. This is likely because the `auth.0011_update_proxy_permissions` migration did not run correctly.

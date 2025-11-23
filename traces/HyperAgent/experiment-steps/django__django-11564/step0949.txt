@@ -1,0 +1,12 @@
+### Input
+<empty>
+
+### Output
+    @override_settings(STATIC_URL='/custom_static/')
+    def test_static_url_with_custom_static_url_and_script_name(self):
+        request = self.factory.get('/index')
+        request.META['SCRIPT_NAME'] = '/myapp'
+        response = self.client.get(reverse('index'), HTTP_SCRIPT_NAME='/myapp')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'<img src="/myapp/custom_static/image.jpg"', response.content)
+```

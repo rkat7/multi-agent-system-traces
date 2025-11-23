@@ -1,0 +1,27 @@
+### Input
+<empty>
+
+### Output
+    .. note::
+        It is better to use the :ref:`pytest.mark.skipif ref` marker when
+        possible to declare a test to be skipped under certain conditions
+        like mismatching platforms or dependencies.
+        Similarly, use the ``# doctest: +SKIP`` directive (see `doctest.SKIP
+        <https://docs.python.org/3/library/how-to/doctest.html#doctest.SKIP>`_)
+        to skip a doctest statically.
+    """
+    __tracebackhide__ = True
+    if not allow_module_level:
+        import inspect
+        frame = inspect.currentframe().f_back
+        filename = frame.f_code.co_filename
+        if filename != '<doctest>':
+            from _pytest.runner import _check_scope
+            _check_scope(
+                'skip',
+                frame,
+                error_msg="Using pytest.skip outside of a test is not allowed. "
+                          "To skip a module, use 'skip(msg, allow_module_level=True)' or "
+                          "use the 'pytestmark = pytest.mark.skip' decorator."
+            )
+    raise Skipped(msg=msg, allow_module_level=allow_module_level)'''

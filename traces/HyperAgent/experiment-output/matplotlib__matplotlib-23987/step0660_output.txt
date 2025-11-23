@@ -1,0 +1,15 @@
+        layout_engine = self.get_layout_engine()
+        if (layout_engine is not None and
+                not isinstance(layout_engine, TightLayoutEngine) and
+                not layout_engine.adjust_compatible):
+            _api.warn_external(
+                "This figure was using a layout engine that is "
+                "incompatible with subplots_adjust and/or tight_layout; "
+                "not calling subplots_adjust.")
+        else:
+            self.subplotpars.update(left, bottom, right, top, wspace, hspace)
+            for ax in self.axes:
+                if hasattr(ax, 'get_subplotspec'):
+                    ax._set_position(ax.get_subplotspec().get_position(self))
+            self.stale = True
+'''

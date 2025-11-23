@@ -1,0 +1,18 @@
+### Input
+<empty>
+
+### Output
+def _get_package_loader(modname, filepath):
+    """Obtain the loader for the given module name."""
+    try:
+        spec = importlib.util.find_spec(modname)
+        if spec is None:
+            raise ImportError(f'No module named {modname!r}')
+        return spec.loader
+    except ImportError:
+        if filepath:
+            try:
+                return pkgutil.get_loader(modname, filepath)
+            except (ImportError, TypeError):
+                pass
+        raise ImportError(f'No module named {modname!r}')

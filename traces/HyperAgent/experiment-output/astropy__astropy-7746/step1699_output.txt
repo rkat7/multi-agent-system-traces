@@ -1,0 +1,20 @@
+            try:
+                tmp_header = fits.Header.fromstring(header_string)
+                self._remove_sip_kw(tmp_header)
+                tmp_header_bytes = tmp_header.tostring().rstrip()
+                if isinstance(tmp_header_bytes, str):
+                    tmp_header_bytes = tmp_header_bytes.encode('ascii')
+                tmp_wcsprm = _wcs.Wcsprm(header=tmp_header_bytes, key=key,
+                                         relax=relax, keysel=keysel_flags,
+                                         colsel=colsel, warnings=False)
+            except _wcs.NoWcsKeywordsFoundError:
+                est_naxis = 0
+            else:
+                if naxis is not None:
+                    try:
+                        tmp_wcsprm.sub(naxis)
+                    except ValueError:
+                        pass
+                    est_naxis = tmp_wcsprm.naxis
+                else:
+                    est_naxis = 2

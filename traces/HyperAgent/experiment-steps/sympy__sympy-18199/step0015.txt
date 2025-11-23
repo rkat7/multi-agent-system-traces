@@ -1,0 +1,30 @@
+### Input
+<empty>
+
+### Output
+    .. [1] A. M. Johnston "A Generalized qth Root Algorithm"
+    """
+    g = primitive_root(p)
+    if not isprime(q):
+        r = _nthroot_mod2(s, q, p)
+    else:
+        f = p - 1
+        assert (p - 1) % q == 0
+        # determine k
+        k = 0
+        while f % q == 0:
+            k += 1
+            f = f // q
+        # find z, x, r1
+        f1 = igcdex(-f, q)[0] % q
+        z = f*f1
+        x = (1 + z) // q
+        r1 = pow(s, x, p)
+        s1 = pow(s, f, p)
+        h = pow(g, f*q, p)
+        t = discrete_log(p, s1, h)
+        g2 = pow(g, z*t, p)
+        g3 = igcdex(g2, p)[0]
+        r = r1*g3 % p
+        #assert pow(r, q, p) == s
+    res = [r]

@@ -1,0 +1,8 @@
+patch = '''    def is_rewrite_disabled(docstring: object) -> bool:
+        if not isinstance(docstring, str):
+            return False
+        return "PYTEST_DONT_REWRITE" in docstring'''
+result = editor._run(relative_file_path=str(Path("_pytest/assertion/rewrite.py")), start_line=745, end_line=746, patch=patch)
+print(result)
+```
+HyperAgent_pytest-dev__pytest-11143 - INFO - Inner-Editor-Assistant's Response: Thought: It seems there's an issue with the `editor._run` function. The error suggests that it's trying to call `endswith` on a `PosixPath` object, which doesn't have this method. This could be due to how the file paths are being handled in the function. Let's try to work around this by converting the path to a string before passing it to the function.

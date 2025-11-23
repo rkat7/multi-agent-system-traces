@@ -1,0 +1,16 @@
+    # Create patches
+    patches = []
+    for x_i, h_i, w_i, b_i in zip(x, height, width, bottom):
+        if x_i.mask and h_i.mask:
+            # Both x and height are NaN, skip this bar
+            continue
+        elif x_i.mask:
+            # x is NaN, use 0 as the x-coordinate
+            rect = Rectangle((0 - w_i/2, b_i), w_i, h_i)
+        elif h_i.mask:
+            # height is NaN, use 0 as the height
+            rect = Rectangle((x_i - align_offset, b_i), w_i, 0)
+        else:
+            # Neither x nor height is NaN
+            rect = Rectangle((x_i - align_offset, b_i), w_i, h_i)
+        patches.append(rect)

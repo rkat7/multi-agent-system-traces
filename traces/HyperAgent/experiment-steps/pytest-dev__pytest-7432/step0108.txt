@@ -1,0 +1,21 @@
+### Input
+<empty>
+
+### Output
+    # Handle xfail tests
+    xfail = getattr(item, '_xfail', None)
+    if item.config.option.runxfail:
+        if xfail and not rep.passed:
+            rep.outcome = "passed"
+            rep.wasxfail = xfail.reason
+    elif xfail:
+        if call.excinfo and call.excinfo.errisinstance(xfail.raises):
+            rep.outcome = "skipped"
+            rep.wasxfail = xfail.reason
+        elif call.when == "call":
+            if rep.passed:
+                rep.outcome = "failed"
+                rep.longrepr = "[XPASS(strict)] " + xfail.reason if xfail.strict else "[XPASS] " + xfail.reason
+            else:
+                rep.outcome = "skipped"
+                rep.wasxfail = xfail.reason

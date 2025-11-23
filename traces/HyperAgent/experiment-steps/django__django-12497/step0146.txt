@@ -1,0 +1,56 @@
+### Input
+<empty>
+
+### Output
+```python
+def _check_relationship_model(self, from_model=None, **kwargs):
+    ...
+    if hasattr(self.remote_field.through, '_meta'):
+        qualified_model_name = "%s.%s" % (
+            self.remote_field.through._meta.app_label, self.remote_field.through.__name__)
+    else:
+        qualified_model_name = self.remote_field.through
+    ...
+    if self.remote_field.through not in self.opts.apps.get_models(include_auto_created=True):
+        # The relationship model is not installed.
+        errors.append(
+            checks.Error(
+                "Field specifies a many-to-many relation through model "
+                "'%s', which has not been installed." % qualified_model_name,
+                obj=self,
+                id='fields.E331',
+            )
+        )
+    else:
+        assert from_model is not None, (
+            "ManyToManyField with intermediate "
+            "tables cannot be checked if you don't pass the model "
+            "where the field is attached to."
+        )
+        # Set some useful local variables
+        to_model = resolve_relation(from_model, self.remote_field.model)
+        from_model_name = from_model._meta.object_name
+        if isinstance(to_model, str):
+            to_model_name = to_model
+        else:
+            to_model_name = to_model._meta.object_name
+        relationship_model_name = self.remote_field.through._meta.object_name
+        self_referential = from_model == to_model
+        # Count foreign keys in intermediate model
+        if self_referential:
+            seen_self = sum(
+                from_model == getattr(field.remote_field, 'model', None)
+                for field in self.remote_field.through._meta.fields
+            )
+            if seen_self > 2 and not self.remote_field.through_fields:
+                errors.append(
+                    checks.Error(
+                        "The model is used as an intermediate model by "
+                        "'%s', but it has more than two foreign keys "
+                        "to '%s', which is ambiguous. You must specify "
+                        "through_fields." % (relationship_model_name, to_model_name),
+                        obj=self,
+                        id='fields.E332',
+                    )
+                )
+```

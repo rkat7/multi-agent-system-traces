@@ -1,0 +1,21 @@
+```python
+def order_by(self, *fields):
+    # ...
+    for field in fields:
+        # ...
+        if isinstance(field, ForeignKey):
+            # Check if it's a self-referencing foreign key
+            if field.remote_field.model == field.model:
+                # Don't apply automatic descending order
+                self.order_by.append(field.column)
+                # Avoid generating an extra JOIN if possible
+                if not self.has_select_fields:
+                    continue
+            # ...
+            # Generate an extra JOIN for other foreign keys
+            self.add_extra(
+                f"{self.from_alias}.{field.name} = {self.from_alias}.{field.column}"
+            )
+            # ...
+    # ...
+```

@@ -1,0 +1,12 @@
+@pytest.mark.parametrize("language_code, languages, expected_error", [
+    ('de-at', [('de', 'German'), ('en', 'English')], False),
+    ('fr-ca', [('de', 'German'), ('en', 'English')], True),
+    ('es-ar', [('es', 'Spanish'), ('en', 'English')], False),
+    ('en-us', [('en', 'English')], False),
+])
+def test_check_setting_language_code(language_code, languages, expected_error):
+    settings.LANGUAGE_CODE = language_code
+    settings.LANGUAGES = languages
+    errors = check_setting_language_code(None)
+    assert bool(errors) == expected_error, f"Expected {'an error' if expected_error else 'no error'} for {language_code}"
+```

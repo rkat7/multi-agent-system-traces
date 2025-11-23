@@ -1,0 +1,11 @@
+### Input
+<empty>
+
+### Output
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    user = User.query.filter_by(username=data['username']).first()
+    if user and user.check_password(data['password']):
+        return jsonify({"message": "Login successful"}), 200
+    return jsonify({"message": "Invalid username or password"}), 401

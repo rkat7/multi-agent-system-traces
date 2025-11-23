@@ -1,0 +1,32 @@
+```python
+270         line = line.strip().lstrip("!")
+271         # Is this a comment?
+272         if datatype == "comment":
+273             comment_text += line + "\n"
+274             continue
+275 
+276         if datatype == "command":
+277             # The first time I find commands, I save whatever comments into
+278             # The initial comments.
+279             if command_lines == "":
+280                 initial_comments = comment_text
+281                 comment_text = ""
+282 
+283             if err_specs != {}:
+284                 warnings.warn(
+285                     "This file contains multiple command blocks. Please verify",
+286                     AstropyUserWarning,
+287                 )
+288             command_lines += line + "\n"
+289             continue
+290 
+291         if datatype.startswith("data"):
+292             # The first time I find data, I define err_specs
+293             if err_specs == {} and command_lines != "":
+294                 for cline in command_lines.strip().split("\n"):
+295                     command = cline.strip().split()
+296                     # This should never happen, but just in case.
+297                     if len(command) < 3:
+298                         continue
+299                     err_specs[command[1].lower()] = [int(c) for c in command[2:]]
+```

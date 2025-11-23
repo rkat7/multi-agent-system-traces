@@ -1,0 +1,22 @@
+### Input
+<empty>
+
+### Output
+        if isinstance(q_object, Q):
+            where = WhereNode()
+            for child in q_object.children:
+                if isinstance(child, Q):
+                    where.add(self.add_q(child), q_object.connector)
+                else:
+                    value = child[1]
+                    if isinstance(value, Query) and value.group_by:
+                        value = GroupBySubquery(value)
+                    where.add((child[0], value), q_object.connector)
+            self.where.add(where, q_object.connector)
+        else:
+            self.where.add(q_object, AND)
+        return self
+'''
+result = editor._run(relative_file_path="django/db/models/sql/query.py", start_line=1297, end_line=1311, patch=patch)
+print(result)
+```

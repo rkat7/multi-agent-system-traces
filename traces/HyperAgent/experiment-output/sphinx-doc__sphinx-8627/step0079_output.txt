@@ -1,0 +1,9 @@
+    def generic_visit(self, node):
+        """Called if no explicit visitor function exists for a node."""
+        for field, value in inspect.getmembers(node):
+            if isinstance(value, ast.AST):
+                self.visit(value)
+            elif isinstance(value, list):
+                for item in value:
+                    if isinstance(item, ast.AST):
+                        self.visit(item)

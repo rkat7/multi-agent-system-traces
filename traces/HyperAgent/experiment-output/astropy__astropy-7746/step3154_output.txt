@@ -1,0 +1,87 @@
+1277     def all_pix2world(self, *args, **kwargs):
+1278         return self._array_converter(
+1279             self._all_pix2world, 'output', *args, **kwargs)
+1280     all_pix2world.__doc__ = """
+1281         Transforms pixel coordinates to world coordinates.
+1282 
+1283         Performs all of the following in series:
+1284 
+1285             - Detector to image plane correction (if present in the
+1286               FITS file)
+1287 
+1288             - `SIP`_ distortion correction (if present in the FITS
+1289               file)
+1290 
+1291             - `distortion paper`_ table-lookup correction (if present
+1292               in the FITS file)
+1293 
+1294             - `wcslib`_ "core" WCS transformation
+1295 
+1296         Parameters
+1297         ----------
+1298         {0}
+1299 
+1300             For a transformation that is not two-dimensional, the
+1301             two-argument form must be used.
+1302 
+1303         {1}
+1304 
+1305         Returns
+1306         -------
+1307 
+1308         {2}
+1309 
+1310         Notes
+1311         -----
+1312         The order of the axes for the result is determined by the
+1313         ``CTYPEia`` keywords in the FITS header, therefore it may not
+1314         always be of the form (*ra*, *dec*).  The
+1315         `~astropy.wcs.Wcsprm.lat`, `~astropy.wcs.Wcsprm.lng`,
+1316         `~astropy.wcs.Wcsprm.lattyp` and `~astropy.wcs.Wcsprm.lngtyp`
+1317         members can be used to determine the order of the axes.
+1318 
+1319         Raises
+1320         ------
+1321         ValueError
+1322             If the input array is not of the correct shape.
+1323         TypeError
+1324             If the input array is not of the correct type.
+1325 
+1326     def _array_converter(self, func, sky, *args, **kwargs):
+1327         if self.naxis == 1:
+1328             return _return_list_of_arrays(args, kwargs.get('origin'))
+1329 
+1330         if len(args) == 2:
+1331             try:
+1332                 xy, origin = args
+1333                 xy = np.asarray(xy)
+1334                 origin = int(origin)
+1335             except Exception:
+1336                 raise TypeError(
+1337                     "When providing two arguments, they must be "
+1338                     "(coords[N][{0}], origin)".format(self.naxis))
+1339             if self.naxis == 1 and len(xy.shape) == 1:
+1340                 return _return_list_of_arrays([xy], origin)
+1341             return _return_single_array(xy, origin)
+1342 
+1343         elif len(args) == self.naxis + 1:
+1344             axes = args[:-1]
+1345             origin = args[-1]
+1346             try:
+1347                 axes = [np.asarray(x) for x in axes]
+1348                 origin = int(origin)
+1349             except Exception:
+1350                 raise TypeError(
+1351                     "When providing more than two arguments, they must be " +
+1352                     "a 1-D array for each axis, followed by an origin.")
+1353 
+1354             return _return_list_of_arrays(axes, origin)
+1355 
+1356         raise TypeError(
+1357             "WCS projection has {0} dimensions, so expected 2 (an Nx{0} array "
+1358             "and the origin argument) or {1} arguments (the position in each "
+1359             "dimension, and the origin argument). Instead, {2} arguments were "
+1360             "given.".format(
+1361                 self.naxis, self.naxis + 1, len(args)))
+```
+HyperAgent_astropy__astropy-7746 - INFO - Navigator->Planner: To see the full indentation structure of the `_array_converter` method, I will open the `astropy/wcs/wcs.py` file and print the relevant code block.

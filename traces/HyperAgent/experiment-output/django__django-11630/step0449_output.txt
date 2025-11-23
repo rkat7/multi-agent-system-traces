@@ -1,0 +1,8 @@
+    for model in apps.get_models(include_auto_created=True):
+        db_table = model._meta.db_table
+        db_for_model = router.db_for_write(model)
+        if db_table not in db_table_models:
+            db_table_models[db_table] = {}
+        if db_for_model not in db_table_models[db_table]:
+            db_table_models[db_table][db_for_model] = []
+        db_table_models[db_table][db_for_model].append(model._meta.label)

@@ -1,0 +1,9 @@
+patch = '''
+    def get_admin_url(self, obj):
+        opts = obj._meta
+        viewname = 'admin:%s_%s_change' % (opts.app_label, opts.model_name)
+        return reverse(viewname, args=[obj.pk], current_app=self.admin_site.name)
+'''
+result = editor._run(relative_file_path="django/contrib/admin/options.py", start_line=1961, end_line=1961, patch=patch)
+print(result)
+```

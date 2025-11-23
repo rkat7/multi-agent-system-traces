@@ -1,0 +1,28 @@
+    Examples
+    --------
+    >>> col_in = ['MJD', 'Rate']
+    >>> cols = _interpret_err_lines(None, 2, names=col_in)
+    >>> cols[0]
+    'MJD'
+    >>> err_specs = {'terr': [1], 'serr': [2]}
+    >>> ncols = 5
+    >>> cols = _interpret_err_lines(err_specs, ncols, names=col_in)
+    >>> cols[0]
+    'MJD'
+    >>> cols[2]
+    'MJD_nerr'
+    >>> cols[4]
+    'Rate_err'
+    >>> _interpret_err_lines(err_specs, 6, names=col_in)
+    Traceback (most recent call last):
+        ...
+    ValueError: Inconsistent number of input colnames
+    """
+    colnames = ["" for i in range(ncols)]
+    if err_specs is None:
+        serr_cols = terr_cols = []
+    else:
+        # Create a case-insensitive copy of err_specs
+        err_specs_lower = {k.lower(): v for k, v in err_specs.items()}
+        serr_cols = err_specs_lower.pop("serr", [])
+        terr_cols = err_specs_lower.pop("terr", [])

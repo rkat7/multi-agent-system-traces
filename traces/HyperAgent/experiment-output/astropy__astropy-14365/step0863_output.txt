@@ -1,0 +1,23 @@
+        Returns
+        -------
+        table : `~astropy.table.Table`
+            The table read from the QDP file.
+        """
+        lines = _get_lines_from_file(self.data)
+        tables = []
+        current_table = []
+        for line in lines:
+            line_type = _line_type(line)
+            if line_type == "command":
+                command = line.split()
+                if command[0].upper() == "READ":
+                    if command[1].upper() == "SERR":
+                        serr_cols = [int(col) - 1 for col in command[2:]]
+                    elif command[1].upper() == "TERR":
+                        terr_cols = [int(col) - 1 for col in command[2:]]
+            elif line_type == "data":
+                current_table.append(line)
+            elif line_type == "comment":
+                if current_table:
+                    tables.append(current_table)
+                    current_table = []

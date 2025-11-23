@@ -1,0 +1,21 @@
+### Input
+<empty>
+
+### Output
+            for obj in [
+                regular_function,
+                star_args_function,
+                star_kwargs_function,
+                _ClassWithDocumentedInitAndStarArgs,
+                ClassWithStarArgsMethod.method_with_star_args,
+            ]:
+                documenter = Documenter.for_type(obj)
+                if documenter is None:
+                    documenter = ClassDocumenter(None, inspect.getmodule(obj).__name__ + '.' + obj.__name__)
+                documenter.object = obj
+                documenter.options = {}
+                documenter.generate(more_content=None)
+                output = documenter.format_signature()
+                print(f"Config: {config_option}={config_value}, Object: {obj.__name__}")
+                print(output)
+                print()

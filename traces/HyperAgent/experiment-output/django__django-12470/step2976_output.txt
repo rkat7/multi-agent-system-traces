@@ -1,0 +1,41 @@
+1. The `ModelBase` metaclass is responsible for creating the model classes and handling the `Meta` class attribute:
+```python
+class ModelBase(type):
+    def __new__(cls, name, bases, attrs, **kwargs):
+        ...
+        attr_meta = attrs.pop('Meta', None)
+        ...
+```
+2. The `Meta` class attribute is extracted from the class attributes and is used to configure the model's options, such as the ordering:
+```python
+meta = attr_meta or getattr(new_class, 'Meta', None)
+```
+3. The `ModelBase` metaclass then sets up the model class, including applying the `ordering` option from the `Meta` class:
+```python
+abstract = getattr(attr_meta, 'abstract', False)
+meta = attr_meta or getattr(new_class, 'Meta', None)
+base_meta = getattr(new_class, '_meta', None)
+...
+new_class._meta.indexes = [copy.deepcopy(idx) for idx in new_class._meta.indexes]
+...
+if abstract:
+    ...
+    new_class._meta.abstract = False
+    new_class.Meta = attr_meta
+    return new_class
+...
+new_class._prepare()
+new_class._meta.apps.register_model(new_class._meta.app_label, new_class)
+return new_class
+```
+4. The `add_to_class` method of the `ModelBase` metaclass is used to add the `Meta` class attribute to the model class:
+```python
+def add_to_class(cls, name, value):
+    ...
+    if name == 'Meta':
+        ...
+        cls._meta = value
+        ...
+```
+These code snippets demonstrate how the `Meta` class is handled in model subclasses in Django's codebase.
+HyperAgent_django__django-12470 - INFO - Planner's Response: Thought: Thank you for providing the relevant code snippets from Django's codebase. Now that we have a better understanding of how Django handles model inheritance and Meta options, we can see that the issue stems from the fact that Meta options are not automatically inherited by subclasses. This is intentional in Django's design to allow subclasses to have different Meta options from their parent classes.

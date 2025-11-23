@@ -1,0 +1,17 @@
+patch = '''
+def get_user() -> Optional[str]:
+    """Return the current user name, or None if getuser() does not work
+    in the current environment (see #1010)."""
+    import getpass
+    try:
+        username = getpass.getuser()
+        # Sanitize the username by replacing illegal characters with underscores
+        sanitized_username = re.sub(r'[<>:"/\\|?*]', '_', username)
+        return sanitized_username
+    except (ImportError, KeyError):
+        return None
+'''
+result = editor._run(relative_file_path="src/_pytest/tmpdir.py", start_line=152, end_line=164, patch=patch)
+print(result)
+```
+HyperAgent_pytest-dev__pytest-8365 - INFO - Inner-Editor-Assistant's Response: Thought: I can see that the `re` module is already imported at the beginning of the file (line 4). However, there's now a redundant import of `re` just before the `get_user()` function (line 152). We should remove this redundant import to keep the code clean and avoid potential confusion.

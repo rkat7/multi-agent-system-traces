@@ -1,0 +1,21 @@
+```python
+# From src/_pytest/pytester_assertions.py
+def assertoutcome(
+    outcomes: Tuple[
+        Sequence[TestReport],
+        Sequence[Union[CollectReport, TestReport]],
+        Sequence[Union[CollectReport, TestReport]],
+    ],
+    passed: int = 0,
+    skipped: int = 0,
+    failed: int = 0,
+) -> None:
+    __tracebackhide__ = True
+    realpassed, realskipped, realfailed = outcomes
+    obtained = {
+        "passed": len(realpassed),
+        "skipped": len(realskipped),
+        "failed": len(realfailed),
+    }
+    expected = {"passed": passed, "skipped": skipped, "failed": failed}
+    assert obtained == expected, outcomes

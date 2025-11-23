@@ -1,0 +1,19 @@
+    Returns
+    -------
+    separable_matrix : ndarray
+        A correlation matrix where each element indicates how correlated
+        the corresponding output is with the corresponding input.
+    """
+    if isinstance(transform, CompoundModel):
+        separable_matrix = np.zeros((transform.n_outputs, transform.n_inputs))
+        for i, model in enumerate(transform.components):
+            sub_matrix = _separable(model)
+            if isinstance(model, Mapping):
+                separable_matrix[model.mapping, i] = sub_matrix
+            else:
+                separable_matrix[:, i:i+model.n_inputs] = sub_matrix
+        return separable_matrix
+    else:
+        # Handle non-compound models
+        ...
+```

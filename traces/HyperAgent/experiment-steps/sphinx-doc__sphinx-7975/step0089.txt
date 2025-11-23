@@ -1,0 +1,19 @@
+### Input
+Action:
+```python
+
+### Output
+patch = '''
+        def keyfunc(entry: Tuple[str, List]) -> Tuple[str, str]:
+            key, (void, void, category_key) = entry
+            if category_key:
+                # using specified category key to sort
+                key = category_key
+            lckey = unicodedata.normalize('NFD', key.lower())
+            if lckey.startswith('\N{RIGHT-TO-LEFT MARK}'):
+                lckey = lckey[1:]
+            if lckey[0:1].isalpha() or lckey.startswith('_'):
+                return (chr(127) + lckey, entry[0])
+            else:
+                # Place all symbols at the beginning
+                return (chr(0) + lckey, entry[0])

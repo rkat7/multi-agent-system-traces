@@ -1,0 +1,19 @@
+```python
+74 class ASGIStaticFilesHandler(StaticFilesHandlerMixin, ASGIHandler):
+75     """
+76     ASGI application which wraps another and intercepts requests for static
+77     files, passing them off to Django's static file serving.
+78     """
+79     def __init__(self, application):
+80         self.application = application
+81         self.base_url = urlparse(self.get_base_url())
+82 
+83     async def __call__(self, scope, receive, send):
+84         # Only even look at HTTP requests
+85         if scope['type'] == 'http' and self._should_handle(scope['path']):
+86             # Serve static content
+87             # (the one thing super() doesn't do is __call__, apparently)
+88             return await super().__call__(scope, receive, send)
+89         # Hand off to the main app
+90         return await self.application(scope, receive, send)
+```

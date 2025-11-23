@@ -1,0 +1,21 @@
+                if is_path:
+                    if fobj is not None:
+                        raise ValueError(
+                            "Can not provide both a FITS filename to "
+                            "argument 1 and a FITS file object to argument 2")
+                    fobj = fits.open(header)
+                    close_fds.append(fobj)
+                    header = fobj[0].header
+            elif isinstance(header, fits.hdu.image._ImageBaseHDU):
+                header = header.header
+            elif not isinstance(header, fits.Header):
+                try:
+                    # Accept any dict-like object
+                    orig_header = header
+                    header = fits.Header()
+                    for dict_key in orig_header.keys():
+                        header[dict_key] = orig_header[dict_key]
+                except TypeError:
+                    raise TypeError(
+                        "header must be a string, an astropy.io.fits.Header "
+                        "object, or a dict-like object")

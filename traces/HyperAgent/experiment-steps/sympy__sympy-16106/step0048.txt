@@ -1,0 +1,85 @@
+### Input
+<empty>
+
+### Output
+HyperAgent_sympy__sympy-16106 - INFO - Editor->Planner: exitcode: 0 (execution succeeded)
+Code output: The content of sympy/printing/mathml.py is: 1 """
+2 A MathML printer.
+3 """
+4 
+5 from __future__ import print_function, division
+6 
+7 from sympy import sympify, S, Mul
+8 from sympy.core.function import _coeff_isneg
+9 from sympy.core.compatibility import range, string_types, default_sort_key
+10 from sympy.printing.conventions import split_super_sub, requires_partial
+11 from sympy.printing.precedence import precedence_traditional, PRECEDENCE
+12 from sympy.printing.pretty.pretty_symbology import greek_unicode
+13 from sympy.printing.printer import Printer
+14 
+15 class MathMLPrinterBase(Printer):
+16     """Contains common code required for MathMLContentPrinter and
+17     MathMLPresentationPrinter.
+18     """
+19 
+20     _default_settings = {
+21         "order": None,
+22         "encoding": "utf-8",
+23         "fold_frac_powers": False,
+24         "fold_func_brackets": False,
+25         "fold_short_frac": None,
+26         "inv_trig_style": "abbreviated",
+27         "ln_notation": False,
+28         "long_frac_ratio": None,
+29         "mat_delim": "[",
+30         "mat_symbol_style": "plain",
+31         "mul_symbol": None,
+32         "root_notation": True,
+33         "symbol_names": {},
+34     }
+35 
+36     def __init__(self, settings=None):
+37         Printer.__init__(self, settings)
+38         from xml.dom.minidom import Document,Text
+39 
+40         self.dom = Document()
+41 
+42         # Workaround to allow strings to remain unescaped
+43         # Based on https://stackoverflow.com/questions/38015864/python-xml-dom-minidom-please-dont-escape-my-strings/38041194
+44         class RawText(Text):
+45             def writexml(self, writer, indent='', addindent='', newl=''):
+46                 if self.data:
+47                     writer.write(u'{}{}{}'.format(indent, self.data, newl))
+48 
+49         def createRawTextNode(data):
+50             r = RawText()
+51             r.data = data
+52             r.ownerDocument = self.dom
+53             return r
+54 
+55         self.dom.createTextNode = createRawTextNode
+56 
+57     def doprint(self, expr):
+58         """
+59         Prints the expression as MathML.
+60         """
+61         mathML = Printer._print(self, expr)
+62         unistr = mathML.toxml()
+63         xmlbstr = unistr.encode('ascii', 'xmlcharrefreplace')
+64         res = xmlbstr.decode()
+65         return res
+66 
+67     def apply_patch(self):
+68         # Applying the patch of xml.dom.minidom bug
+69         # Date: 2011-11-18
+70         # Description: http://ronrothman.com/public/leftbraned/xml-dom-minidom-\
+71         #                   toprettyxml-and-silly-whitespace/#best-solution
+72         # Issue: http://bugs.python.org/issue4147
+73         # Patch: http://hg.python.org/cpython/rev/7262f8f276ff/
+74 
+75         from xml.dom.minidom import Element, Text, Node, _write_data
+76 
+77         def writexml(self, writer, indent="", addindent="", newl=""):
+78             # indent = current indentation
+79             # addindent = indentation to add to higher levels
+80             # newl = newline string

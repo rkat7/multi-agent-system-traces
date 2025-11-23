@@ -1,0 +1,49 @@
+### Input
+<empty>
+
+### Output
+        keep = False
+        if safe_getattr(member, '__sphinx_mock__', None) is not None:
+            # mocked module or object
+            pass
+        elif self.options.exclude_members and membername in self.options.exclude_members:
+            # remove members given by exclude-members
+            keep = False
+        elif want_all and special_member_re.match(membername):
+            # special __methods__
+            if self.options.special_members and membername in self.options.special_members:
+                if membername == '__doc__':
+                    keep = False
+                elif is_filtered_inherited_member(membername, obj):
+                    keep = False
+                else:
+                    keep = has_doc or self.options.undoc_members
+            else:
+                keep = False
+        elif (namespace, membername) in attr_docs:
+            if want_all and isprivate:
+                if self.options.private_members is None:
+                    keep = False
+                else:
+                    keep = membername in self.options.private_members
+            else:
+                # keep documented attributes
+                keep = True
+                isattr = True
+        elif want_all and isprivate:
+            if has_doc or self.options.undoc_members:
+                if self.options.private_members is None:
+                    keep = False
+                elif is_filtered_inherited_member(membername, obj):
+                    keep = False
+                else:
+                    keep = membername in self.options.private_members
+            else:
+                keep = False
+        else:
+            if (self.options.members is ALL and
+                    is_filtered_inherited_member(membername, obj)):
+                keep = False
+            else:
+                # ignore undocumented members if :undoc-members: is not given
+                keep = has_doc or self.options.undoc_members

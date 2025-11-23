@@ -1,0 +1,23 @@
+```python
+def get_ordering(self, alias):
+    """
+    Return the ordering for the given alias.
+    """
+    if self._order_by:
+        return self._order_by
+    elif self.query.annotations:
+        # If we have annotations, we can't use the model's ordering
+        # because it might not be valid for the annotated fields.
+        return []
+    else:
+        # If we don't have any annotations, we can use the model's ordering
+        # if it exists.
+        meta = self.model._meta
+        if meta.ordering:
+            return meta.ordering
+        # If the model doesn't have ordering, check its parent classes
+        for base in self.model.__bases__:
+            if hasattr(base, '_meta') and base._meta.ordering:
+                return base._meta.ordering
+        return []
+```

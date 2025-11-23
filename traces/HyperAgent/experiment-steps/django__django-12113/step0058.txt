@@ -1,0 +1,22 @@
+### Input
+<empty>
+
+### Output
+```python
+28 @override_settings(ROOT_URLCONF=__name__, DATABASE_ROUTERS=['%s.Router' % __name__])
+29 class MultiDatabaseTests(TestCase):
+30     databases = {'default', 'other'}
+31 
+32     @classmethod
+33     def setUpTestData(cls):
+34         cls.superusers = {}
+35         cls.test_book_ids = {}
+36         for db in connections:
+37             Router.target_db = db
+38             cls.superusers[db] = User.objects.create_superuser(
+39                 username='admin', password='something', email='test@test.org',
+40             )
+41             b = Book(name='Test Book')
+42             b.save(using=db)
+43             cls.test_book_ids[db] = b.id
+```

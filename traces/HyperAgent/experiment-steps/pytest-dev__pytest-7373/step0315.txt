@@ -1,0 +1,23 @@
+### Input
+<empty>
+
+### Output
+                for expr in args:
+                    self.expr = expr
+                    if isinstance(expr, str):
+                        d = self._getglobals()
+                        result = cached_eval(self.item.config, expr, d)
+                    else:
+                        if "reason" not in mark.kwargs:
+                            # XXX better be checked at collection time
+                            msg = (
+                                "you need to specify reason=STRING "
+                                "when using booleans as conditions."
+                            )
+                            fail(msg)
+                        result = bool(expr)
+                    if result:
+                        self.result = True
+                        self.reason = mark.kwargs.get("reason", None)
+                        self.expr = expr
+                        return self.result

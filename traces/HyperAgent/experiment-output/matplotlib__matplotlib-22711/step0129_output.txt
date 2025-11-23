@@ -1,0 +1,18 @@
+    def _update(self, event):
+        """Update the slider position and value."""
+        if self.ignore(event):
+            return
+        if event.name == 'button_press_event' and event.button != 1:
+            return
+        if event.name == 'button_press_event' and self.eventson:
+            self._event_waiters['press'].append(event)
+            self._pause()
+        elif event.name == 'button_release_event' and self.eventson:
+            self._event_waiters['release'].append(event)
+            self._pause()
+        elif event.name == 'motion_notify_event' and self.dragging:
+            if self.orientation == 'horizontal':
+                val = event.xdata
+            else:
+                val = event.ydata
+            self.set_val(val)

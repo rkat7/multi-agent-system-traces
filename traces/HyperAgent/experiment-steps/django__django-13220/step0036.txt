@@ -1,0 +1,12 @@
+### Input
+<empty>
+
+### Output
+def __hash__(self):
+    if hasattr(self, 'error_dict'):
+        return hash(frozenset((k, frozenset(map(str, v))) for k, v in self.error_dict.items()))
+    elif hasattr(self, 'error_list'):
+        return hash(frozenset(map(str, self.error_list)))
+    else:
+        return hash((self.message, self.code, frozenset(self.params.items()) if self.params else None))
+```

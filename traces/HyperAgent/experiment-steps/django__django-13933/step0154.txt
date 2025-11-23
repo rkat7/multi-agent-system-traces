@@ -1,0 +1,27 @@
+### Input
+<empty>
+
+### Output
+```python
+1187 class ModelChoiceField(ChoiceField):
+1188     """A ChoiceField whose choices are a model QuerySet."""
+1189     default_error_messages = {
+1190         'invalid_choice': _('Select a valid choice. %(value)s is not one of the available choices.'),
+1191     }
+1192 
+1193     def to_python(self, value):
+1194         if value in self.empty_values:
+1195             return None
+1196         try:
+1197             key = self.to_field_name or 'pk'
+1198             if isinstance(value, self.queryset.model):
+1199                 value = getattr(value, key)
+1200             value = self.queryset.get(**{key: value})
+1201         except (ValueError, TypeError, self.queryset.model.DoesNotExist):
+1202             raise ValidationError(
+1203                 self.error_messages['invalid_choice'],
+1204                 code='invalid_choice',
+1205                 params={'value': value},
+1206             )
+1207         return value
+```

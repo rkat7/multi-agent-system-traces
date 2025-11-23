@@ -1,0 +1,50 @@
+### Input
+<empty>
+
+### Output
+Results for keyword: def get_order_by
+749     def get_order_by(self):
+750         """
+751         Return a list of 2-tuples of form (expr, (sql, params, is_ref)) for the
+752         ORDER BY clause.
+753 
+754         The order_by clause can alter the select clause (for example it
+755         can add aliases to clauses that do not yet have one, or it can
+756         add totally new select clauses).
+757         """
+758         result = []
+759         seen = set()
+760 
+761         order_by = self.query.order_by
+762         if not order_by:
+763             return result
+764 
+765         for expr, is_ref in order_by:
+766             resolved = expr.resolve_expression(self.query, allow_joins=True, reuse=None)
+767             if self.query.combinator:
+768                 src = resolved.get_source_expressions()[0]
+769                 # Relabel order by columns to raw numbers if this is a combined
+770                 # query; necessary since the columns can't be referenced by the
+771                 # fully qualified name and the simple column names may collide.
+772                 for idx, (sel_expr, _, col_alias) in enumerate(self.select):
+773                     if is_ref and col_alias == src.refs:
+774                         src = src.source
+775                     elif col_alias:
+776                         continue
+777                     if src == sel_expr:
+778                         resolved.set_source_expressions([RawSQL('%d' % (idx + 1), ())])
+779                         break
+780                 else:
+781                     raise DatabaseError('ORDER BY term does not match any column in the result set.')
+782             sql, params = self.compile(resolved)
+783             # Don't add the same column twice, but the order direction is
+784             # not taken into account so we strip it. When this entire method
+785             # is refactored into expressions, then we can check each part as we
+786             # generate it.
+787             without_ordering = self.ordering_parts.search(sql).group(1)
+788             params_hash = make_hashable(params)
+789             if (without_ordering, params_hash) in seen:
+790                 continue
+791             seen.add((without_ordering, params_hash))
+792             result.append((resolved, (sql, params, is_ref)))
+793         return result

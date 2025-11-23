@@ -1,0 +1,31 @@
+### Input
+<empty>
+
+### Output
+```python
+def get_object_members(self, want_all: bool) -> Tuple[bool, ObjectMembers]:
+    members = self.get_module_members()
+    if want_all:
+        if self.__all__ is None:
+            # for implicit module members, check __module__ to avoid
+            # documenting imported objects
+            return True, list(members.values())
+        else:
+            # When __all__ is defined (even if empty), only return members in __all__
+            return True, [member for member in members.values() if member.__name__ in self.__all__]
+    else:
+        skipped = []
+        for member_name, member in members.items():
+            if member_name in self.options.exclude_members:
+                skipped.append(member)
+                member.skipped = True
+            elif self.options.members and member_name not in self.options.members:
+                skipped.append(member)
+                member.skipped = True
+            elif self.options.exclude_inherited and hasattr(member, '__bases__'):
+                for base in member.__bases__:
+                    if base.__module__ == member.__module__:
+                        skipped.append(member)
+                        member.skipped = True
+                        break
+        return False, list(members.values())

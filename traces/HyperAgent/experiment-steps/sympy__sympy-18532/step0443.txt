@@ -1,0 +1,85 @@
+### Input
+<empty>
+
+### Output
+```python
+434     def atoms(self, *types):
+435         """Returns the atoms that form the current object.
+436 
+437         By default, only objects that are truly atomic and can't
+438         be divided into smaller pieces are returned: symbols, numbers,
+439         and number symbols like I and pi. It is possible to request
+440         atoms of any type, however, as demonstrated below.
+441 
+442         Examples
+443         ========
+444 
+445         >>> from sympy import I, pi, sin
+446         >>> from sympy.abc import x, y
+447         >>> (1 + x + 2*sin(y + I*pi)).atoms()
+448         {1, 2, I, pi, x, y}
+449 
+450         If one or more types are given, the results will contain only
+451         those types of atoms.
+452 
+453         >>> from sympy import Number, NumberSymbol, Symbol
+454         >>> (1 + x + 2*sin(y + I*pi)).atoms(Symbol)
+455         {x, y}
+456 
+457         >>> (1 + x + 2*sin(y + I*pi)).atoms(Number)
+458         {1, 2}
+459 
+460         >>> (1 + x + 2*sin(y + I*pi)).atoms(Number, NumberSymbol)
+461         {1, 2, pi}
+462 
+463         >>> (1 + x + 2*sin(y + I*pi)).atoms(Number, NumberSymbol, I)
+464         {1, 2, I, pi}
+465 
+466         Note that I (imaginary unit) and zoo (complex infinity) are special
+467         types of number symbols and are not part of the NumberSymbol class.
+468 
+469         The type can be given implicitly, too:
+470 
+471         >>> (1 + x + 2*sin(y + I*pi)).atoms(x) # x is a Symbol
+472         {x, y}
+473 
+474         Be careful to check your assumptions when using the implicit option
+475         since ``S(1).is_Integer = True`` but ``type(S(1))`` is ``One``, a special type
+476         of sympy atom, while ``type(S(2))`` is type ``Integer`` and will find all
+477         integers in an expression:
+478 
+479         >>> from sympy import S
+480         >>> (1 + x + 2*sin(y + I*pi)).atoms(S(1))
+481         {1}
+482 
+483         >>> (1 + x + 2*sin(y + I*pi)).atoms(S(2))
+484         {1, 2}
+485 
+486         Finally, arguments to atoms() can select more than atomic atoms: any
+487         sympy type (loaded in core/__init__.py) can be listed as an argument
+488         and those types of "atoms" as found in scanning the arguments of the
+489         expression recursively:
+490 
+491         >>> from sympy import Function, Mul
+492         >>> from sympy.core.function import AppliedUndef
+493         >>> f = Function('f')
+494         >>> (1 + f(x) + 2*sin(y + I*pi)).atoms(Function)
+495         {f(x), sin(y + I*pi)}
+496         >>> (1 + f(x) + 2*sin(y + I*pi)).atoms(AppliedUndef)
+497         {f(x)}
+498 
+499         >>> (1 + x + 2*sin(y + I*pi)).atoms(Mul)
+500         {I*pi, 2*sin(y + I*pi)}
+501 
+502         """
+503         if types:
+504             types = tuple(
+505                 [t if isinstance(t, type) else type(t) for t in types])
+506         else:
+507             types = (Atom,)
+508         result = set()
+509         for expr in preorder_traversal(self):
+510             if isinstance(expr, types):
+511                 result.add(expr)
+512         return result
+```

@@ -1,0 +1,10 @@
+patch = '''
+        if self.choices is not None:
+            method_name = 'get_%s_display' % self.name
+            if not hasattr(cls, method_name):
+                setattr(cls, method_name,
+                        partialmethod(cls._get_FIELD_display, field=self))
+'''
+result = editor._run(relative_file_path="django/db/models/fields/__init__.py", start_line=765, end_line=767, patch=patch)
+print(result)
+```

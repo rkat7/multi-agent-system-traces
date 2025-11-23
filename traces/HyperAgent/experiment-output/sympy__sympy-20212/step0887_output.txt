@@ -1,0 +1,11 @@
+# Find relevant pull requests
+response = requests.get(f"{repo_url}/search?q={search_query}&type=PullRequests")
+soup = BeautifulSoup(response.content, "html.parser")
+pull_requests = soup.find_all("a", class_="Link--primary")
+relevant_prs = []
+for pr in pull_requests:
+    if search_query.lower() in pr.text.lower():
+        relevant_prs.append({
+            "title": pr.text.strip(),
+            "url": f"{repo_url}/{pr['href']}"
+        })

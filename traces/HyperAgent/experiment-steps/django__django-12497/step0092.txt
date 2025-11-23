@@ -1,0 +1,19 @@
+### Input
+<empty>
+
+### Output
+    if not self.rel.is_hidden():
+        if self.rel.related_name:
+            related_name = self.rel.related_name
+        elif self.model != cls:
+            related_name = cls._meta.model_name + '_set'
+        else:
+            related_name = None
+        remote_field = ForeignObject(
+            cls,
+            on_delete=CASCADE,
+            related_name=related_name,
+            related_query_name=self.rel.related_query_name,
+        )
+        remote_field.contribute_to_related_class(self.rel.to, self)
+```

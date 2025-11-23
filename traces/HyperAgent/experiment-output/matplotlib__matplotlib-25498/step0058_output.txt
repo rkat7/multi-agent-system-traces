@@ -1,0 +1,78 @@
+Results for keyword: Colorbar
+2 """
+3 Colorbars are a visualization of the mapping from scalar values to colors.
+4 In Matplotlib they are drawn into a dedicated `~.axes.Axes`.
+5 
+6 .. note::
+7    Colorbars are typically created through `.Figure.colorbar` or its pyplot
+8    wrapper `.pyplot.colorbar`, which internally use `.Colorbar` together with
+9    `.make_axes_gridspec` (for `.GridSpec`-positioned axes) or `.make_axes` (for
+10    non-`.GridSpec`-positioned axes).
+--------------
+2 """
+3 Colorbars are a visualization of the mapping from scalar values to colors.
+4 In Matplotlib they are drawn into a dedicated `~.axes.Axes`.
+5 
+6 .. note::
+7    Colorbars are typically created through `.Figure.colorbar` or its pyplot
+8    wrapper `.pyplot.colorbar`, which internally use `.Colorbar` together with
+9    `.make_axes_gridspec` (for `.GridSpec`-positioned axes) or `.make_axes` (for
+10    non-`.GridSpec`-positioned axes).
+11 
+12    End-users most likely won't need to directly use this module's API.
+13 """
+14 
+--------------
+2 """
+3 Colorbars are a visualization of the mapping from scalar values to colors.
+4 In Matplotlib they are drawn into a dedicated `~.axes.Axes`.
+5 
+6 .. note::
+7    Colorbars are typically created through `.Figure.colorbar` or its pyplot
+8    wrapper `.pyplot.colorbar`, which internally use `.Colorbar` together with
+9    `.make_axes_gridspec` (for `.GridSpec`-positioned axes) or `.make_axes` (for
+10    non-`.GridSpec`-positioned axes).
+11 
+12    End-users most likely won't need to directly use this module's API.
+13 """
+14 
+15 import logging
+--------------
+111     each region delimited by adjacent entries in *boundaries*, the color mapped
+112     to the corresponding value in values will be used.
+113     Normally only useful for indexed colors (i.e. ``norm=NoNorm()``) or other
+114     unusual circumstances.""")
+115 
+116 
+117 def _set_ticks_on_axis_warn(*args, **kwargs):
+118     # a top level function which gets put in at the axes'
+119     # set_xticks and set_yticks by Colorbar.__init__.
+120     _api.warn_external("Use the colorbar set_ticks() method instead.")
+121 
+122 
+123 class _ColorbarSpine(mspines.Spine):
+124     def __init__(self, axes):
+125         self._ax = axes
+126         super().__init__(axes, 'colorbar', mpath.Path(np.empty((0, 2))))
+--------------
+123 class _ColorbarSpine(mspines.Spine):
+124     def __init__(self, axes):
+125         self._ax = axes
+126         super().__init__(axes, 'colorbar', mpath.Path(np.empty((0, 2))))
+127         mpatches.Patch.set_transform(self, axes.transAxes)
+128 
+129     def get_window_extent(self, renderer=None):
+130         # This Spine has no Axis associated with it, and doesn't need to adjust
+131         # its location, so we can directly get the window extent from the
+132         # super-super-class.
+133         return mpatches.Patch.get_window_extent(self, renderer=renderer)
+134 
+135     def set_xy(self, xy):
+136         self._path = mpath.Path(xy, closed=True)
+137         self._xy = xy
+138         self.stale = True
+139 
+140     def draw(self, renderer):
+141         ret = mpatches.Patch.draw(self, renderer)
+142         self.stale = False
+143         return ret

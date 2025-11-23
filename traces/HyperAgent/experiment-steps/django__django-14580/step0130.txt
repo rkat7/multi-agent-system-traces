@@ -1,0 +1,53 @@
+### Input
+<empty>
+
+### Output
+```python
+26         def _write(_arg_name, _arg_value):
+27             if (_arg_name in self.operation.serialization_expand_args and
+28                     isinstance(_arg_value, (list, tuple, dict))):
+29                 if isinstance(_arg_value, dict):
+30                     self.feed('%s={' % _arg_name)
+31                     self.indent()
+32                     for key, value in _arg_value.items():
+33                         key_string, key_imports = MigrationWriter.serialize(key)
+34                         arg_string, arg_imports = MigrationWriter.serialize(value)
+35                         args = arg_string.splitlines()
+36                         if len(args) > 1:
+37                             self.feed('%s: %s' % (key_string, args[0]))
+38                             for arg in args[1:-1]:
+39                                 self.feed(arg)
+40                             self.feed('%s,' % args[-1])
+41                         else:
+42                             self.feed('%s: %s,' % (key_string, arg_string))
+43                         imports.update(key_imports)
+44                         imports.update(arg_imports)
+45                     self.unindent()
+46                     self.feed('},')
+47                 else:
+48                     self.feed('%s=[' % _arg_name)
+49                     self.indent()
+50                     for item in _arg_value:
+51                         arg_string, arg_imports = MigrationWriter.serialize(item)
+52                         args = arg_string.splitlines()
+53                         if len(args) > 1:
+54                             for arg in args[:-1]:
+55                                 self.feed(arg)
+56                             self.feed('%s,' % args[-1])
+57                         else:
+58                             self.feed('%s,' % arg_string)
+59                         imports.update(arg_imports)
+60                     self.unindent()
+61                     self.feed('],')
+62             else:
+63                 arg_string, arg_imports = MigrationWriter.serialize(_arg_value)
+64                 args = arg_string.splitlines()
+65                 if len(args) > 1:
+66                     self.feed('%s=%s' % (_arg_name, args[0]))
+67                     for arg in args[1:-1]:
+68                         self.feed(arg)
+69                     self.feed('%s,' % args[-1])
+70                 else:
+71                     self.feed('%s=%s,' % (_arg_name, arg_string))
+72                 imports.update(arg_imports)
+```

@@ -1,0 +1,13 @@
+### Input
+<empty>
+
+### Output
+        # Redirect resolving generation
+        if response.is_redirect:
+            while response.is_redirect:
+                prepared_request = self.resolve_redirects(response, request, stream=stream, timeout=timeout,
+                                                          verify=verify, cert=cert, proxies=proxies)
+                conn = self.get_connection(request.url, proxies)
+                response = self.send_request_socket(conn, prepared_request, stream=stream, timeout=timeout)
+                for attr in ('status_code', 'headers', 'content', 'cookies', 'url', 'history'):
+                    setattr(response, attr, getattr(sent, attr, None))

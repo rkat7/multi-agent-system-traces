@@ -1,0 +1,18 @@
+**django/urls/resolvers.py**
+```python
+def resolve(self, path):
+    # ...
+    for pattern in self.url_patterns:
+        try:
+            sub_match = pattern.resolve(new_path)
+        except Resolver404 as e:
+            # Handle Resolver404 exception
+            sub_tried = e.args[0].get('tried')
+            if sub_tried is not None:
+                tried.extend([pattern] + t for t in sub_tried)
+            else:
+                tried.append([pattern])
+        else:
+            # ...
+```
+This file defines the `URLResolver.resolve` method, which is responsible for resolving a URL to a view function. This method iterates through the `self.url_patterns` and tries to resolve the remaining part of the path using each pattern. If a pattern raises a `Resolver404` exception, the method adds the tried pattern to the `tried` list and continues to the next pattern.

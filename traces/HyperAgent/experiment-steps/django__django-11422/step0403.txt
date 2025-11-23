@@ -1,0 +1,22 @@
+### Input
+<empty>
+
+### Output
+    def run_loop(self):
+        """
+        Run the reloader loop.
+        """
+        while not self._stop_condition.is_set():
+            try:
+                # Watch for file changes
+                for filename in self.watched_files():
+                    if os.path.exists(filename):
+                        if os.path.getmtime(filename) > self._last_modified[filename]:
+                            self._last_modified[filename] = os.path.getmtime(filename)
+                            self.trigger_reload(filename)
+                # Wait for 0.1 seconds before checking again
+                time.sleep(0.1)
+            except Exception as e:
+                logger.error('Error in reloader thread: %s', e)
+                self._stop_condition.set()
+```

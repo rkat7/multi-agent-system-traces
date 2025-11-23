@@ -1,0 +1,21 @@
+### Input
+Action:
+```python
+
+### Output
+patch = '''
+    def get_ordering(self):
+        if self.order_by:
+            return self.order_by
+        elif self.model._meta.ordering:
+            return self.model._meta.ordering
+        # Check if this is a child model
+        if self.model._meta.parents:
+            for parent in self.model._meta.parents.values():
+                if parent._meta.ordering:
+                    return parent._meta.ordering
+        return []
+'''
+result = editor._run(relative_file_path="django/db/models/sql/query.py", start_line=2262, end_line=2262, patch=patch)
+print(result)
+```

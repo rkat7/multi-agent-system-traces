@@ -1,0 +1,17 @@
+### Input
+<empty>
+
+### Output
+```python
+280         # Optimize for the case with a single obj and no dependencies
+281         if len(self.data) == 1 and len(instances) == 1:
+282             instance = list(instances)[0]
+283             if self.can_fast_delete(instance):
+284                 with transaction.mark_for_rollback_on_error():
+285                     count = sql.DeleteQuery(model).delete_batch([instance.pk], self.using)
+286                 return count, {model._meta.label: count}
+287 
+288         with transaction.atomic(using=self.using, savepoint=False):
+289             # send pre_delete signals
+290             for model, obj in self.instances_with_model():
+```

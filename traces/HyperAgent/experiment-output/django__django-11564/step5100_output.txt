@@ -1,0 +1,13 @@
+2. In the `StaticNode` class:
+   The `render` method also includes `SCRIPT_NAME` handling:
+   ```python
+   def render(self, context):
+       script_prefix = get_script_prefix()
+       url = f"{script_prefix.rstrip('/')}{self.url(context)}"
+       if context.autoescape:
+           url = conditional_escape(url)
+       if self.varname is None:
+           return url
+       context[self.varname] = url
+       return ''
+   ```

@@ -1,0 +1,13 @@
+    def test_punctuation_only_tag(self):
+        node = astroid.extract_node("""
+        # ???: This is a punctuation-only tag
+        pass
+        """)
+        with self.assertAddsMessages(
+            Message(
+                msg_id='fixme',
+                line=2,
+                args='???: This is a punctuation-only tag'
+            )
+        ):
+            self.checker.process_tokens(node.root().tokens)

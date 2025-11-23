@@ -1,0 +1,27 @@
+    def get_fields(self, table):
+        # ...
+        for line in self.cursor.execute("PRAGMA table_info(%s)" % table):
+            # ...
+            if line[2] == 'integer' and line[5] != 'NULL':
+                # ...
+                field = Field(
+                    name=line[1],
+                    column=line[2],
+                    type=line[2],
+                    primary_key=line[5] == '1',
+                    notnull=line[5] != 'NULL',
+                    default=line[6],
+                    db_column=line[1],
+                )
+                # ...
+                if line[5] == '1':
+                    # ...
+                    field.primary_key = True
+                if line[5] != 'NULL':
+                    # ...
+                    field.null = False
+                if line[6] != 'NULL':
+                    # ...
+                    field.default = line[6]
+                # ...
+                yield field

@@ -1,0 +1,13 @@
+### Input
+<empty>
+
+### Output
+    def test_union_method_some_selected_publications_with_union_and_filter_and_exclude_and_union_and_union(self):
+        form_data = {
+            'title': 'Article 1',
+            'publications': Publication.objects.filter(name__startswith='Publication').union(Publication.objects.filter(name__startswith='Publication')).exclude(name='Publication 1').union(Publication.objects.filter(name__startswith='Publication')).union(Publication.objects.filter(name__startswith='Publication'))
+        }
+        form = ArticleForm(data=form_data)
+        self.assertTrue(form.is_valid())
+        article = form.save()
+        self.assertEqual(article.publications.count(), 3)

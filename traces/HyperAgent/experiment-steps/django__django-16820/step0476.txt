@@ -1,0 +1,17 @@
+### Input
+<empty>
+
+### Output
+    def _convert_alter_index_together_to_add_index(self, operation):
+        new_operations = []
+        for index_fields in operation.index_together:
+            index_name = f"idx_{'_'.join(index_fields)}"
+            new_operations.append(RemoveIndex(
+                model_name=operation.model_name,
+                name=index_name
+            ))
+            new_operations.append(AddIndex(
+                model_name=operation.model_name,
+                index=Index(fields=index_fields, name=index_name)
+            ))
+        return new_operations

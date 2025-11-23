@@ -1,0 +1,16 @@
+```python
+# django/db/migrations/operations/fields.py
+def reduce(self, operation, app_label):
+    if isinstance(operation, AlterField) and self.is_same_field_operation(operation):
+        return [operation]
+    if isinstance(operation, FieldOperation) and self.is_same_field_operation(operation):
+        if isinstance(operation, AlterField):
+            return [
+                AddField(
+                    model_name=self.model_name,
+                    name=operation.name,
+                    field=operation.field,
+                ),
+            ]
+    # ... rest of the method remains unchanged
+```

@@ -1,0 +1,25 @@
+### Input
+<empty>
+
+### Output
+```python
+1581 """
+1582     expr = _sympify(expr)
+1583     inf = Float('inf')
+1584     p = expr
+1585     reps = {}
+1586     reduce_num = None
+1587     if tolerance is not None and tolerance < 1:
+1588         reduce_num = ceiling(1/tolerance)
+1590     for fl in p.atoms(Float):
+1591         key = fl
+1592         if reduce_num is not None:
+1593             r = Rational(fl).limit_denominator(reduce_num)
+1594         elif (tolerance is not None and tolerance >= 1 and
+1595                 fl.is_Integer is False):
+1596             r = Rational(tolerance*round(fl/tolerance))
+1597         else:
+1598             r = fl
+1599         reps[key] = r
+1600     p = p.subs(reps)
+```

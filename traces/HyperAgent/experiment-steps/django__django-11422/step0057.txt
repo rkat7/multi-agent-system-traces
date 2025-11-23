@@ -1,0 +1,20 @@
+### Input
+<empty>
+
+### Output
+```python
+# directory_globs dictionary
+458         watched_files = list(self.watched_files(include_globs=False))
+459         found_roots = common_roots(self.watched_roots(watched_files))
+460         logger.debug('Watching %s files', len(watched_files))
+461         logger.debug('Found common roots: %s', found_roots)
+462         # Setup initial roots for performance, shortest roots first.
+463         for root in sorted(found_roots):
+464             self._watch_root(root)
+465         for directory, patterns in self.directory_globs.items():
+466             self._watch_glob(directory, patterns)
+467         # Group sorted watched_files by their parent directory.
+468         sorted_files = sorted(watched_files, key=lambda p: p.parent)
+469         for directory, group in itertools.groupby(sorted_files, key=lambda p: p.parent):
+470             # These paths need to be relative to the parent directory.
+471             self._subscribe_dir(directory, [str(p.relative_to(directory)) for p in group])

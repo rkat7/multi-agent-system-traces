@@ -1,0 +1,26 @@
+   Relevant code snippets from `misc.py`:
+   ```python
+# Processing of comments, including looking for "FIXME", "XXX", and "TODO" tags
+def process_tokens(self, tokens):
+    ...
+    comments = (
+        token_info for token_info in tokens if token_info.type == tokenize.COMMENT
+    )
+    for comment in comments:
+        comment_text = comment.string[1:].lstrip()  # trim '#' and whitespaces
+        # handle pylint disable clauses
+        disable_option_match = OPTION_PO.search(comment_text)
+        if disable_option_match:
+            try:
+                values = []
+                ...
+        # emit warnings if necessary
+        match = self._fixme_pattern.search("#" + comment_text.lower())
+        if match:
+            self.add_message(
+                "fixme",
+                col_offset=comment.start[1] + 1,
+                args=comment_text,
+                line=comment.start[0],
+            )
+```

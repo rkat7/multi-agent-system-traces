@@ -1,0 +1,12 @@
+### Input
+<empty>
+
+### Output
+        # Preserve the original HTTP method for 303 See Other responses
+        if resp.status_code == codes.see_other:
+            prepared_request.method = req.method
+        # Convert POST to GET for 301 Moved Permanently responses
+        elif resp.status_code == codes.moved and method == 'POST':
+            prepared_request.method = 'GET'
+        else:
+            prepared_request.method = method

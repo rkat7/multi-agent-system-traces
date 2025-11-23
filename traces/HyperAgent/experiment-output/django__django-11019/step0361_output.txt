@@ -1,0 +1,35 @@
+Results for keyword: def merge
+138     @staticmethod
+139     def merge(list_1, list_2):
+140         """
+141         Merge two lists while trying to keep the relative order of the elements.
+142         Warn if the lists have the same two elements in a different relative
+143         order.
+144 
+145         For static assets it can be important to have them included in the DOM
+146         in a certain order. In JavaScript you may not be able to reference a
+147         global or in CSS you might want to override a style.
+148         """
+149         # Start with a copy of list_1.
+150         combined_list = list(list_1)
+151         last_insert_index = len(list_1)
+152         # Walk list_2 in reverse, inserting each element into combined_list if
+153         # it doesn't already exist.
+154         for path in reversed(list_2):
+155             try:
+156                 # Does path already exist in the list?
+157                 index = combined_list.index(path)
+158             except ValueError:
+159                 # Add path to combined_list since it doesn't exist.
+160                 combined_list.insert(last_insert_index, path)
+161             else:
+162                 if index > last_insert_index:
+163                     warnings.warn(
+164                         'Detected duplicate Media files in an opposite order:\n'
+165                         '%s\n%s' % (combined_list[last_insert_index], combined_list[index]),
+166                         MediaOrderConflictWarning,
+167                     )
+168                 # path already exists in the list. Update last_insert_index so
+169                 # that the following elements are inserted in front of this one.
+170                 last_insert_index = index
+171         return combined_list

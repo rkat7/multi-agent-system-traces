@@ -1,0 +1,41 @@
+### Input
+<empty>
+
+### Output
+    This is an type-independent way of obtaining the first non-None element,
+    supporting both index access and the iterator protocol.
+    The first non-None element will be obtained when skip_none is True.
+    """
+    def safe_isfinite(val):
+        if val is None:
+            return False
+        try:
+            return np.isfinite(val) if np.isscalar(val) else True
+        except TypeError:
+            # This is something that numpy can not make heads or tails
+            # of, assume "finite"
+            return True
+    if skip_nonfinite is False:
+        if isinstance(obj, collections.abc.Iterator):
+            # needed to accept `array.flat` as input.
+            # np.flatiter reports as an instance of collections.Iterator
+            # but can still be indexed via [].
+            # This has the side effect of re-setting the iterator, but
+            # that is acceptable.
+            try:
+                return obj[0]
+            except TypeError:
+                pass
+            raise RuntimeError("matplotlib does not support generators "
+                               "as input")
+        return next(iter(obj))
+    elif isinstance(obj, np.flatiter):
+        # TODO do the finite filtering on this
+        return obj[0]
+    elif isinstance(obj, collections.abc.Iterator):
+        raise RuntimeError("matplotlib does not "
+                           "support generators as input")
+    else:
+        return next(val for val in obj if safe_isfinite(val))
+```
+HyperAgent_matplotlib__matplotlib-24149 - INFO - Planner's Response: Thought: After examining the relevant code, it's clear that the issue is related to how the `bar()` function handles NaN values during the unit conversion process. The `_convert_dx()` function, which is called within `bar()`, relies on `cbook._safe_first_finite()` to get the first finite value from the x-coordinates. When all values are NaN, this leads to a StopIteration exception, which is then caught and re-raised as a ValueError.

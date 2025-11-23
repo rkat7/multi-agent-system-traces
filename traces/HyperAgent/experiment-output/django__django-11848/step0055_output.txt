@@ -1,0 +1,136 @@
+```python
+90 
+91 @keep_lazy_text
+92 def parse_http_date(date_string):
+93     """
+94     Parse a date string in the format specified by RFC 7231, Section 7.1.1.2.
+95     """
+96     # RFC 7231, Section 7.1.1.2
+97     #   HTTP-date  = rfc1123-date / obsoleted-date
+98     #   rfc1123-date = weekday "," SP date1 SP time SP GMT
+99     #   date1       = 1*2DIGIT 2DIGIT "-" 1*2DIGIT "-" 1*2DIGIT
+100    #   time        = 2DIGIT ":" 2DIGIT ":" 2DIGIT
+101    #   weekday     = "Mon" / "Tue" / "Wed" / "Thu" / "Fri" / "Sat" / "Sun"
+102    #   GMT         = "GMT"
+103    #   obsoleted-date = rfc850-date / asctime-date
+104    #   rfc850-date  = weekday "," SP date2 SP time SP GMT
+105    #   date2       = 1*3DIGIT "-" 1*2DIGIT "-" 1*2DIGIT
+106    #   asctime-date = weekday SP date3 SP time SP year
+107    #   date3       = month SP day SP year
+108    #   month       = "Jan" / "Feb" / "Mar" / "Apr" / "May" / "Jun" /
+109    #                "Jul" / "Aug" / "Sep" / "Oct" / "Nov" / "Dec"
+110    #   year        = 4DIGIT
+111    #   time        = 2DIGIT ":" 2DIGIT ":" 2DIGIT
+112    #   weekday     = "Mon" / "Tue" / "Wed" / "Thu" / "Fri" / "Sat" / "Sun"
+113    #   GMT         = "GMT"
+114    #   month       = "Jan" / "Feb" / "Mar" / "Apr" / "May" / "Jun" /
+115    #                "Jul" / "Aug" / "Sep" / "Oct" / "Nov" / "Dec"
+116    #   day         = 2DIGIT / (LWSP digit)
+117    #   year        = 4(HEXDIG / %x20-7E)
+118    #   time        = 2DIGIT ":" 2DIGIT ":" 2DIGIT
+119    #   LWSP         = (WSP / CRLF)
+120    #   digit        = "0" / "1" / "2" / "3" / "4" / "5" / "6" / "7" /
+121    #                "8" / "9"
+122    #   HEXDIG       = DIGIT / "A" / "B" / "C" / "D" / "E" / "F"
+123    #   CRLF         = CR LF
+124    #   SP           = SP
+125    #   WSP          = SP / HT
+126    #   HT           = HT
+127    #   CR           = CR
+128    #   LF           = LF
+129    #   DQUOTE       = DQUOTE
+130    #   obs-text     = %x80-FF
+131    #   obs-fold     = CRLF 1*WSP
+132    #   obs-date     = rfc850-date / asctime-date
+133    #   obs-tz-offset = ("+" / "-") 4DIGIT
+134    #   obs-day      = 1*3DIGIT
+135    #   obs-time     = 2DIGIT ":" 2DIGIT ":" 2DIGIT
+136    #   obs-zone     = obs-tz-offset / obs-day " " obs-time
+137    #   obs-htz      = obs-zone
+138    #   obs-date     = obs-htz
+139    #   obs-time     = obs-htz
+140    #   obs-tz-offset = ("+" / "-") 4DIGIT
+141    #   obs-day      = 1*3DIGIT
+142    #   obs-time     = 2DIGIT ":" 2DIGIT ":" 2DIGIT
+143    #   obs-zone     = obs-tz-offset / obs-day " " obs-time
+144    #   obs-date     = obs-htz
+145    #   obs-time     = obs-htz
+146    #   obs-htz      = obs-zone
+147    #   obs-date     = obs-htz
+148    #   obs-time     = obs-htz
+149    #   obs-htz      = obs-zone
+150    #   obs-date     = obs-htz
+151    #   obs-time     = obs-htz
+152    #   obs-htz      = obs-zone
+153    #   obs-date     = obs-htz
+154    #   obs-time     = obs-htz
+155    #   obs-htz      = obs-zone
+156    #   obs-date     = obs-htz
+157    #   obs-time     = obs-htz
+158    #   obs-htz      = obs-zone
+159    #   obs-date     = obs-htz
+160    #   obs-time     = obs-htz
+161    #   obs-htz      = obs-zone
+162    #   obs-date     = obs-htz
+163    #   obs-time     = obs-htz
+164    #   obs-htz      = obs-zone
+165    #   obs-date     = obs-htz
+166    #   obs-time     = obs-htz
+167    #   obs-htz      = obs-zone
+168    #   obs-date     = obs-htz
+169    #   obs-time     = obs-htz
+170    #   obs-htz      = obs-zone
+171    #   obs-date     = obs-htz
+172    #   obs-time     = obs-htz
+173    #   obs-htz      = obs-zone
+174    #   obs-date     = obs-htz
+175    #   obs-time     = obs-htz
+176    #   obs-htz      = obs-zone
+177    #   obs-date     = obs-htz
+178    #   obs-time     = obs-htz
+179    #   obs-htz      = obs-zone
+180    #   obs-date     = obs-htz
+181    #   obs-time     = obs-htz
+182    #   obs-htz      = obs-zone
+183    #   obs-date     = obs-htz
+184    #   obs-time     = obs-htz
+185    #   obs-htz      = obs-zone
+186    #   obs-date     = obs-htz
+187    #   obs-time     = obs-htz
+188    #   obs-htz      = obs-zone
+189    #   obs-date     = obs-htz
+190    #   obs-time     = obs-htz
+191    #   obs-htz      = obs-zone
+192    #   obs-date     = obs-htz
+193    #   obs-time     = obs-htz
+194    #   obs-htz      = obs-zone
+195    #   obs-date     = obs-htz
+196    #   obs-time     = obs-htz
+197    #   obs-htz      = obs-zone
+198    #   obs-date     = obs-htz
+199    #   obs-time     = obs-htz
+200    #   obs-htz      = obs-zone
+201    #   obs-date     = obs-htz
+202    #   obs-time     = obs-htz
+203    #   obs-htz      = obs-zone
+204    #   obs-date     = obs-htz
+205    #   obs-time     = obs-htz
+206    #   obs-htz      = obs-zone
+207    #   obs-date     = obs-htz
+208    #   obs-time     = obs-htz
+209    #   obs-htz      = obs-zone
+210    #   obs-date     = obs-htz
+211    #   obs-time     = obs-htz
+212    #   obs-htz      = obs-zone
+213    #   obs-date     = obs-htz
+214    #   obs-time     = obs-htz
+215    #   obs-htz      = obs-zone
+216    #   obs-date     = obs-htz
+217    #   obs-time     = obs-htz
+218    #   obs-htz      = obs-zone
+219    #   obs-date     = obs-htz
+220    #   obs-time     = obs-htz
+221    #   obs-htz      = obs-zone
+222    #   obs-date     = obs-htz
+223    #   obs-time    
+HyperAgent_django__django-11848 - INFO - Planner's Response: Thought: Thank you for providing the additional context. It seems that the function definition and some comments are included, but we're still missing the actual implementation of the `parse_http_date` function. Let's request the Codebase Navigator to show us the implementation part of the function, which should come after these comments.

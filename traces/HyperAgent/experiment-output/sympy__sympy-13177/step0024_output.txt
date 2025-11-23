@@ -1,0 +1,47 @@
+```python
+34         def doit(p, q):
+35             """Try to return p % q if both are numbers or +/-p is known
+36             to be less than or equal q.
+37             """
+38 
+39             if p.is_infinite or q.is_infinite or p is nan or q is nan:
+40                 return nan
+41             if (p == q or p == -q or
+42                     p.is_Pow and p.exp.is_Integer and p.base == q or
+43                     p.is_integer and q == 1):
+44                 return S.Zero
+45 
+46             if q.is_Number:
+47                 if p.is_Number:
+48                     return (p % q)
+49                 if q == 2:
+50                     if p.is_even:
+51                         return S.Zero
+52                     elif p.is_odd:
+53                         return S.One
+54 
+55             # by ratio
+56             r = p/q
+57             try:
+58                 d = int(r)
+59             except TypeError:
+60                 pass
+61             else:
+62                 if type(d) is int:
+63                     rv = p - d*q
+64                     if (rv*q < 0) == True:
+65                         rv += q
+66                     return rv
+67 
+68             # by difference
+69             d = p - q
+70             if d.is_negative:
+71                 if q.is_negative:
+72                     return d
+73                 elif q.is_positive:
+74                     return p
+75 
+76         rv = doit(p, q)
+77         if rv is not None:
+78             return rv
+```

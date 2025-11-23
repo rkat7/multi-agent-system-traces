@@ -1,0 +1,16 @@
+```python
+150     def _is_expired(self, f):
+151         """
+152         Take an open cache file `f` and delete it if it's expired.
+153         """
+154         try:
+155             exp = pickle.load(f)
+156         except EOFError:
+157             exp = 0  # An empty file is considered expired.
+158         if exp is not None and exp < time.time():
+159             f.close()  # On Windows a file has to be closed before deleting
+160             self._delete(f.name)
+161             return True
+162         return False
+```
+HyperAgent_django__django-16379 - INFO - Planner's Response: Thought: Thank you for providing the `_is_expired` method. After examining its implementation, I can see that it does have side effects that we need to consider. Specifically:

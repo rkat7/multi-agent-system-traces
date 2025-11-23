@@ -1,0 +1,27 @@
+### Input
+<empty>
+
+### Output
+    def references_field(self, model_name, name, app_label):
+        model_name_lower = model_name.lower()
+        # Check if this operation locally references the field.
+        if model_name_lower == self.model_name_lower:
+            if name == self.name:
+                return True
+            elif (
+                self.field
+                and hasattr(self.field, "from_fields")
+                and name in self.field.from_fields
+            ):
+                return True
+        # Check if this operation remotely references the field.
+        if self.field is None:
+            return False
+        return bool(
+            field_references(
+                (app_label, self.model_name_lower),
+                self.field,
+                (app_label, model_name_lower),
+                name,
+            )
+        )

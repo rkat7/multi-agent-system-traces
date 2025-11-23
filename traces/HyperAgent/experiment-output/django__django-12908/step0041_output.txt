@@ -1,0 +1,12 @@
+```python
+# django/db/models/sql/query.py
+def get_initial_alias(self):
+    # ...
+    if (isinstance(self.group_by, tuple) or self.is_sliced or existing_annotations or
+            self.distinct or self.combinator):
+        from django.db.models.sql.subqueries import AggregateQuery
+        outer_query = AggregateQuery(self.model)
+        inner_query = self.clone()
+        inner_query.select_for_update = False
+        inner_query.select_related = False
+        # ...

@@ -1,0 +1,23 @@
+    n_classes = classes.shape[0]
+    n_clusters = clusters.shape[0]
+    # Using coo_matrix to accelerate simple histogram calculation,
+    # i.e. bins are consecutive integers
+    # Currently, coo_matrix is faster than histogram2d for simple cases
+    contingency = sp.coo_matrix((np.ones(class_idx.shape[0]),
+                                 (class_idx, cluster_idx)),
+                                shape=(n_classes, n_clusters),
+                                dtype=np.int)
+    if sparse:
+        contingency = contingency.tocsr()
+        contingency.sum_duplicates()
+    else:
+        contingency = contingency.toarray()
+        if eps is not None:
+            # don't use += as contingency is integer
+            contingency = contingency + eps
+    return contingency
+'''
+result = editor._run(relative_file_path="sklearn/metrics/cluster/_supervised.py", start_line=79, end_line=133, patch=patch)
+print(result)
+```
+HyperAgent_scikit-learn__scikit-learn-15535 - INFO - Inner-Editor-Assistant's Response: Thought: The changes have been successfully applied to both the `mutual_info_score` and `contingency_matrix` functions. These modifications should now allow for string labels to be processed without conversion attempts when `allow_string_labels=True`. This should resolve the issue described in the original GitHub issue.

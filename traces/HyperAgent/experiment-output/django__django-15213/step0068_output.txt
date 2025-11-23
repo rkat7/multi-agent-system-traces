@@ -1,0 +1,8 @@
+    def _resolve_negated_q(self, q_object):
+        if isinstance(q_object, Q) and q_object.negated:
+            children = q_object.children
+            if len(children) == 1 and isinstance(children[0], tuple):
+                key, value = children[0]
+                if key == 'pk__in' and not value:
+                    return Value(True, output_field=BooleanField())
+        return q_object

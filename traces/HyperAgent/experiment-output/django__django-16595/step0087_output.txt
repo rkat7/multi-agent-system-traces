@@ -1,0 +1,18 @@
+    def reduce(self, operation, app_label):
+        if isinstance(operation, AlterField):
+            if self.name == operation.name and self.model_name == operation.model_name:
+                # The fields being altered are the same, so we can combine the AlterField operations.
+                # This will ensure that the final field has all the changes applied.
+                return [AlterField(
+                    self.model_name,
+                    self.name,
+                    max_field(self.field, operation.field),
+                    preserve_default=self.preserve_default and operation.preserve_default,
+                )]
+            else:
+                # The fields being altered are different, so we can't combine the operations.
+                return [self, operation]
+        else:
+            # The operation is not an AlterField, so we can't combine it.
+            return [self, operation]
+```

@@ -1,0 +1,12 @@
+        try:
+            source_field = source_model._meta.get_field(field_name)
+        except FieldDoesNotExist as e:
+            raise PermissionDenied from e
+        try:
+            remote_model = source_field.remote_field.model
+        except AttributeError as e:
+            raise PermissionDenied from e
+        try:
+            model_admin = self.admin_site._registry[remote_model]
+        except KeyError as e:
+            raise PermissionDenied from e

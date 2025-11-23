@@ -1,0 +1,81 @@
+HyperAgent_django__django-14608 - INFO - Editor->Planner: exitcode: 0 (execution succeeded)
+Code output: The content of tests/test_formsets.py is: 1 import datetime
+2 from collections import Counter
+3 from unittest import mock
+4 
+5 from django.core.exceptions import ValidationError
+6 from django.forms import (
+7     BaseForm, CharField, DateField, FileField, Form, IntegerField,
+8     SplitDateTimeField, formsets,
+9 )
+10 from django.forms.formsets import BaseFormSet, all_valid, formset_factory
+11 from django.forms.utils import ErrorList
+12 from django.forms.widgets import HiddenInput
+13 from django.test import SimpleTestCase
+14 
+15 
+16 class Choice(Form):
+17     choice = CharField()
+18     votes = IntegerField()
+19 
+20 
+21 ChoiceFormSet = formset_factory(Choice)
+22 
+23 
+24 class FavoriteDrinkForm(Form):
+25     name = CharField()
+26 
+27 
+28 class BaseFavoriteDrinksFormSet(BaseFormSet):
+29     def clean(self):
+30         seen_drinks = []
+31 
+32         for drink in self.cleaned_data:
+33             if drink['name'] in seen_drinks:
+34                 raise ValidationError('You may only specify a drink once.')
+35 
+36             seen_drinks.append(drink['name'])
+37 
+38 
+39 # A FormSet that takes a list of favorite drinks and raises an error if
+40 # there are any duplicates.
+41 FavoriteDrinksFormSet = formset_factory(FavoriteDrinkForm, formset=BaseFavoriteDrinksFormSet, extra=3)
+42 
+43 
+44 class CustomKwargForm(Form):
+45     def __init__(self, *args, custom_kwarg, **kwargs):
+46         self.custom_kwarg = custom_kwarg
+47         super().__init__(*args, **kwargs)
+48 
+49 
+50 class FormsFormsetTestCase(SimpleTestCase):
+51 
+52     def make_choiceformset(
+53             self, formset_data=None, formset_class=ChoiceFormSet,
+54             total_forms=None, initial_forms=0, max_num_forms=0, min_num_forms=0, **kwargs):
+55         """
+56         Make a ChoiceFormset from the given formset_data.
+57         The data should be given as a list of (choice, votes) tuples.
+58         """
+59         kwargs.setdefault('prefix', 'choices')
+60         kwargs.setdefault('auto_id', False)
+61 
+62         if formset_data is None:
+63             return formset_class(**kwargs)
+64 
+65         if total_forms is None:
+66             total_forms = len(formset_data)
+67 
+68         def prefixed(*args):
+69             args = (kwargs['prefix'],) + args
+70             return '-'.join(args)
+71 
+72         data = {
+73             prefixed('TOTAL_FORMS'): str(total_forms),
+74             prefixed('INITIAL_FORMS'): str(initial_forms),
+75             prefixed('MAX_NUM_FORMS'): str(max_num_forms),
+76             prefixed('MIN_NUM_FORMS'): str(min_num_forms),
+77         }
+78         for i, (choice, votes) in enumerate(formset_data):
+79             data[prefixed(str(i), 'choice')] = choice
+80             data[prefixed(str(i), 'votes')] = votes

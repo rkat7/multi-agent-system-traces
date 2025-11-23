@@ -1,0 +1,25 @@
+### Input
+<empty>
+
+### Output
+```python
+def get_commands():
+    """
+    Returns a dictionary of all available management commands.
+    """
+    commands = {}
+    for app in apps.get_app_configs():
+        module_path = getattr(app.module, '__path__', [app.module.__file__])
+        for name in module_path:
+            try:
+                mod = __import__(name, {}, {}, ['*'])
+            except ImportError:
+                continue
+            for obj in dir(mod):
+                mod_obj = getattr(mod, obj)
+                if hasattr(mod_obj, 'commands'):
+                    for command_name, command in mod_obj.commands.items():
+                        if not hasattr(command, 'hidden'):
+                            commands[command_name] = command
+    return commands
+```

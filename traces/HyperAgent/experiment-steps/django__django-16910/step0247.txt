@@ -1,0 +1,28 @@
+### Input
+<empty>
+
+### Output
+    ret = []
+    col_idx = 1
+    for col, alias in select:
+        try:
+            sql, params = self.compile(col)
+        except EmptyResultSet:
+            empty_result_set_value = getattr(
+                col, "empty_result_set_value", NotImplemented
+            )
+            if empty_result_set_value is NotImplemented:
+                # Select a predicate that's always False.
+                sql, params = "0", ()
+            else:
+                sql, params = self.compile(Value(empty_result_set_value))
+        except FullResultSet:
+            sql, params = self.compile(Value(True))
+        else:
+            sql, params = col.select_format(self, sql, params)
+        if alias is None and with_col_aliases:
+            alias = f"col{col_idx}"
+            col_idx += 1
+        ret.append((col, (sql, params), alias))
+    return ret, klass_info, annotations
+```
